@@ -31,7 +31,9 @@ function Router() {
   return (
     <Switch>
       {/* Public route - Login page */}
-      <Route path="/login" component={Login} />
+      <Route path="/login">
+        <Login />
+      </Route>
       
       {/* Protected routes - Require authentication */}
       <Route path="/">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -7,6 +7,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Helmet } from "react-helmet";
+import { useAuth } from "@/lib/auth";
 
 import {
   Form,
@@ -54,6 +55,14 @@ export default function Login() {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState<string>("login");
+  const { login, register: registerUser, isAuthenticated } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
 
   // Setup login form
   const loginForm = useForm<z.infer<typeof loginSchema>>({
@@ -78,8 +87,11 @@ export default function Login() {
   // Login mutation
   const loginMutation = useMutation({
     mutationFn: async (data: z.infer<typeof loginSchema>) => {
-      const res = await apiRequest("POST", "/api/auth/login", data);
-      return res.json();
+      const success = await login(data.username, data.password);
+      if (!success) {
+        throw new Error("Invalid username or password");
+      }
+      return success;
     },
     onSuccess: () => {
       toast({
@@ -101,8 +113,11 @@ export default function Login() {
   const registerMutation = useMutation({
     mutationFn: async (data: z.infer<typeof registerSchema>) => {
       const { confirmPassword, ...registerData } = data;
-      const res = await apiRequest("POST", "/api/auth/register", registerData);
-      return res.json();
+      const success = await registerUser(registerData.username, registerData.password, registerData.email);
+      if (!success) {
+        throw new Error("Registration failed. Username may already exist.");
+      }
+      return success;
     },
     onSuccess: () => {
       toast({

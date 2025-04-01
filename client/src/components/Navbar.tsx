@@ -5,16 +5,27 @@ import {
   Menu as MenuIcon,
   X as XIcon,
   User,
-  Search
+  Search,
+  LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/lib/auth";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   const isMobile = useIsMobile();
+  const { user, isAuthenticated, logout } = useAuth();
 
   // Add scroll effect for navbar
   useEffect(() => {
@@ -43,6 +54,12 @@ export default function Navbar() {
   const closeMenu = () => {
     setIsMenuOpen(false);
     document.body.style.overflow = "auto";
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+    closeMenu();
   };
 
   const isActive = (path: string) => {
@@ -119,22 +136,55 @@ export default function Navbar() {
                 <span className="sr-only">Search</span>
               </Button>
               
-              <Link 
-                href="/list-property" 
-                className="hidden md:inline-block text-primary hover:text-primary/80 font-medium"
-              >
-                List Property
-              </Link>
+              {isAuthenticated && (
+                <Link 
+                  href="/list-property" 
+                  className="hidden md:inline-block text-primary hover:text-primary/80 font-medium"
+                >
+                  List Property
+                </Link>
+              )}
             </>
           )}
           
-          <Button 
-            variant="default" 
-            size={isMobile ? "sm" : "default"} 
-            className="rounded-full bg-primary hover:bg-primary/90"
-          >
-            {isMobile ? <User className="h-4 w-4" /> : "Sign In"}
-          </Button>
+          {!isAuthenticated ? (
+            <Link href="/login">
+              <Button 
+                variant="default" 
+                size={isMobile ? "sm" : "default"} 
+                className="rounded-full bg-primary hover:bg-primary/90"
+              >
+                {isMobile ? <User className="h-4 w-4" /> : "Sign In"}
+              </Button>
+            </Link>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="default" 
+                  size={isMobile ? "sm" : "default"} 
+                  className="rounded-full bg-primary hover:bg-primary/90"
+                >
+                  {isMobile ? (
+                    <User className="h-4 w-4" />
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      {user?.username}
+                    </span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           
           <button 
             className="md:hidden flex items-center justify-center text-foreground/80" 
@@ -181,21 +231,43 @@ export default function Navbar() {
           >
             Contact
           </Link>
-          <Link 
-            href="/list-property" 
-            className="text-2xl font-semibold hover:text-primary transition-colors"
-            onClick={closeMenu}
-          >
-            List Your Property
-          </Link>
           
-          <div className="mt-auto pt-6 border-t">
-            <Button 
-              className="w-full rounded-full py-6 text-lg btn-primary"
+          {isAuthenticated && (
+            <Link 
+              href="/list-property" 
+              className="text-2xl font-semibold hover:text-primary transition-colors"
               onClick={closeMenu}
             >
-              Sign In
-            </Button>
+              List Your Property
+            </Link>
+          )}
+          
+          <div className="mt-auto pt-6 border-t">
+            {!isAuthenticated ? (
+              <Link href="/login">
+                <Button 
+                  className="w-full rounded-full py-6 text-lg"
+                  onClick={closeMenu}
+                >
+                  Sign In
+                </Button>
+              </Link>
+            ) : (
+              <div className="space-y-4">
+                <div className="px-2 py-3 bg-primary/10 rounded-lg">
+                  <p className="font-medium text-gray-800">Signed in as:</p>
+                  <p className="font-bold text-primary">{user?.username}</p>
+                </div>
+                <Button 
+                  variant="outline"
+                  className="w-full rounded-full py-6 text-lg border-primary text-primary hover:bg-primary hover:text-white"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="mr-2 h-5 w-5" />
+                  Log Out
+                </Button>
+              </div>
+            )}
           </div>
         </nav>
       </div>
