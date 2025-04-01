@@ -168,10 +168,14 @@ export default function Login() {
                   </div>
                   <h1 className="text-4xl md:text-5xl font-bold text-white mb-2 drop-shadow-md tracking-tight">STAY CHILL</h1>
                   <div className="h-0.5 w-24 bg-gradient-to-r from-teal-400 via-blue-400 to-amber-400 mx-auto mt-4 mb-6"></div>
-                  <p className="text-white/90 text-lg font-light">EXCLUSIVE SAHEL & RAS EL HEKMA</p>
+                  <p className="text-white/90 text-lg font-light">UNLOCK PREMIUM EXPERIENCES</p>
+                  <div className="mt-3">
+                    <span className="inline-block bg-teal-500/20 text-teal-300 text-xs px-2.5 py-1 rounded-full border border-teal-600/30 font-medium">Exclusive Access</span>
+                    <span className="ml-2 inline-block bg-amber-500/20 text-amber-300 text-xs px-2.5 py-1 rounded-full border border-amber-600/30 font-medium">Verified Properties</span>
+                  </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-filter backdrop-blur-lg rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-white/10">
+                <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-filter backdrop-blur-lg rounded-2xl p-8 shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-teal-500/10 hover:border-teal-500/20 transition-all duration-300">
                   <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className="grid w-full grid-cols-2 mb-8 bg-black/20 rounded-xl p-1">
                       <TabsTrigger 
@@ -317,11 +321,19 @@ export default function Login() {
                               <FormItem>
                                 <FormLabel className="text-white text-sm font-medium">Username</FormLabel>
                                 <FormControl>
-                                  <Input 
-                                    placeholder="Choose a username" 
-                                    {...field} 
-                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-primary focus:ring-primary transition-all duration-300"
-                                  />
+                                  <div className="relative">
+                                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50">
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" strokeWidth="1.5"/>
+                                        <path d="M20.5899 22C20.5899 18.13 16.7399 15 11.9999 15C7.25991 15 3.40991 18.13 3.40991 22" stroke="currentColor" strokeWidth="1.5"/>
+                                      </svg>
+                                    </div>
+                                    <Input 
+                                      placeholder="Choose a username" 
+                                      {...field}
+                                      className="bg-black/20 pl-10 border-transparent text-white placeholder:text-white/40 focus:bg-black/30 focus:border-primary/50 focus:ring-primary/50 rounded-xl h-12 transition-all duration-300"
+                                    />
+                                  </div>
                                 </FormControl>
                                 <FormMessage className="text-amber-300 text-xs" />
                               </FormItem>
@@ -335,12 +347,19 @@ export default function Login() {
                               <FormItem>
                                 <FormLabel className="text-white text-sm font-medium">Email</FormLabel>
                                 <FormControl>
-                                  <Input 
-                                    type="email" 
-                                    placeholder="Enter your email" 
-                                    {...field} 
-                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-primary focus:ring-primary transition-all duration-300"
-                                  />
+                                  <div className="relative">
+                                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50">
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 8L10.8906 13.2604C11.5624 13.7083 12.4376 13.7083 13.1094 13.2604L21 8M5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                      </svg>
+                                    </div>
+                                    <Input 
+                                      type="email" 
+                                      placeholder="Enter your email" 
+                                      {...field} 
+                                      className="bg-black/20 pl-10 border-transparent text-white placeholder:text-white/40 focus:bg-black/30 focus:border-primary/50 focus:ring-primary/50 rounded-xl h-12 transition-all duration-300"
+                                    />
+                                  </div>
                                 </FormControl>
                                 <FormMessage className="text-amber-300 text-xs" />
                               </FormItem>
@@ -355,12 +374,20 @@ export default function Login() {
                                 <FormItem>
                                   <FormLabel className="text-white text-sm font-medium">Password</FormLabel>
                                   <FormControl>
-                                    <Input 
-                                      type="password" 
-                                      placeholder="Create a password" 
-                                      {...field} 
-                                      className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-primary focus:ring-primary transition-all duration-300"
-                                    />
+                                    <div className="relative">
+                                      <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M19 11H5C3.89543 11 3 11.8954 3 13V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V13C21 11.8954 20.1046 11 19 11Z" stroke="currentColor" strokeWidth="1.5"/>
+                                          <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" strokeWidth="1.5"/>
+                                        </svg>
+                                      </div>
+                                      <Input 
+                                        type="password" 
+                                        placeholder="Create a password" 
+                                        {...field} 
+                                        className="bg-black/20 pl-10 border-transparent text-white placeholder:text-white/40 focus:bg-black/30 focus:border-primary/50 focus:ring-primary/50 rounded-xl h-12 transition-all duration-300"
+                                      />
+                                    </div>
                                   </FormControl>
                                   <FormMessage className="text-amber-300 text-xs" />
                                 </FormItem>
@@ -374,12 +401,20 @@ export default function Login() {
                                 <FormItem>
                                   <FormLabel className="text-white text-sm font-medium">Confirm</FormLabel>
                                   <FormControl>
-                                    <Input 
-                                      type="password" 
-                                      placeholder="Confirm password" 
-                                      {...field} 
-                                      className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-primary focus:ring-primary transition-all duration-300"
-                                    />
+                                    <div className="relative">
+                                      <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M19 11H5C3.89543 11 3 11.8954 3 13V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V13C21 11.8954 20.1046 11 19 11Z" stroke="currentColor" strokeWidth="1.5"/>
+                                          <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" strokeWidth="1.5"/>
+                                        </svg>
+                                      </div>
+                                      <Input 
+                                        type="password" 
+                                        placeholder="Confirm password" 
+                                        {...field} 
+                                        className="bg-black/20 pl-10 border-transparent text-white placeholder:text-white/40 focus:bg-black/30 focus:border-primary/50 focus:ring-primary/50 rounded-xl h-12 transition-all duration-300"
+                                      />
+                                    </div>
                                   </FormControl>
                                   <FormMessage className="text-amber-300 text-xs" />
                                 </FormItem>
@@ -389,7 +424,7 @@ export default function Login() {
                           
                           <Button 
                             type="submit" 
-                            className="w-full mt-8 bg-primary hover:bg-primary/90 text-white font-medium py-2.5 rounded-xl transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-lg"
+                            className="w-full mt-8 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-medium py-3 h-12 rounded-xl transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-lg"
                             disabled={registerMutation.isPending}
                           >
                             {registerMutation.isPending ? 
@@ -407,8 +442,11 @@ export default function Login() {
                       </Form>
                     </TabsContent>
                   </Tabs>
-                  <div className="mt-6 bg-white/5 p-3 rounded-lg">
-                    <p className="text-sm text-center text-white/70">
+                  <div className="mt-6 bg-gradient-to-r from-white/5 to-white/10 p-3 rounded-lg border border-white/10">
+                    <p className="text-sm text-center text-white/70 flex items-center justify-center">
+                      <svg className="w-4 h-4 text-teal-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
                       By signing in, you agree to Stay Chill's Terms of Service
                     </p>
                   </div>
@@ -420,12 +458,20 @@ export default function Login() {
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 to-teal-800/50"></div>
                 <div className="relative h-full flex flex-col justify-end p-8 md:p-12">
                   <div className="mb-8">
-                    <h2 className="text-3xl font-light text-white mb-2 tracking-wide">EXCEPTIONAL <span className="font-bold">EXPERIENCES</span></h2>
+                    <h2 className="text-3xl font-light text-white mb-2 tracking-wide">DISCOVER <span className="font-bold">LUXURY LIVING</span></h2>
                     <div className="h-0.5 w-16 bg-amber-400 mb-4"></div>
                     <p className="text-white/80 leading-relaxed">
-                      Discover our curated collection of luxury properties in Sahel and Ras El Hekma, 
-                      designed exclusively for the most discerning clientele.
+                      Explore a handpicked collection of premium properties at exclusive locations, 
+                      with personalized services for the ultimate vacation experience.
                     </p>
+                    <div className="mt-4 bg-gradient-to-r from-teal-400/20 to-teal-600/20 rounded-lg p-3 border border-teal-500/20">
+                      <div className="flex items-center">
+                        <svg className="w-5 h-5 text-teal-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p className="text-white/90 text-sm">Over 95% customer satisfaction rate</p>
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -457,8 +503,8 @@ export default function Login() {
                   <div className="mt-auto">
                     <div className="flex items-center justify-center mt-4 bg-white/10 rounded-lg p-3">
                       <div className="text-center">
-                        <p className="text-white font-medium mb-1">Experience the best of Sahel & Ras El Hekma</p>
-                        <p className="text-amber-300 text-sm">Sign in to discover premium vacation properties</p>
+                        <p className="text-white font-medium mb-1">Experience the Ultimate in Luxury</p>
+                        <p className="text-amber-300 text-sm">Sign in to unlock exclusive access and special offers</p>
                       </div>
                     </div>
                   </div>
