@@ -467,7 +467,7 @@ export class PostgresStorage implements IStorage {
       if (!existingUser) {
         const guestUser: InsertUser = {
           username: "guest",
-          password: "$2a$10$CUd8KN.dqzTP0fWNrWMS4eDWmXFEFgH1g2JJYCVEyoQHUCg/NAFzi", // bcrypt hash for "guest123"
+          password: "$2b$10$5XQQgQ9PwFmtdITHkyDFEuZWVmkbTpiUOUMY0rfir6cS4bxzI4ALO", // bcrypt hash for "guest123"
           email: "guest@guestemail.com"
         };
         await this.createUser(guestUser);
