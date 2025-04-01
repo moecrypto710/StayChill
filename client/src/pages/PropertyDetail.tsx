@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
 import { Property } from "@shared/schema";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
-import { DateRange } from "@/lib/types";
+import { DateRange, Panorama } from "@/lib/types";
+import Panorama360Gallery from "@/components/Panorama360Gallery";
 import { 
   Card,
   CardContent,
@@ -101,6 +102,44 @@ export default function PropertyDetail() {
       message: "",
     },
   });
+  
+  // Sample panoramas for 360° virtual tour
+  const [panoramas, setPanoramas] = useState<Panorama[]>([]);
+  
+  // Initialize panoramas for the current property
+  useEffect(() => {
+    if (property) {
+      // In a real app, these would be fetched from an API
+      const propertyPanoramas: Panorama[] = [
+        {
+          id: 'living-room',
+          url: 'https://pannellum.org/images/cerro-toco-0.jpg',
+          title: 'Living Room',
+          thumbnail: 'https://images.unsplash.com/photo-1560448204-603b3fc33ddc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80',
+        },
+        {
+          id: 'kitchen',
+          url: 'https://pannellum.org/images/jfk.jpg',
+          title: 'Kitchen',
+          thumbnail: 'https://images.unsplash.com/photo-1588854337115-1c67d9247e4d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80',
+        },
+        {
+          id: 'bedroom',
+          url: 'https://pannellum.org/images/alma.jpg',
+          title: 'Master Bedroom',
+          thumbnail: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80',
+        },
+        {
+          id: 'bathroom',
+          url: 'https://pannellum.org/images/bma-1.jpg',
+          title: 'Bathroom',
+          thumbnail: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80',
+        },
+      ];
+      
+      setPanoramas(propertyPanoramas);
+    }
+  }, [property]);
 
   // Booking mutation
   const bookingMutation = useMutation({
@@ -309,6 +348,14 @@ export default function PropertyDetail() {
                 Located in {property.location}, this property offers easy access to the beach and local attractions.
               </p>
             </div>
+
+            {/* 360° Virtual Tour */}
+            {panoramas.length > 0 && (
+              <Panorama360Gallery
+                propertyTitle={property.title}
+                panoramas={panoramas}
+              />
+            )}
           </div>
 
           {/* Booking Card */}

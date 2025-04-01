@@ -50,3 +50,29 @@ export interface PropertyFilters {
   dateRange?: DateRange;
   guests?: number;
 }
+
+// VR and 360° Experience Types
+export interface Panorama {
+  id: string;
+  url: string;
+  title: string;
+  thumbnail: string;
+  hotspots?: Hotspot[];
+}
+
+export interface Hotspot {
+  id: string;
+  pitch: number;
+  yaw: number;
+  type: 'info' | 'link';
+  text?: string;
+  URL?: string;
+  targetPanoramaId?: string;
+}
+
+export interface VirtualTourData {
+  propertyId: number;
+  title: string;
+  panoramas: Panorama[];
+  defaultPanoramaId?: string;
+}
