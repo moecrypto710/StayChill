@@ -10,12 +10,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { DateRange } from "@/lib/types";
-import { Search, Calendar, Users, MapPin } from "lucide-react";
+import { Search, Calendar, Users, MapPin, Home, Star, ArrowRight } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-// Modern beach image with better quality and mobile optimization
-const heroImageUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80";
+// Higher quality beach image with vibrant colors
+const heroImageUrl = "https://images.unsplash.com/photo-1559494007-9f5847c49d94?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80";
 
 export default function HeroSection() {
   const [, setLocation] = useLocation();
@@ -62,24 +63,51 @@ export default function HeroSection() {
 
   return (
     <section className="hero-section">
-      <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-black/30"></div>
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/30"></div>
+      
+      {/* Animated wave pattern overlay */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIyMDBweCIgdmlld0JveD0iMCAwIDEyODAgMTQwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGZpbGw9IiMwMzY0ODAyMCI+PHBhdGggZD0iTTEyODAgMEw2NDAgNzAgMCAwdjE0MGgxMjgweiIvPjwvZz48L3N2Zz4=')] bg-bottom bg-no-repeat opacity-30"></div>
+      
       <div className="relative container h-full flex flex-col justify-center">
-        <div className="max-w-3xl space-y-6 animate-in fade-in slide-in-from-bottom-5 duration-700">
-          <div className="space-y-4">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">
-              Discover Your Perfect <span className="text-primary/90">Beachside Getaway</span>
+        <div className="max-w-3xl space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700 pt-10">
+          {/* Badge */}
+          <Badge className="bg-white/20 backdrop-blur-md hover:bg-white/30 text-white font-medium text-sm px-4 py-1.5 border-none">
+            Experience Coastal Luxury
+          </Badge>
+          
+          {/* Hero text */}
+          <div className="space-y-5">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight">
+              Find Your <span className="text-primary">Dream Getaway</span> in Egypt's Finest Beaches
             </h1>
-            <p className="text-lg sm:text-xl text-white/90">
-              Premium vacation rentals in Sahel & Ras El Hekma
+            <p className="text-lg sm:text-xl text-white/90 max-w-2xl">
+              Exclusive vacation rentals with panoramic sea views, luxury amenities, and unforgettable experiences in Sahel & Ras El Hekma
             </p>
           </div>
           
-          {/* Search Form - Responsive design */}
-          <div className="bg-white/95 backdrop-blur-sm p-4 md:p-6 rounded-xl shadow-lg border border-gray-100">
+          {/* Stats bar */}
+          <div className="flex flex-wrap gap-6 mb-4">
+            <div className="flex items-center text-white">
+              <Home className="h-5 w-5 mr-2 text-primary" />
+              <span className="font-bold mr-1.5">200+</span> Properties
+            </div>
+            <div className="flex items-center text-white">
+              <MapPin className="h-5 w-5 mr-2 text-primary" />
+              <span className="font-bold mr-1.5">2</span> Prime Locations
+            </div>
+            <div className="flex items-center text-white">
+              <Star className="h-5 w-5 mr-2 text-primary" />
+              <span className="font-bold mr-1.5">4.8</span> Rating
+            </div>
+          </div>
+          
+          {/* Search Form - Glassmorphism design */}
+          <div className="bg-white/90 backdrop-blur-md p-5 md:p-6 rounded-xl shadow-xl border border-white/20">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                  <MapPin className="h-4 w-4 text-primary/80" />
+                  <MapPin className="h-4 w-4 text-primary" />
                   <span>Where</span>
                 </Label>
                 <Select value={selectedLocation} onValueChange={setSelectedLocation}>
@@ -95,18 +123,18 @@ export default function HeroSection() {
               </div>
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                  <Calendar className="h-4 w-4 text-primary/80" />
+                  <Calendar className="h-4 w-4 text-primary" />
                   <span>When</span>
                 </Label>
                 <DateRangePicker 
                   date={dateRange} 
-                  onDateChange={(date) => date && setDateRange(date)}
+                  onDateChange={(date) => date && setDateRange(date as any)}
                   className="border-gray-200"
                 />
               </div>
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                  <Users className="h-4 w-4 text-primary/80" />
+                  <Users className="h-4 w-4 text-primary" />
                   <span>Who</span>
                 </Label>
                 <Select value={guestCount} onValueChange={setGuestCount}>
@@ -125,12 +153,12 @@ export default function HeroSection() {
             </div>
             <div className="mt-5">
               <Button 
-                className="w-full rounded-full btn-primary group"
+                className="w-full h-12 rounded-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-medium shadow-lg shadow-primary/30 group"
                 onClick={handleSearch}
-                size={isMobile ? "default" : "lg"}
               >
                 <Search className="h-4 w-4 mr-2 group-hover:animate-pulse" />
-                {isMobile ? "Search" : "Search Available Properties"}
+                {isMobile ? "Search" : "Find Available Properties"}
+                <ArrowRight className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-[-10px] group-hover:translate-x-0" />
               </Button>
             </div>
           </div>
