@@ -21,7 +21,7 @@ export default function PropertyCard({
   showRating = true
 }: PropertyCardProps) {
   const { currentLanguage } = useLanguage();
-  const t = useTranslation(currentLanguage.code);
+  const { t } = useTranslation(currentLanguage.code);
   const [isFavorite, setIsFavorite] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);

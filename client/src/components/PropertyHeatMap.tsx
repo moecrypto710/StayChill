@@ -41,6 +41,7 @@ interface PropertyHeatMapProps {
 // Custom tooltip component for the heatmap
 const CustomTooltip = ({ active, payload }: any) => {
   const { currentLanguage } = useLanguage();
+  const { t } = useTranslation(currentLanguage.code);
   const isArabic = currentLanguage.code === 'ar';
   const dateLocale = isArabic ? ar : enUS;
   
@@ -86,7 +87,7 @@ export default function PropertyHeatMap({
 }: PropertyHeatMapProps) {
   const { theme } = useTheme();
   const { currentLanguage } = useLanguage();
-  const t = useTranslation(currentLanguage.code);
+  const { t } = useTranslation(currentLanguage.code);
   const isArabic = currentLanguage.code === 'ar';
   const dateLocale = isArabic ? ar : enUS;
   
