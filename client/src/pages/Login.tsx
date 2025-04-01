@@ -175,7 +175,7 @@ export default function Login() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-filter backdrop-blur-lg rounded-2xl p-8 shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-teal-500/10 hover:border-teal-500/20 transition-all duration-300">
+                <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/90 backdrop-filter backdrop-blur-lg rounded-2xl p-8 shadow-[0_10px_40px_rgba(0,0,0,0.3)] border border-teal-500/20 hover:border-teal-500/40 transition-all duration-300">
                   <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className="grid w-full grid-cols-2 mb-8 bg-black/20 rounded-xl p-1">
                       <TabsTrigger 
@@ -281,31 +281,57 @@ export default function Login() {
                               </div>
                             </div>
                             
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className="w-full border-white/20 bg-white/5 text-white hover:bg-white/10 hover:text-amber-300 hover:border-amber-300/50 rounded-xl py-3 h-12"
-                              onClick={() => {
-                                loginForm.setValue("username", "guest");
-                                loginForm.setValue("password", "guest123");
-                                loginMutation.mutate({ username: "guest", password: "guest123" });
-                              }}
-                            >
-                              <div className="flex items-center justify-center">
-                                <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M8 16.5C8 18.9853 10.0147 21 12.5 21C14.9853 21 17 18.9853 17 16.5C17 14.0147 14.9853 12 12.5 12C10.0147 12 8 14.0147 8 16.5Z" stroke="currentColor" strokeWidth="1.5"/>
-                                  <path d="M20 18C21.6569 18 23 16.6569 23 15C23 13.3431 21.6569 12 20 12C18.9143 12 17.9816 12.6255 17.5 13.5" stroke="currentColor" strokeWidth="1.5"/>
-                                  <path d="M4 18C2.34315 18 1 16.6569 1 15C1 13.3431 2.34315 12 4 12C5.08571 12 6.01843 12.6255 6.5 13.5" stroke="currentColor" strokeWidth="1.5"/>
-                                  <path d="M13 9C13 9.55228 12.5523 10 12 10C11.4477 10 11 9.55228 11 9C11 8.44772 11.4477 8 12 8C12.5523 8 13 8.44772 13 9Z" fill="currentColor"/>
-                                  <path d="M16 7C16 7.55228 15.5523 8 15 8C14.4477 8 14 7.55228 14 7C14 6.44772 14.4477 6 15 6C15.5523 6 16 6.44772 16 7Z" fill="currentColor"/>
-                                  <path d="M10 7C10 7.55228 9.55228 8 9 8C8.44772 8 8 7.55228 8 7C8 6.44772 8.44772 6 9 6C9.55228 6 10 6.44772 10 7Z" fill="currentColor"/>
-                                  <path d="M16 9.5C16.8284 9.5 17.5 8.82843 17.5 8C17.5 7.17157 16.8284 6.5 16 6.5C15.1716 6.5 14.5 7.17157 14.5 8C14.5 8.82843 15.1716 9.5 16 9.5Z" stroke="currentColor" strokeWidth="1.5"/>
-                                  <path d="M8 9.5C8.82843 9.5 9.5 8.82843 9.5 8C9.5 7.17157 8.82843 6.5 8 6.5C7.17157 6.5 6.5 7.17157 6.5 8C6.5 8.82843 7.17157 9.5 8 9.5Z" stroke="currentColor" strokeWidth="1.5"/>
-                                  <path d="M12 7.5C12.8284 7.5 13.5 6.82843 13.5 6C13.5 5.17157 12.8284 4.5 12 4.5C11.1716 4.5 10.5 5.17157 10.5 6C10.5 6.82843 11.1716 7.5 12 7.5Z" stroke="currentColor" strokeWidth="1.5"/>
-                                </svg>
-                                <span>Continue as Guest</span>
-                              </div>
-                            </Button>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                className="w-full border-white/20 bg-white/5 text-white hover:bg-white/10 hover:text-amber-300 hover:border-amber-300/50 rounded-xl py-3 h-12"
+                                onClick={() => {
+                                  loginForm.setValue("username", "guest");
+                                  loginForm.setValue("password", "guest123");
+                                  loginMutation.mutate({ username: "guest", password: "guest123" });
+                                }}
+                              >
+                                <div className="flex items-center justify-center">
+                                  <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 16.5C8 18.9853 10.0147 21 12.5 21C14.9853 21 17 18.9853 17 16.5C17 14.0147 14.9853 12 12.5 12C10.0147 12 8 14.0147 8 16.5Z" stroke="currentColor" strokeWidth="1.5"/>
+                                    <path d="M20 18C21.6569 18 23 16.6569 23 15C23 13.3431 21.6569 12 20 12C18.9143 12 17.9816 12.6255 17.5 13.5" stroke="currentColor" strokeWidth="1.5"/>
+                                    <path d="M4 18C2.34315 18 1 16.6569 1 15C1 13.3431 2.34315 12 4 12C5.08571 12 6.01843 12.6255 6.5 13.5" stroke="currentColor" strokeWidth="1.5"/>
+                                    <path d="M13 9C13 9.55228 12.5523 10 12 10C11.4477 10 11 9.55228 11 9C11 8.44772 11.4477 8 12 8C12.5523 8 13 8.44772 13 9Z" fill="currentColor"/>
+                                    <path d="M16 7C16 7.55228 15.5523 8 15 8C14.4477 8 14 7.55228 14 7C14 6.44772 14.4477 6 15 6C15.5523 6 16 6.44772 16 7Z" fill="currentColor"/>
+                                    <path d="M10 7C10 7.55228 9.55228 8 9 8C8.44772 8 8 7.55228 8 7C8 6.44772 8.44772 6 9 6C9.55228 6 10 6.44772 10 7Z" fill="currentColor"/>
+                                    <path d="M16 9.5C16.8284 9.5 17.5 8.82843 17.5 8C17.5 7.17157 16.8284 6.5 16 6.5C15.1716 6.5 14.5 7.17157 14.5 8C14.5 8.82843 15.1716 9.5 16 9.5Z" stroke="currentColor" strokeWidth="1.5"/>
+                                    <path d="M8 9.5C8.82843 9.5 9.5 8.82843 9.5 8C9.5 7.17157 8.82843 6.5 8 6.5C7.17157 6.5 6.5 7.17157 6.5 8C6.5 8.82843 7.17157 9.5 8 9.5Z" stroke="currentColor" strokeWidth="1.5"/>
+                                    <path d="M12 7.5C12.8284 7.5 13.5 6.82843 13.5 6C13.5 5.17157 12.8284 4.5 12 4.5C11.1716 4.5 10.5 5.17157 10.5 6C10.5 6.82843 11.1716 7.5 12 7.5Z" stroke="currentColor" strokeWidth="1.5"/>
+                                  </svg>
+                                  <span>Guest Access</span>
+                                </div>
+                              </Button>
+
+                              <Button
+                                type="button"
+                                variant="outline"
+                                className="w-full border-white/20 bg-white/5 text-white hover:bg-white/10 hover:text-blue-300 hover:border-blue-300/50 rounded-xl py-3 h-12"
+                                onClick={() => {
+                                  // TODO: Implement Google auth when API is available
+                                  toast({
+                                    title: "Google Login",
+                                    description: "Google login will be available soon.",
+                                    variant: "default",
+                                  });
+                                }}
+                              >
+                                <div className="flex items-center justify-center">
+                                  <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M23.766 12.2764C23.766 11.4607 23.6999 10.6406 23.5588 9.83807H12.24V14.4591H18.7217C18.4528 15.9494 17.5885 17.2678 16.323 18.1056V21.1039H20.19C22.4608 19.0139 23.766 15.9274 23.766 12.2764Z" fill="#4285F4"/>
+                                    <path d="M12.2401 24.0008C15.4766 24.0008 18.2059 22.9382 20.1945 21.1039L16.3276 18.1055C15.2517 18.8375 13.8627 19.252 12.2445 19.252C9.11388 19.252 6.45946 17.1399 5.50705 14.3003H1.5166V17.3912C3.55371 21.4434 7.7029 24.0008 12.2401 24.0008Z" fill="#34A853"/>
+                                    <path d="M5.50253 14.3002C4.99987 12.8099 4.99987 11.1961 5.50253 9.70581V6.61487H1.51649C-0.18551 10.0056 -0.18551 14.0004 1.51649 17.3912L5.50253 14.3002Z" fill="#FBBC04"/>
+                                    <path d="M12.2401 4.74966C13.9509 4.7232 15.6044 5.36697 16.8434 6.54867L20.2695 3.12262C18.1001 1.0855 15.2208 -0.034466 12.2401 0.000808666C7.7029 0.000808666 3.55371 2.55822 1.5166 6.61481L5.50264 9.70575C6.45064 6.86173 9.10947 4.74966 12.2401 4.74966Z" fill="#EA4335"/>
+                                  </svg>
+                                  <span>Google Login</span>
+                                </div>
+                              </Button>
+                            </div>
                           </div>
                         </form>
                       </Form>
@@ -442,7 +468,7 @@ export default function Login() {
                       </Form>
                     </TabsContent>
                   </Tabs>
-                  <div className="mt-6 bg-gradient-to-r from-white/5 to-white/10 p-3 rounded-lg border border-white/10">
+                  <div className="mt-6 bg-gradient-to-r from-slate-900/90 to-slate-800/80 p-3 rounded-lg border border-teal-500/20">
                     <p className="text-sm text-center text-white/70 flex items-center justify-center">
                       <svg className="w-4 h-4 text-teal-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />

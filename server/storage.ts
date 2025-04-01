@@ -3,6 +3,7 @@ import {
   bookings, 
   inquiries, 
   owners,
+  users,
   type Property, 
   type InsertProperty, 
   type Booking, 
@@ -11,19 +12,14 @@ import {
   type InsertInquiry,
   type Owner,
   type InsertOwner,
-  type PropertySearch
+  type PropertySearch,
+  type User,
+  type InsertUser
 } from "@shared/schema";
 import { eq, gte, lte, inArray } from "drizzle-orm";
 import { db } from "./db";
 
-// Define a simplified User type since it's not in our schema yet
-type User = {
-  id: number;
-  username: string;
-  password: string;
-};
-
-type InsertUser = Omit<User, "id">;
+// Types are imported from shared/schema.ts
 
 // modify the interface with any CRUD methods
 // you might need
@@ -98,7 +94,8 @@ export class MemStorage implements IStorage {
   private initializeGuestUser() {
     const guestUser: InsertUser = {
       username: "guest",
-      password: "$2a$10$CUd8KN.dqzTP0fWNrWMS4eDWmXFEFgH1g2JJYCVEyoQHUCg/NAFzi" // bcrypt hash for "guest123"
+      password: "$2a$10$CUd8KN.dqzTP0fWNrWMS4eDWmXFEFgH1g2JJYCVEyoQHUCg/NAFzi", // bcrypt hash for "guest123"
+      email: "guest@guestemail.com"
     };
     
     this.createUser(guestUser).catch(err => {
@@ -423,10 +420,30 @@ export class MemStorage implements IStorage {
 export class PostgresStorage implements IStorage {
   constructor() {
     this.initializeProperties();
+    this.initializeGuestUser();
   }
   
   // Use the imported db
   private readonly db = db;
+  
+  // Initialize a guest account for demo purposes
+  private async initializeGuestUser() {
+    try {
+      // Check if guest user already exists
+      const existingUser = await this.getUserByUsername("guest");
+      if (!existingUser) {
+        const guestUser: InsertUser = {
+          username: "guest",
+          password: "$2a$10$CUd8KN.dqzTP0fWNrWMS4eDWmXFEFgH1g2JJYCVEyoQHUCg/NAFzi", // bcrypt hash for "guest123"
+          email: "guest@guestemail.com"
+        };
+        await this.createUser(guestUser);
+        console.log("Created guest user for demo purposes");
+      }
+    } catch (err) {
+      console.error("Error creating guest user:", err);
+    }
+  }
   
   // Initialize with sample data if DB is empty
   private async initializeProperties() {
@@ -506,18 +523,45 @@ export class PostgresStorage implements IStorage {
   
   // User operations
   async getUser(id: number): Promise<User | undefined> {
-    // Will implement when users table is added to schema
-    return undefined;
+    try {
+      const result = await this.db.select().from(users).where(eq(users.id, id));
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error: any) {
+      console.error("Error fetching user:", error);
+      throw new Error(`Failed to fetch user: ${error.message}`);
+    }
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    // Will implement when users table is added to schema
-    return undefined;
+    try {
+      const result = await this.db.select().from(users).where(eq(users.username, username));
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error: any) {
+      console.error("Error fetching user by username:", error);
+      throw new Error(`Failed to fetch user by username: ${error.message}`);
+    }
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    // Will implement when users table is added to schema
-    throw new Error("User functionality not implemented yet");
+    try {
+      // Check if user already exists
+      const existingUser = await this.getUserByUsername(user.username);
+      if (existingUser) {
+        return existingUser;
+      }
+      
+      // Make sure we have an email field even if it's not provided (for guest user)
+      const userData = {
+        ...user,
+        email: user.email || `${user.username}@guestemail.com`
+      };
+      
+      const result = await this.db.insert(users).values(userData).returning();
+      return result[0];
+    } catch (error: any) {
+      console.error("Error creating user:", error);
+      throw new Error(`Failed to create user: ${error.message}`);
+    }
   }
   
   // Property operations
