@@ -44,14 +44,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
       const res = await apiRequest('POST', '/api/auth/login', { username, password });
+      const data = await res.json();
+      
       if (res.ok) {
-        const userData = await res.json();
-        setUser(userData);
+        setUser(data);
         return true;
+      } else {
+        throw new Error(data.error || 'Login failed');
       }
-      return false;
     } catch (error) {
-      return false;
+      console.error('Login error:', error);
+      throw error;
     }
   };
   

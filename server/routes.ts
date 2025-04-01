@@ -237,6 +237,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Favorites routes
+  apiRouter.post("/favorites/:propertyId", isAuthenticated, async (req, res) => {
+    try {
+      const propertyId = parseInt(req.params.propertyId);
+      const userId = req.session.userId as number;
+      
+      await storage.addFavorite(userId, propertyId);
+      res.status(200).json({ message: "Added to favorites" });
+    } catch (error) {
+      console.error("Error adding favorite:", error);
+      res.status(500).json({ error: "Failed to add favorite" });
+    }
+  });
+
+  apiRouter.delete("/favorites/:propertyId", isAuthenticated, async (req, res) => {
+    try {
+      const propertyId = parseInt(req.params.propertyId);
+      const userId = req.session.userId as number;
+      
+      await storage.removeFavorite(userId, propertyId);
+      res.status(200).json({ message: "Removed from favorites" });
+    } catch (error) {
+      console.error("Error removing favorite:", error);
+      res.status(500).json({ error: "Failed to remove favorite" });
+    }
+  });
+
+  apiRouter.get("/favorites", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session.userId as number;
+      const favorites = await storage.getFavorites(userId);
+      res.json(favorites);
+    } catch (error) {
+      console.error("Error fetching favorites:", error);
+      res.status(500).json({ error: "Failed to fetch favorites" });
+    }
+  });
+
   // Mount API router
   app.use("/api", apiRouter);
 

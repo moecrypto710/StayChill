@@ -24,11 +24,16 @@ import { db } from "./db";
 // modify the interface with any CRUD methods
 // you might need
 export interface IStorage {
-  // User operations - keeping original ones
+  // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
+  // Favorites operations
+  addFavorite(userId: number, propertyId: number): Promise<boolean>;
+  removeFavorite(userId: number, propertyId: number): Promise<boolean>;
+  getFavorites(userId: number): Promise<number[]>;
+
   // Property operations
   getProperties(): Promise<Property[]>;
   getProperty(id: number): Promise<Property | undefined>;
@@ -37,21 +42,21 @@ export interface IStorage {
   createProperty(property: InsertProperty): Promise<Property>;
   updateProperty(id: number, property: Partial<Property>): Promise<Property | undefined>;
   deleteProperty(id: number): Promise<boolean>;
-  
+
   // Booking operations
   getBookings(): Promise<Booking[]>;
   getBooking(id: number): Promise<Booking | undefined>;
   getBookingsByPropertyId(propertyId: number): Promise<Booking[]>;
   createBooking(booking: InsertBooking): Promise<Booking>;
   updateBookingStatus(id: number, status: string): Promise<Booking | undefined>;
-  
+
   // Inquiry operations
   getInquiries(): Promise<Inquiry[]>;
   getInquiry(id: number): Promise<Inquiry | undefined>;
   getInquiriesByPropertyId(propertyId: number): Promise<Inquiry[]>;
   createInquiry(inquiry: InsertInquiry): Promise<Inquiry>;
   markInquiryAsResponded(id: number): Promise<Inquiry | undefined>;
-  
+
   // Owner operations
   getOwners(): Promise<Owner[]>;
   getOwner(id: number): Promise<Owner | undefined>;
@@ -65,7 +70,8 @@ export class MemStorage implements IStorage {
   private bookings: Map<number, Booking>;
   private inquiries: Map<number, Inquiry>;
   private owners: Map<number, Owner>;
-  
+  private favorites: Map<number, number[]>; // Add favorites map
+
   private userCurrentId: number;
   private propertyCurrentId: number;
   private bookingCurrentId: number;
@@ -78,18 +84,19 @@ export class MemStorage implements IStorage {
     this.bookings = new Map();
     this.inquiries = new Map();
     this.owners = new Map();
-    
+    this.favorites = new Map(); // Initialize favorites map
+
     this.userCurrentId = 1;
     this.propertyCurrentId = 1;
     this.bookingCurrentId = 1;
     this.inquiryCurrentId = 1;
     this.ownerCurrentId = 1;
-    
+
     // Add some initial dummy properties and guest user
     this.initializeProperties();
     this.initializeGuestUser();
   }
-  
+
   // Initialize a guest account for demo purposes
   private initializeGuestUser() {
     const guestUser: InsertUser = {
@@ -97,7 +104,7 @@ export class MemStorage implements IStorage {
       password: "$2a$10$CUd8KN.dqzTP0fWNrWMS4eDWmXFEFgH1g2JJYCVEyoQHUCg/NAFzi", // bcrypt hash for "guest123"
       email: "guest@guestemail.com"
     };
-    
+
     this.createUser(guestUser).catch(err => {
       console.error("Error creating guest user:", err);
     });
@@ -239,6 +246,32 @@ export class MemStorage implements IStorage {
     return user;
   }
 
+  // Favorites operations
+  async addFavorite(userId: number, propertyId: number): Promise<boolean> {
+    let favorites = this.favorites.get(userId) || [];
+    if (!favorites.includes(propertyId)) {
+      favorites.push(propertyId);
+      this.favorites.set(userId, favorites);
+      return true;
+    }
+    return false;
+  }
+
+  async removeFavorite(userId: number, propertyId: number): Promise<boolean> {
+    const favorites = this.favorites.get(userId) || [];
+    const index = favorites.indexOf(propertyId);
+    if (index > -1) {
+      favorites.splice(index, 1);
+      this.favorites.set(userId, favorites);
+      return true;
+    }
+    return false;
+  }
+
+  async getFavorites(userId: number): Promise<number[]> {
+    return this.favorites.get(userId) || [];
+  }
+
   // Property operations
   async getProperties(): Promise<Property[]> {
     return Array.from(this.properties.values());
@@ -256,33 +289,33 @@ export class MemStorage implements IStorage {
 
   async searchProperties(filters: PropertySearch): Promise<Property[]> {
     let results = Array.from(this.properties.values());
-    
+
     if (filters.area) {
       results = results.filter(p => p.area === filters.area);
     }
-    
+
     if (filters.minPrice !== undefined) {
       results = results.filter(p => p.price >= filters.minPrice!);
     }
-    
+
     if (filters.maxPrice !== undefined) {
       results = results.filter(p => p.price <= filters.maxPrice!);
     }
-    
+
     if (filters.bedrooms !== undefined) {
       results = results.filter(p => p.bedrooms >= filters.bedrooms!);
     }
-    
+
     if (filters.maxGuests !== undefined) {
       results = results.filter(p => p.maxGuests >= filters.maxGuests!);
     }
-    
+
     if (filters.amenities && filters.amenities.length > 0) {
       results = results.filter(p => 
         filters.amenities!.every(amenity => p.amenities.includes(amenity))
       );
     }
-    
+
     return results;
   }
 
@@ -304,7 +337,7 @@ export class MemStorage implements IStorage {
   async updateProperty(id: number, updates: Partial<Property>): Promise<Property | undefined> {
     const property = this.properties.get(id);
     if (!property) return undefined;
-    
+
     const updatedProperty = { ...property, ...updates };
     this.properties.set(id, updatedProperty);
     return updatedProperty;
@@ -313,7 +346,7 @@ export class MemStorage implements IStorage {
   async deleteProperty(id: number): Promise<boolean> {
     return this.properties.delete(id);
   }
-  
+
   // Booking operations
   async getBookings(): Promise<Booking[]> {
     return Array.from(this.bookings.values());
@@ -343,11 +376,11 @@ export class MemStorage implements IStorage {
   async updateBookingStatus(id: number, status: string): Promise<Booking | undefined> {
     const booking = this.bookings.get(id);
     if (!booking) return undefined;
-    
+
     booking.status = status;
     return booking;
   }
-  
+
   // Inquiry operations
   async getInquiries(): Promise<Inquiry[]> {
     return Array.from(this.inquiries.values());
@@ -379,11 +412,11 @@ export class MemStorage implements IStorage {
   async markInquiryAsResponded(id: number): Promise<Inquiry | undefined> {
     const inquiry = this.inquiries.get(id);
     if (!inquiry) return undefined;
-    
+
     inquiry.responded = true;
     return inquiry;
   }
-  
+
   // Owner operations
   async getOwners(): Promise<Owner[]> {
     return Array.from(this.owners.values());
@@ -407,12 +440,12 @@ export class MemStorage implements IStorage {
   async addPropertyToOwner(ownerId: number, propertyId: number): Promise<Owner | undefined> {
     const owner = this.owners.get(ownerId);
     if (!owner) return undefined;
-    
+
     const properties = owner.properties || [];
     if (!properties.includes(propertyId)) {
       owner.properties = [...properties, propertyId];
     }
-    
+
     return owner;
   }
 }
@@ -422,10 +455,10 @@ export class PostgresStorage implements IStorage {
     this.initializeProperties();
     this.initializeGuestUser();
   }
-  
+
   // Use the imported db
   private readonly db = db;
-  
+
   // Initialize a guest account for demo purposes
   private async initializeGuestUser() {
     try {
@@ -444,12 +477,12 @@ export class PostgresStorage implements IStorage {
       console.error("Error creating guest user:", err);
     }
   }
-  
+
   // Initialize with sample data if DB is empty
   private async initializeProperties() {
     try {
       const existingProperties = await this.getProperties();
-      
+
       // If no properties exist, seed the database
       if (existingProperties.length === 0) {
         const dummyProperties: InsertProperty[] = [
@@ -508,19 +541,19 @@ export class PostgresStorage implements IStorage {
             reviewCount: 12
           }
         ];
-        
+
         // Insert sample properties
         for (const property of dummyProperties) {
           await this.createProperty(property);
         }
-        
+
         console.log("Database seeded with initial properties");
       }
     } catch (error) {
       console.error("Error initializing properties:", error);
     }
   }
-  
+
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     try {
@@ -549,13 +582,13 @@ export class PostgresStorage implements IStorage {
       if (existingUser) {
         return existingUser;
       }
-      
+
       // Make sure we have an email field even if it's not provided (for guest user)
       const userData = {
         ...user,
         email: user.email || `${user.username}@guestemail.com`
       };
-      
+
       const result = await this.db.insert(users).values(userData).returning();
       return result[0];
     } catch (error: any) {
@@ -563,7 +596,7 @@ export class PostgresStorage implements IStorage {
       throw new Error(`Failed to create user: ${error.message}`);
     }
   }
-  
+
   // Property operations
   async getProperties(): Promise<Property[]> {
     return await this.db.select().from(properties);
@@ -586,39 +619,39 @@ export class PostgresStorage implements IStorage {
     try {
       // Start building the query
       let query = this.db.select().from(properties);
-      
+
       // Apply filters with AND logic in a simplified approach
       if (filters.area) {
         query = query.where(eq(properties.area, filters.area));
       }
-      
+
       let qResult = await query;
       let results = [...qResult]; // Make a copy to avoid type issues
-      
+
       // Apply remaining filters manually since the query building is causing type issues
       if (filters.minPrice !== undefined) {
         results = results.filter(p => p.price >= filters.minPrice!);
       }
-      
+
       if (filters.maxPrice !== undefined) {
         results = results.filter(p => p.price <= filters.maxPrice!);
       }
-      
+
       if (filters.bedrooms !== undefined) {
         results = results.filter(p => p.bedrooms >= filters.bedrooms!);
       }
-      
+
       if (filters.maxGuests !== undefined) {
         results = results.filter(p => p.maxGuests >= filters.maxGuests!);
       }
-      
+
       // Filter by amenities
       if (filters.amenities && filters.amenities.length > 0) {
         results = results.filter((p: Property) => 
           filters.amenities!.every(amenity => p.amenities.includes(amenity))
         );
       }
-      
+
       return results;
     } catch (error: any) {
       console.error("Error searching properties:", error);
@@ -643,7 +676,7 @@ export class PostgresStorage implements IStorage {
         .set(updates)
         .where(eq(properties.id, id))
         .returning();
-        
+
       return result.length > 0 ? result[0] : undefined;
     } catch (error: any) {
       console.error("Error updating property:", error);
@@ -657,14 +690,14 @@ export class PostgresStorage implements IStorage {
         .delete(properties)
         .where(eq(properties.id, id))
         .returning({ id: properties.id });
-        
+
       return result.length > 0;
     } catch (error: any) {
       console.error("Error deleting property:", error);
       throw new Error(`Failed to delete property: ${error.message}`);
     }
   }
-  
+
   // Booking operations
   async getBookings(): Promise<Booking[]> {
     try {
@@ -714,14 +747,14 @@ export class PostgresStorage implements IStorage {
         .set({ status })
         .where(eq(bookings.id, id))
         .returning();
-        
+
       return result.length > 0 ? result[0] : undefined;
     } catch (error: any) {
       console.error("Error updating booking status:", error);
       throw new Error(`Failed to update booking status: ${error.message}`);
     }
   }
-  
+
   // Inquiry operations
   async getInquiries(): Promise<Inquiry[]> {
     try {
@@ -763,7 +796,7 @@ export class PostgresStorage implements IStorage {
           responded: false,
         })
         .returning();
-        
+
       return result[0];
     } catch (error: any) {
       console.error("Error creating inquiry:", error);
@@ -778,14 +811,14 @@ export class PostgresStorage implements IStorage {
         .set({ responded: true })
         .where(eq(inquiries.id, id))
         .returning();
-        
+
       return result.length > 0 ? result[0] : undefined;
     } catch (error: any) {
       console.error("Error marking inquiry as responded:", error);
       throw new Error(`Failed to mark inquiry as responded: ${error.message}`);
     }
   }
-  
+
   // Owner operations
   async getOwners(): Promise<Owner[]> {
     try {
@@ -814,14 +847,14 @@ export class PostgresStorage implements IStorage {
       console.error("Error creating owner:", error);
       throw new Error(`Failed to create owner: ${error.message}`);
     }
-  }
+    }
 
   async addPropertyToOwner(ownerId: number, propertyId: number): Promise<Owner | undefined> {
     try {
       // First get the owner
       const owner = await this.getOwner(ownerId);
       if (!owner) return undefined;
-      
+
       // Update the owner's properties list
       const properties = owner.properties || [];
       if (!properties.includes(propertyId)) {
@@ -830,14 +863,52 @@ export class PostgresStorage implements IStorage {
           .set({ properties: [...properties, propertyId] })
           .where(eq(owners.id, ownerId))
           .returning();
-          
+
         return result.length > 0 ? result[0] : undefined;
       }
-      
+
       return owner;
     } catch (error: any) {
       console.error("Error adding property to owner:", error);
       throw new Error(`Failed to add property to owner: ${error.message}`);
+    }
+  }
+
+  // Favorites operations
+  async addFavorite(userId: number, propertyId: number): Promise<boolean> {
+    try {
+      const result = await this.db.insert(favorites).values({ userId, propertyId }).returning();
+      return result.length > 0;
+    } catch (error: any) {
+      console.error("Error adding favorite:", error);
+      throw new Error(`Failed to add favorite: ${error.message}`);
+    }
+  }
+
+  async removeFavorite(userId: number, propertyId: number): Promise<boolean> {
+    try {
+      const result = await this.db
+        .delete(favorites)
+        .where(eq(favorites.userId, userId))
+        .where(eq(favorites.propertyId, propertyId))
+        .returning();
+      return result.length > 0;
+    } catch (error: any) {
+      console.error("Error removing favorite:", error);
+      throw new Error(`Failed to remove favorite: ${error.message}`);
+    }
+  }
+
+  async getFavorites(userId: number): Promise<number[]> {
+    try {
+      const result = await this.db
+        .select({ propertyId: favorites.propertyId })
+        .from(favorites)
+        .where(eq(favorites.userId, userId));
+      return result.map(fav => fav.propertyId);
+    } catch (error: any) {
+      console.error("Error getting favorites:", error);
+      throw new Error(`Failed to get favorites: ${error.message}`);
     }
   }
 }
