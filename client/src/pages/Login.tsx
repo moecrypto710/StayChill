@@ -137,201 +137,181 @@ export default function Login() {
         <meta name="description" content="Log in to access premium vacation rentals in Sahel and Ras El Hekma, Egypt" />
       </Helmet>
 
-      <div className="min-h-screen flex flex-col">
-        {/* Hero Section with Login/Register */}
-        <div className="relative flex flex-col md:flex-row md:items-center">
-          {/* Left Side - About Us Content */}
-          <div className="w-full md:w-1/2 bg-ocean-50 p-8 md:p-16 min-h-[50vh] md:min-h-screen flex items-center">
-            <div className="max-w-xl mx-auto">
-              <h1 className="text-3xl md:text-5xl font-bold text-ocean-700 mb-6">Welcome to Stay Chill</h1>
-              <h2 className="text-xl md:text-2xl font-semibold text-ocean-600 mb-4">Your Luxury Vacation Awaits</h2>
-              
-              <p className="text-gray-700 mb-6">
-                Stay Chill is the premier vacation rental platform specializing in luxurious properties 
-                across Sahel and Ras El Hekma, Egypt. We pride ourselves on curating the most exceptional 
-                beach houses, villas, and chalets to make your holiday truly unforgettable.
-              </p>
-              
-              <div className="space-y-4 mb-8">
-                <div className="flex items-start">
-                  <div className="bg-ocean-100 rounded-full p-2 mt-1 mr-4">
-                    <svg className="w-4 h-4 text-ocean-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-ocean-700">Handpicked Properties</h3>
-                    <p className="text-gray-600">Each listing is personally vetted by our team to ensure quality and comfort.</p>
-                  </div>
-                </div>
+      <div className="min-h-screen bg-gradient-to-b from-ocean-50 to-white">
+        <div className="container mx-auto px-4 py-10 md:py-16">
+          <div className="mb-8 text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-ocean-700 mb-2">Stay Chill</h1>
+            <p className="text-ocean-600 text-xl">Premium vacation rentals in Egypt's coastal paradise</p>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-10 items-center">
+            {/* Auth Form - Now First */}
+            <div className="w-full lg:w-1/2 order-1">
+              <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 max-w-md mx-auto">
+                <h2 className="text-2xl font-bold text-center mb-6">Welcome Back</h2>
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-6">
+                    <TabsTrigger value="login">Login</TabsTrigger>
+                    <TabsTrigger value="register">Register</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="login">
+                    <Form {...loginForm}>
+                      <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+                        <FormField
+                          control={loginForm.control}
+                          name="username"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Username</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Enter your username" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={loginForm.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Password</FormLabel>
+                              <FormControl>
+                                <Input type="password" placeholder="Enter your password" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <Button 
+                          type="submit" 
+                          className="w-full bg-ocean-600 hover:bg-ocean-700 text-white"
+                          disabled={loginMutation.isPending}
+                        >
+                          {loginMutation.isPending ? "Logging in..." : "Log In"}
+                        </Button>
+                      </form>
+                    </Form>
+                  </TabsContent>
+                  
+                  <TabsContent value="register">
+                    <Form {...registerForm}>
+                      <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+                        <FormField
+                          control={registerForm.control}
+                          name="username"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Username</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Choose a username" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={registerForm.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Email</FormLabel>
+                              <FormControl>
+                                <Input type="email" placeholder="Enter your email" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={registerForm.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Password</FormLabel>
+                              <FormControl>
+                                <Input type="password" placeholder="Create a password" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={registerForm.control}
+                          name="confirmPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Confirm Password</FormLabel>
+                              <FormControl>
+                                <Input type="password" placeholder="Confirm your password" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <Button 
+                          type="submit" 
+                          className="w-full bg-ocean-600 hover:bg-ocean-700 text-white"
+                          disabled={registerMutation.isPending}
+                        >
+                          {registerMutation.isPending ? "Creating account..." : "Create Account"}
+                        </Button>
+                      </form>
+                    </Form>
+                  </TabsContent>
+                </Tabs>
+                <p className="text-xs text-center text-gray-500 mt-6">
+                  By continuing, you agree to Stay Chill's Terms of Service and Privacy Policy
+                </p>
+              </div>
+            </div>
+            
+            {/* About Us - Now Second */}
+            <div className="w-full lg:w-1/2 order-2">
+              <div className="bg-white bg-opacity-70 backdrop-blur-sm rounded-xl p-6 md:p-8">
+                <h2 className="text-2xl font-bold text-ocean-700 mb-4">About Us</h2>
+                <p className="text-gray-700 mb-4">
+                  Stay Chill is the premier vacation rental platform specializing in luxury properties 
+                  in Sahel and Ras El Hekma, Egypt. We curate exceptional beach houses, villas, and 
+                  chalets for unforgettable holidays.
+                </p>
                 
-                <div className="flex items-start">
-                  <div className="bg-ocean-100 rounded-full p-2 mt-1 mr-4">
-                    <svg className="w-4 h-4 text-ocean-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
+                <div className="space-y-3 mb-4">
+                  <div className="flex items-center">
+                    <div className="bg-ocean-100 rounded-full p-1.5 mr-3">
+                      <svg className="w-3 h-3 text-ocean-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </div>
+                    <p className="text-sm text-gray-700"><span className="font-medium">Handpicked Properties</span> - Personally vetted for quality</p>
                   </div>
-                  <div>
-                    <h3 className="font-medium text-ocean-700">360° Virtual Tours</h3>
-                    <p className="text-gray-600">Explore properties in immersive detail before booking.</p>
+                  
+                  <div className="flex items-center">
+                    <div className="bg-ocean-100 rounded-full p-1.5 mr-3">
+                      <svg className="w-3 h-3 text-ocean-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </div>
+                    <p className="text-sm text-gray-700"><span className="font-medium">360° Virtual Tours</span> - Explore before booking</p>
                   </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <div className="bg-ocean-100 rounded-full p-2 mt-1 mr-4">
-                    <svg className="w-4 h-4 text-ocean-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-ocean-700">Concierge Service</h3>
-                    <p className="text-gray-600">Dedicated support throughout your stay for a stress-free vacation.</p>
+                  
+                  <div className="flex items-center">
+                    <div className="bg-ocean-100 rounded-full p-1.5 mr-3">
+                      <svg className="w-3 h-3 text-ocean-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </div>
+                    <p className="text-sm text-gray-700"><span className="font-medium">Concierge Service</span> - Dedicated support throughout your stay</p>
                   </div>
                 </div>
               </div>
-              
-              <p className="text-gray-700 italic">
-                "Our mission is to transform your vacation into an extraordinary experience, where 
-                every moment is infused with luxury, comfort, and the breathtaking beauty of Egypt's 
-                coastal paradise."
-              </p>
-            </div>
-          </div>
-          
-          {/* Right Side - Auth Form */}
-          <div className="w-full md:w-1/2 bg-white p-8 md:p-16 flex items-center justify-center">
-            <div className="w-full max-w-md">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl text-center">Access Your Account</CardTitle>
-                  <CardDescription className="text-center">
-                    Login or create an account to explore exclusive properties
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="login">Login</TabsTrigger>
-                      <TabsTrigger value="register">Register</TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="login">
-                      <Form {...loginForm}>
-                        <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4 mt-4">
-                          <FormField
-                            control={loginForm.control}
-                            name="username"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Username</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Enter your username" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={loginForm.control}
-                            name="password"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Password</FormLabel>
-                                <FormControl>
-                                  <Input type="password" placeholder="Enter your password" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <Button 
-                            type="submit" 
-                            className="w-full bg-coral-500 hover:bg-coral-600"
-                            disabled={loginMutation.isPending}
-                          >
-                            {loginMutation.isPending ? "Logging in..." : "Log In"}
-                          </Button>
-                        </form>
-                      </Form>
-                    </TabsContent>
-                    
-                    <TabsContent value="register">
-                      <Form {...registerForm}>
-                        <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4 mt-4">
-                          <FormField
-                            control={registerForm.control}
-                            name="username"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Username</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Choose a username" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={registerForm.control}
-                            name="email"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Email</FormLabel>
-                                <FormControl>
-                                  <Input type="email" placeholder="Enter your email" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={registerForm.control}
-                            name="password"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Password</FormLabel>
-                                <FormControl>
-                                  <Input type="password" placeholder="Create a password" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={registerForm.control}
-                            name="confirmPassword"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Confirm Password</FormLabel>
-                                <FormControl>
-                                  <Input type="password" placeholder="Confirm your password" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <Button 
-                            type="submit" 
-                            className="w-full bg-ocean-500 hover:bg-ocean-600"
-                            disabled={registerMutation.isPending}
-                          >
-                            {registerMutation.isPending ? "Creating account..." : "Create Account"}
-                          </Button>
-                        </form>
-                      </Form>
-                    </TabsContent>
-                  </Tabs>
-                </CardContent>
-                <CardFooter className="flex flex-col items-center text-sm text-gray-500">
-                  <p>By continuing, you agree to Stay Chill's Terms of Service and Privacy Policy</p>
-                </CardFooter>
-              </Card>
             </div>
           </div>
         </div>
