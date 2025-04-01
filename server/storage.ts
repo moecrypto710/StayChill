@@ -4,6 +4,7 @@ import {
   inquiries, 
   owners,
   users,
+  favorites,
   type Property, 
   type InsertProperty, 
   type Booking, 
@@ -14,7 +15,9 @@ import {
   type InsertOwner,
   type PropertySearch,
   type User,
-  type InsertUser
+  type InsertUser,
+  type PricePoint,
+  type AvailabilityData
 } from "@shared/schema";
 import { eq, gte, lte, inArray } from "drizzle-orm";
 import { db } from "./db";
@@ -62,6 +65,10 @@ export interface IStorage {
   getOwner(id: number): Promise<Owner | undefined>;
   createOwner(owner: InsertOwner): Promise<Owner>;
   addPropertyToOwner(ownerId: number, propertyId: number): Promise<Owner | undefined>;
+  
+  // Availability and pricing operations
+  getAvailabilityData(propertyId: number, startDate?: string, endDate?: string): Promise<AvailabilityData>;
+  updateAvailabilityData(propertyId: number, data: PricePoint[]): Promise<AvailabilityData>;
 }
 
 export class MemStorage implements IStorage {
@@ -447,6 +454,119 @@ export class MemStorage implements IStorage {
     }
 
     return owner;
+  }
+
+  // Store availability data with property id as key (in-memory)
+  private availabilityData: Map<number, AvailabilityData> = new Map();
+
+  // Availability and pricing operations
+  async getAvailabilityData(propertyId: number, startDate?: string, endDate?: string): Promise<AvailabilityData> {
+    // Get data or create default if it doesn't exist
+    let data = this.availabilityData.get(propertyId);
+    
+    if (!data) {
+      // Generate some sample data for the property
+      const property = this.properties.get(propertyId);
+      if (!property) {
+        throw new Error(`Property with ID ${propertyId} not found`);
+      }
+      
+      // Generate sample data for the next 90 days
+      const today = new Date();
+      const priceData: PricePoint[] = [];
+      
+      for (let i = 0; i < 90; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+        const dateStr = date.toISOString().split('T')[0];
+        
+        // Random availability and dynamic pricing based on weekends etc.
+        const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+        const isRandom = Math.random() > 0.7;
+        const available = isRandom ? false : true;
+        
+        // Weekend pricing 15-30% higher
+        const price = isWeekend 
+          ? property.price * (1 + Math.random() * 0.15 + 0.15) 
+          : property.price * (1 + Math.random() * 0.1 - 0.05);
+        
+        // Booked dates (20% of unavailable dates)
+        const isBooked = !available && Math.random() > 0.8;
+        
+        priceData.push({
+          date: dateStr,
+          price: Math.round(price),
+          available,
+          bookingCount: isBooked ? Math.floor(Math.random() * 3) + 1 : 0
+        });
+      }
+      
+      data = {
+        id: propertyId,
+        propertyId,
+        data: priceData
+      };
+      
+      // Save to in-memory store
+      this.availabilityData.set(propertyId, data);
+    }
+    
+    // Filter by date range if provided
+    if (startDate || endDate) {
+      const filteredData = {
+        ...data,
+        data: data.data.filter(point => {
+          if (startDate && point.date < startDate) return false;
+          if (endDate && point.date > endDate) return false;
+          return true;
+        })
+      };
+      return filteredData;
+    }
+    
+    return data;
+  }
+  
+  async updateAvailabilityData(propertyId: number, newData: PricePoint[]): Promise<AvailabilityData> {
+    // Get existing data or create new
+    let data = this.availabilityData.get(propertyId);
+    
+    if (!data) {
+      data = {
+        id: propertyId,
+        propertyId,
+        data: []
+      };
+    }
+    
+    // Merge new data with existing data
+    const existingData = [...data.data];
+    
+    // Update or add new price points
+    for (const newPoint of newData) {
+      const existingIndex = existingData.findIndex(p => p.date === newPoint.date);
+      
+      if (existingIndex !== -1) {
+        // Update existing
+        existingData[existingIndex] = newPoint;
+      } else {
+        // Add new
+        existingData.push(newPoint);
+      }
+    }
+    
+    // Sort by date
+    existingData.sort((a, b) => a.date.localeCompare(b.date));
+    
+    const updatedData = {
+      ...data,
+      data: existingData
+    };
+    
+    // Save to in-memory store
+    this.availabilityData.set(propertyId, updatedData);
+    
+    return updatedData;
   }
 }
 
@@ -910,6 +1030,116 @@ export class PostgresStorage implements IStorage {
       console.error("Error getting favorites:", error);
       throw new Error(`Failed to get favorites: ${error.message}`);
     }
+  }
+
+  // Availability and pricing operations
+  // Using in-memory implementation for demo until we add tables to DB
+  private availabilityDataCache: Map<number, AvailabilityData> = new Map();
+
+  async getAvailabilityData(propertyId: number, startDate?: string, endDate?: string): Promise<AvailabilityData> {
+    // Get data or create default if it doesn't exist
+    let data = this.availabilityDataCache.get(propertyId);
+    
+    if (!data) {
+      // Get the property first to confirm it exists and get base price
+      const property = await this.getProperty(propertyId);
+      if (!property) {
+        throw new Error(`Property with ID ${propertyId} not found`);
+      }
+      
+      // Generate sample data for the next 90 days
+      const today = new Date();
+      const priceData: PricePoint[] = [];
+      
+      for (let i = 0; i < 90; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+        const dateStr = date.toISOString().split('T')[0];
+        
+        // Random availability and dynamic pricing based on weekends etc.
+        const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+        const isRandom = Math.random() > 0.7;
+        const available = isRandom ? false : true;
+        
+        // Weekend pricing 15-30% higher
+        const price = isWeekend 
+          ? property.price * (1 + Math.random() * 0.15 + 0.15) 
+          : property.price * (1 + Math.random() * 0.1 - 0.05);
+        
+        // Booked dates (20% of unavailable dates)
+        const isBooked = !available && Math.random() > 0.8;
+        
+        priceData.push({
+          date: dateStr,
+          price: Math.round(price),
+          available,
+          bookingCount: isBooked ? Math.floor(Math.random() * 3) + 1 : 0
+        });
+      }
+      
+      data = {
+        id: propertyId,
+        propertyId,
+        data: priceData
+      };
+      
+      // Save to cache
+      this.availabilityDataCache.set(propertyId, data);
+    }
+    
+    // Filter by date range if provided
+    if (startDate || endDate) {
+      const filteredData = {
+        ...data,
+        data: data.data.filter(point => {
+          if (startDate && point.date < startDate) return false;
+          if (endDate && point.date > endDate) return false;
+          return true;
+        })
+      };
+      return filteredData;
+    }
+    
+    return data;
+  }
+  
+  async updateAvailabilityData(propertyId: number, newData: PricePoint[]): Promise<AvailabilityData> {
+    // Get existing data or create new
+    let data = this.availabilityDataCache.get(propertyId);
+    
+    // If it doesn't exist, get it first (this will create it)
+    if (!data) {
+      data = await this.getAvailabilityData(propertyId);
+    }
+    
+    // Merge new data with existing data
+    const existingData = [...data.data];
+    
+    // Update or add new price points
+    for (const newPoint of newData) {
+      const existingIndex = existingData.findIndex(p => p.date === newPoint.date);
+      
+      if (existingIndex !== -1) {
+        // Update existing
+        existingData[existingIndex] = newPoint;
+      } else {
+        // Add new
+        existingData.push(newPoint);
+      }
+    }
+    
+    // Sort by date
+    existingData.sort((a, b) => a.date.localeCompare(b.date));
+    
+    const updatedData = {
+      ...data,
+      data: existingData
+    };
+    
+    // Save to cache
+    this.availabilityDataCache.set(propertyId, updatedData);
+    
+    return updatedData;
   }
 }
 

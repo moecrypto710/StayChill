@@ -7,6 +7,7 @@ import { Property } from "@shared/schema";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange, Panorama } from "@/lib/types";
 import Panorama360Gallery from "@/components/Panorama360Gallery";
+import PropertyHeatMap, { AvailabilityData } from "@/components/PropertyHeatMap";
 import { 
   Card,
   CardContent,
@@ -105,6 +106,39 @@ export default function PropertyDetail() {
   
   // Sample panoramas for 360° virtual tour
   const [panoramas, setPanoramas] = useState<Panorama[]>([]);
+  
+  // Get property availability data
+  const { data: availabilityData, isLoading: isLoadingAvailability } = useQuery<AvailabilityData>({
+    queryKey: [`/api/properties/${propertyId}/availability`],
+    enabled: !!property, // Only fetch when property data is available
+  });
+  
+  // Handler for date selection from heat map
+  const handleDateSelect = (date: string, price: number, available: boolean) => {
+    if (!available) {
+      toast({
+        title: "Date not available",
+        description: "This date is not available for booking.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Parse date string to Date object
+    const selectedDate = new Date(date);
+    
+    // Set date in date range picker
+    setDateRange(prev => ({
+      ...prev,
+      from: selectedDate,
+      to: new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) // Next day
+    }));
+    
+    toast({
+      title: "Date selected",
+      description: `Selected ${date} at $${price}/night`,
+    });
+  };
   
   // Initialize panoramas for the current property
   useEffect(() => {
@@ -346,6 +380,27 @@ export default function PropertyDetail() {
               </div>
               <p className="mt-4 text-gray-700">
                 Located in {property.location}, this property offers easy access to the beach and local attractions.
+              </p>
+            </div>
+            
+            {/* Availability & Pricing Heat Map */}
+            <div className="mt-10">
+              <h2 className="text-2xl font-bold mb-4">Availability & Pricing</h2>
+              {isLoadingAvailability ? (
+                <div className="animate-pulse h-72 bg-gray-200 rounded-lg"></div>
+              ) : availabilityData ? (
+                <PropertyHeatMap
+                  availabilityData={availabilityData}
+                  onDateSelect={handleDateSelect}
+                  isInteractive={true}
+                />
+              ) : (
+                <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg">
+                  <p className="text-amber-700">Availability information could not be loaded. Please try again later.</p>
+                </div>
+              )}
+              <p className="mt-4 text-gray-700">
+                Select a date on the calendar to see pricing and availability. Green dates are available for booking.
               </p>
             </div>
 

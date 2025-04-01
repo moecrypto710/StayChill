@@ -12,7 +12,8 @@ import {
   bookingValidationSchema,
   inquiryValidationSchema,
   loginSchema,
-  registerSchema
+  registerSchema,
+  pricePointSchema
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -152,7 +153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.use("/auth", authRouter);
   
   // Properties routes
-  apiRouter.get("/properties", isAuthenticated, async (req, res) => {
+  apiRouter.get("/properties", async (req, res) => {
     try {
       const properties = await storage.getProperties();
       res.json(properties);
@@ -162,7 +163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  apiRouter.get("/properties/featured", isAuthenticated, async (req, res) => {
+  apiRouter.get("/properties/featured", async (req, res) => {
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 3;
       const featuredProperties = await storage.getFeaturedProperties(limit);
@@ -173,7 +174,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  apiRouter.get("/properties/:id", isAuthenticated, async (req, res) => {
+  apiRouter.get("/properties/:id", async (req, res) => {
     try {
       const propertyId = parseInt(req.params.id);
       const property = await storage.getProperty(propertyId);
@@ -189,7 +190,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  apiRouter.post("/properties/search", isAuthenticated, async (req, res) => {
+  apiRouter.post("/properties/search", async (req, res) => {
     try {
       const filters = propertySearchSchema.parse(req.body);
       const properties = await storage.searchProperties(filters);
@@ -272,6 +273,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching favorites:", error);
       res.status(500).json({ error: "Failed to fetch favorites" });
+    }
+  });
+  
+  // Property availability and pricing routes
+  apiRouter.get("/properties/:id/availability", async (req, res) => {
+    try {
+      const propertyId = parseInt(req.params.id);
+      const startDate = req.query.startDate as string | undefined;
+      const endDate = req.query.endDate as string | undefined;
+      
+      const availabilityData = await storage.getAvailabilityData(propertyId, startDate, endDate);
+      res.json(availabilityData);
+    } catch (error) {
+      console.error("Error fetching availability data:", error);
+      res.status(500).json({ error: "Failed to fetch availability data" });
+    }
+  });
+  
+  apiRouter.post("/properties/:id/availability", isAuthenticated, async (req, res) => {
+    try {
+      const propertyId = parseInt(req.params.id);
+      const data = pricePointSchema.array().parse(req.body);
+      
+      const updatedData = await storage.updateAvailabilityData(propertyId, data);
+      res.json(updatedData);
+    } catch (error) {
+      handleZodError(error, res);
     }
   });
 

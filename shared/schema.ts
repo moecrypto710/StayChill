@@ -129,6 +129,23 @@ export const favorites = pgTable("favorites", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Define a type for price and availability data points
+export const pricePointSchema = z.object({
+  date: z.string(),
+  price: z.number().positive(),
+  available: z.boolean(),
+  bookingCount: z.number().optional()
+});
+
+// Schema for property availability data
+export const availabilityDataSchema = z.object({
+  id: z.number(),
+  propertyId: z.number(),
+  data: z.array(pricePointSchema)
+});
+
 export type PropertySearch = z.infer<typeof propertySearchSchema>;
 export type Favorite = typeof favorites.$inferSelect;
 export type InsertFavorite = typeof favorites.$inferInsert;
+export type PricePoint = z.infer<typeof pricePointSchema>;
+export type AvailabilityData = z.infer<typeof availabilityDataSchema>;
