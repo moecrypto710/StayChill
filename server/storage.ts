@@ -89,8 +89,21 @@ export class MemStorage implements IStorage {
     this.inquiryCurrentId = 1;
     this.ownerCurrentId = 1;
     
-    // Add some initial dummy properties
+    // Add some initial dummy properties and guest user
     this.initializeProperties();
+    this.initializeGuestUser();
+  }
+  
+  // Initialize a guest account for demo purposes
+  private initializeGuestUser() {
+    const guestUser: InsertUser = {
+      username: "guest",
+      password: "$2a$10$CUd8KN.dqzTP0fWNrWMS4eDWmXFEFgH1g2JJYCVEyoQHUCg/NAFzi" // bcrypt hash for "guest123"
+    };
+    
+    this.createUser(guestUser).catch(err => {
+      console.error("Error creating guest user:", err);
+    });
   }
 
   // Initialize with sample properties to get started

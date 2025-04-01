@@ -171,14 +171,24 @@ export default function Login() {
                   <p className="text-white/90 text-lg font-light">EXCLUSIVE SAHEL & RAS EL HEKMA</p>
                 </div>
 
-                <div className="bg-white/10 backdrop-filter backdrop-blur-md rounded-xl p-8 shadow-lg">
+                <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-filter backdrop-blur-lg rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-white/10">
                   <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-8 bg-white/20">
-                      <TabsTrigger value="login" className="text-slate-100 data-[state=active]:bg-white/20 data-[state=active]:text-white">Sign In</TabsTrigger>
-                      <TabsTrigger value="register" className="text-slate-100 data-[state=active]:bg-white/20 data-[state=active]:text-white">Join Us</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-2 mb-8 bg-black/20 rounded-xl p-1">
+                      <TabsTrigger 
+                        value="login" 
+                        className="text-white font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/90 data-[state=active]:to-primary data-[state=active]:text-white rounded-lg py-3 transition-all duration-300"
+                      >
+                        Sign In
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="register" 
+                        className="text-white font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/90 data-[state=active]:to-primary data-[state=active]:text-white rounded-lg py-3 transition-all duration-300"
+                      >
+                        Create Account
+                      </TabsTrigger>
                     </TabsList>
                     
-                    <TabsContent value="login">
+                    <TabsContent value="login" className="animate-in fade-in-50">
                       <Form {...loginForm}>
                         <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-5">
                           <FormField
@@ -186,13 +196,21 @@ export default function Login() {
                             name="username"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-white/90 text-sm font-medium">USERNAME</FormLabel>
+                                <FormLabel className="text-white text-sm font-medium">Username</FormLabel>
                                 <FormControl>
-                                  <Input 
-                                    placeholder="Enter your username" 
-                                    {...field} 
-                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-white/30 transition-all duration-300"
-                                  />
+                                  <div className="relative">
+                                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50">
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" strokeWidth="1.5"/>
+                                        <path d="M20.5899 22C20.5899 18.13 16.7399 15 11.9999 15C7.25991 15 3.40991 18.13 3.40991 22" stroke="currentColor" strokeWidth="1.5"/>
+                                      </svg>
+                                    </div>
+                                    <Input 
+                                      placeholder="Enter your username" 
+                                      {...field} 
+                                      className="bg-black/20 pl-10 border-transparent text-white placeholder:text-white/40 focus:bg-black/30 focus:border-primary/50 focus:ring-primary/50 rounded-xl h-12 transition-all duration-300"
+                                    />
+                                  </div>
                                 </FormControl>
                                 <FormMessage className="text-amber-300 text-xs" />
                               </FormItem>
@@ -204,41 +222,92 @@ export default function Login() {
                             name="password"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-white/90 text-sm font-medium">PASSWORD</FormLabel>
+                                <FormLabel className="text-white text-sm font-medium">Password</FormLabel>
                                 <FormControl>
-                                  <Input 
-                                    type="password" 
-                                    placeholder="Enter your password" 
-                                    {...field} 
-                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-white/30 transition-all duration-300"
-                                  />
+                                  <div className="relative">
+                                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50">
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19 11H5C3.89543 11 3 11.8954 3 13V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V13C21 11.8954 20.1046 11 19 11Z" stroke="currentColor" strokeWidth="1.5"/>
+                                        <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" strokeWidth="1.5"/>
+                                      </svg>
+                                    </div>
+                                    <Input 
+                                      type="password" 
+                                      placeholder="Enter your password" 
+                                      {...field} 
+                                      className="bg-black/20 pl-10 border-transparent text-white placeholder:text-white/40 focus:bg-black/30 focus:border-primary/50 focus:ring-primary/50 rounded-xl h-12 transition-all duration-300"
+                                    />
+                                  </div>
                                 </FormControl>
                                 <FormMessage className="text-amber-300 text-xs" />
                               </FormItem>
                             )}
                           />
                           
-                          <Button 
-                            type="submit" 
-                            className="w-full mt-8 bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white font-medium py-2.5 rounded-lg transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-lg"
-                            disabled={loginMutation.isPending}
-                          >
-                            {loginMutation.isPending ? 
-                              <div className="flex items-center justify-center">
-                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                <span>Authenticating...</span>
+                          <div className="space-y-3 mt-8">
+                            <Button 
+                              type="submit" 
+                              className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-medium py-3 h-12 rounded-xl transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-lg"
+                              disabled={loginMutation.isPending}
+                            >
+                              {loginMutation.isPending ? 
+                                <div className="flex items-center justify-center">
+                                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                  </svg>
+                                  <span>Signing In...</span>
+                                </div>
+                                : <div className="flex items-center justify-center">
+                                    <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                      <path d="M3 22C3 17.0294 7.02944 13 12 13C16.9706 13 21 17.0294 21 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                    <span>Sign In</span>
+                                  </div>
+                              }
+                            </Button>
+                            
+                            <div className="relative">
+                              <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t border-white/20"></span>
                               </div>
-                              : "SIGN IN"
-                            }
-                          </Button>
+                              <div className="relative flex justify-center text-xs">
+                                <span className="bg-slate-900/80 px-2 text-white/60">or</span>
+                              </div>
+                            </div>
+                            
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="w-full border-white/20 bg-white/5 text-white hover:bg-white/10 hover:text-amber-300 hover:border-amber-300/50 rounded-xl py-3 h-12"
+                              onClick={() => {
+                                loginForm.setValue("username", "guest");
+                                loginForm.setValue("password", "guest123");
+                                loginMutation.mutate({ username: "guest", password: "guest123" });
+                              }}
+                            >
+                              <div className="flex items-center justify-center">
+                                <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M8 16.5C8 18.9853 10.0147 21 12.5 21C14.9853 21 17 18.9853 17 16.5C17 14.0147 14.9853 12 12.5 12C10.0147 12 8 14.0147 8 16.5Z" stroke="currentColor" strokeWidth="1.5"/>
+                                  <path d="M20 18C21.6569 18 23 16.6569 23 15C23 13.3431 21.6569 12 20 12C18.9143 12 17.9816 12.6255 17.5 13.5" stroke="currentColor" strokeWidth="1.5"/>
+                                  <path d="M4 18C2.34315 18 1 16.6569 1 15C1 13.3431 2.34315 12 4 12C5.08571 12 6.01843 12.6255 6.5 13.5" stroke="currentColor" strokeWidth="1.5"/>
+                                  <path d="M13 9C13 9.55228 12.5523 10 12 10C11.4477 10 11 9.55228 11 9C11 8.44772 11.4477 8 12 8C12.5523 8 13 8.44772 13 9Z" fill="currentColor"/>
+                                  <path d="M16 7C16 7.55228 15.5523 8 15 8C14.4477 8 14 7.55228 14 7C14 6.44772 14.4477 6 15 6C15.5523 6 16 6.44772 16 7Z" fill="currentColor"/>
+                                  <path d="M10 7C10 7.55228 9.55228 8 9 8C8.44772 8 8 7.55228 8 7C8 6.44772 8.44772 6 9 6C9.55228 6 10 6.44772 10 7Z" fill="currentColor"/>
+                                  <path d="M16 9.5C16.8284 9.5 17.5 8.82843 17.5 8C17.5 7.17157 16.8284 6.5 16 6.5C15.1716 6.5 14.5 7.17157 14.5 8C14.5 8.82843 15.1716 9.5 16 9.5Z" stroke="currentColor" strokeWidth="1.5"/>
+                                  <path d="M8 9.5C8.82843 9.5 9.5 8.82843 9.5 8C9.5 7.17157 8.82843 6.5 8 6.5C7.17157 6.5 6.5 7.17157 6.5 8C6.5 8.82843 7.17157 9.5 8 9.5Z" stroke="currentColor" strokeWidth="1.5"/>
+                                  <path d="M12 7.5C12.8284 7.5 13.5 6.82843 13.5 6C13.5 5.17157 12.8284 4.5 12 4.5C11.1716 4.5 10.5 5.17157 10.5 6C10.5 6.82843 11.1716 7.5 12 7.5Z" stroke="currentColor" strokeWidth="1.5"/>
+                                </svg>
+                                <span>Continue as Guest</span>
+                              </div>
+                            </Button>
+                          </div>
                         </form>
                       </Form>
                     </TabsContent>
                     
-                    <TabsContent value="register">
+                    <TabsContent value="register" className="animate-in fade-in-50">
                       <Form {...registerForm}>
                         <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-5">
                           <FormField
@@ -246,12 +315,12 @@ export default function Login() {
                             name="username"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-white/90 text-sm font-medium">USERNAME</FormLabel>
+                                <FormLabel className="text-white text-sm font-medium">Username</FormLabel>
                                 <FormControl>
                                   <Input 
                                     placeholder="Choose a username" 
                                     {...field} 
-                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-white/30 transition-all duration-300"
+                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-primary focus:ring-primary transition-all duration-300"
                                   />
                                 </FormControl>
                                 <FormMessage className="text-amber-300 text-xs" />
@@ -264,13 +333,13 @@ export default function Login() {
                             name="email"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-white/90 text-sm font-medium">EMAIL</FormLabel>
+                                <FormLabel className="text-white text-sm font-medium">Email</FormLabel>
                                 <FormControl>
                                   <Input 
                                     type="email" 
                                     placeholder="Enter your email" 
                                     {...field} 
-                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-white/30 transition-all duration-300"
+                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-primary focus:ring-primary transition-all duration-300"
                                   />
                                 </FormControl>
                                 <FormMessage className="text-amber-300 text-xs" />
@@ -284,13 +353,13 @@ export default function Login() {
                               name="password"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-white/90 text-sm font-medium">PASSWORD</FormLabel>
+                                  <FormLabel className="text-white text-sm font-medium">Password</FormLabel>
                                   <FormControl>
                                     <Input 
                                       type="password" 
                                       placeholder="Create a password" 
                                       {...field} 
-                                      className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-white/30 transition-all duration-300"
+                                      className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-primary focus:ring-primary transition-all duration-300"
                                     />
                                   </FormControl>
                                   <FormMessage className="text-amber-300 text-xs" />
@@ -303,13 +372,13 @@ export default function Login() {
                               name="confirmPassword"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-white/90 text-sm font-medium">CONFIRM</FormLabel>
+                                  <FormLabel className="text-white text-sm font-medium">Confirm</FormLabel>
                                   <FormControl>
                                     <Input 
                                       type="password" 
                                       placeholder="Confirm password" 
                                       {...field} 
-                                      className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-white/30 transition-all duration-300"
+                                      className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-primary focus:ring-primary transition-all duration-300"
                                     />
                                   </FormControl>
                                   <FormMessage className="text-amber-300 text-xs" />
@@ -320,7 +389,7 @@ export default function Login() {
                           
                           <Button 
                             type="submit" 
-                            className="w-full mt-8 bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white font-medium py-2.5 rounded-lg transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-lg"
+                            className="w-full mt-8 bg-primary hover:bg-primary/90 text-white font-medium py-2.5 rounded-xl transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-lg"
                             disabled={registerMutation.isPending}
                           >
                             {registerMutation.isPending ? 
@@ -331,16 +400,18 @@ export default function Login() {
                                 </svg>
                                 <span>Creating Account...</span>
                               </div>
-                              : "BECOME A MEMBER"
+                              : "Create Account"
                             }
                           </Button>
                         </form>
                       </Form>
                     </TabsContent>
                   </Tabs>
-                  <p className="text-xs text-center text-white/60 mt-6 font-light">
-                    By continuing, you agree to Stay Chill's Terms of Service and Privacy Policy
-                  </p>
+                  <div className="mt-6 bg-white/5 p-3 rounded-lg">
+                    <p className="text-sm text-center text-white/70">
+                      By signing in, you agree to Stay Chill's Terms of Service
+                    </p>
+                  </div>
                 </div>
               </div>
               
@@ -383,21 +454,12 @@ export default function Login() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center mt-auto">
-                    <div className="flex mr-4">
-                      <div className="h-10 w-10 rounded-full border-2 border-white overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&q=80" alt="Happy client" className="h-full w-full object-cover" />
+                  <div className="mt-auto">
+                    <div className="flex items-center justify-center mt-4 bg-white/10 rounded-lg p-3">
+                      <div className="text-center">
+                        <p className="text-white font-medium mb-1">Experience the best of Sahel & Ras El Hekma</p>
+                        <p className="text-amber-300 text-sm">Sign in to discover premium vacation properties</p>
                       </div>
-                      <div className="h-10 w-10 rounded-full border-2 border-white overflow-hidden -ml-3">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&q=80" alt="Happy client" className="h-full w-full object-cover" />
-                      </div>
-                      <div className="h-10 w-10 rounded-full border-2 border-white overflow-hidden -ml-3">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&q=80" alt="Happy client" className="h-full w-full object-cover" />
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-amber-400 font-medium text-sm">Join our exclusive community</p>
-                      <p className="text-white/80 text-xs">5,000+ satisfied clients</p>
                     </div>
                   </div>
                 </div>
