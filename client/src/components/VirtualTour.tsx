@@ -1,7 +1,9 @@
+
 import { useEffect, useRef, useState } from 'react';
 import { Button } from './ui/button';
-import { X, RotateCcw, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
-// Import pannellum from the window object (it's loaded via script)
+import { X, RotateCcw, ZoomIn, ZoomOut, Maximize2, Compass } from 'lucide-react';
+import { Badge } from './ui/badge';
+
 declare global {
   interface Window {
     pannellum: any;
@@ -16,21 +18,20 @@ interface VirtualTourProps {
 
 export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: VirtualTourProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showCompass, setShowCompass] = useState(true);
   const tourRef = useRef<HTMLDivElement>(null);
   const viewerContainerRef = useRef<HTMLDivElement>(null);
   const [viewer, setViewer] = useState<any>(null);
 
-  // Initialize pannellum viewer
   useEffect(() => {
     if (!viewerContainerRef.current || viewer) return;
     
-    // Load pannellum CSS
     const linkEl = document.createElement('link');
     linkEl.rel = 'stylesheet';
     linkEl.href = 'https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css';
     document.head.appendChild(linkEl);
 
-    // Load pannellum script if not already loaded
     if (!window.pannellum) {
       const scriptEl = document.createElement('script');
       scriptEl.src = 'https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js';
@@ -50,8 +51,10 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
         showControls: false,
         mouseZoom: true,
         hfov: 100,
-        compass: false,
-        hotSpots: []
+        compass: showCompass,
+        northOffset: 247.5,
+        hotSpots: [],
+        onLoad: () => setIsLoading(false)
       });
       
       setViewer(newViewer);
@@ -62,7 +65,7 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
         viewer.destroy();
       }
     };
-  }, [panoramaUrl, viewer]);
+  }, [panoramaUrl, viewer, showCompass]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -113,14 +116,21 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
   const zoomIn = () => {
     if (viewer) {
       const currentHfov = viewer.getHfov();
-      viewer.setHfov(currentHfov - 10);
+      viewer.setHfov(Math.max(30, currentHfov - 10));
     }
   };
 
   const zoomOut = () => {
     if (viewer) {
       const currentHfov = viewer.getHfov();
-      viewer.setHfov(currentHfov + 10);
+      viewer.setHfov(Math.min(120, currentHfov + 10));
+    }
+  };
+
+  const toggleCompass = () => {
+    setShowCompass(!showCompass);
+    if (viewer) {
+      viewer.setCompassVisible(!showCompass);
     }
   };
 
@@ -130,12 +140,22 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
         ref={tourRef} 
         className="relative w-full max-w-5xl aspect-[16/9] rounded-xl overflow-hidden shadow-2xl"
       >
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+            <div className="text-white text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mb-4"></div>
+              <p>Loading panorama...</p>
+            </div>
+          </div>
+        )}
+        
         <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
           <Button 
             variant="secondary" 
             size="icon" 
             className="bg-black/50 hover:bg-black/70 transition-all"
             onClick={resetView}
+            title="Reset View"
           >
             <RotateCcw className="h-4 w-4" />
           </Button>
@@ -144,6 +164,7 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
             size="icon" 
             className="bg-black/50 hover:bg-black/70 transition-all"
             onClick={zoomIn}
+            title="Zoom In"
           >
             <ZoomIn className="h-4 w-4" />
           </Button>
@@ -152,14 +173,25 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
             size="icon" 
             className="bg-black/50 hover:bg-black/70 transition-all"
             onClick={zoomOut}
+            title="Zoom Out"
           >
             <ZoomOut className="h-4 w-4" />
           </Button>
           <Button 
             variant="secondary" 
             size="icon" 
+            className={`bg-black/50 hover:bg-black/70 transition-all ${showCompass ? 'text-primary' : ''}`}
+            onClick={toggleCompass}
+            title="Toggle Compass"
+          >
+            <Compass className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="secondary" 
+            size="icon" 
             className="bg-black/50 hover:bg-black/70 transition-all"
             onClick={toggleFullscreen}
+            title="Toggle Fullscreen"
           >
             <Maximize2 className="h-4 w-4" />
           </Button>
@@ -168,6 +200,7 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
             size="icon" 
             className="bg-black/50 hover:bg-black/70 transition-all"
             onClick={onClose}
+            title="Close"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -175,11 +208,11 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
         
         <div className="absolute bottom-4 left-4 z-10">
           <div className="bg-black/50 py-2 px-4 rounded-lg text-white">
-            <p className="text-sm font-medium">{propertyTitle} - Virtual Tour</p>
+            <p className="text-sm font-medium">{propertyTitle}</p>
+            <Badge variant="secondary" className="mt-1">Virtual Tour</Badge>
           </div>
         </div>
         
-        {/* Pannellum container */}
         <div 
           ref={viewerContainerRef} 
           className="w-full h-full"
