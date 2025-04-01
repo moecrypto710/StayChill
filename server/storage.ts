@@ -509,11 +509,11 @@ export class PostgresStorage implements IStorage {
   
   // Property operations
   async getProperties(): Promise<Property[]> {
-    return await this.db.select().from(properties).execute();
+    return await this.db.select().from(properties);
   }
 
   async getProperty(id: number): Promise<Property | undefined> {
-    const result = await this.db.select().from(properties).where(eq(properties.id, id)).execute();
+    const result = await this.db.select().from(properties).where(eq(properties.id, id));
     return result.length > 0 ? result[0] : undefined;
   }
 
@@ -522,205 +522,266 @@ export class PostgresStorage implements IStorage {
       .select()
       .from(properties)
       .where(eq(properties.featured, true))
-      .limit(limit)
-      .execute();
+      .limit(limit);
   }
 
   async searchProperties(filters: PropertySearch): Promise<Property[]> {
-    // Build up conditions for the query
-    const conditions: any[] = [];
-    
-    if (filters.area) {
-      conditions.push(eq(properties.area, filters.area));
-    }
-    
-    if (filters.minPrice !== undefined) {
-      conditions.push(gte(properties.price, filters.minPrice));
-    }
-    
-    if (filters.maxPrice !== undefined) {
-      conditions.push(lte(properties.price, filters.maxPrice));
-    }
-    
-    if (filters.bedrooms !== undefined) {
-      conditions.push(gte(properties.bedrooms, filters.bedrooms));
-    }
-    
-    if (filters.maxGuests !== undefined) {
-      conditions.push(gte(properties.maxGuests, filters.maxGuests));
-    }
-    
-    // Execute query
-    let results: Property[] = [];
-    if (conditions.length > 0) {
-      results = await this.db
-        .select()
-        .from(properties)
-        .where(conditions[0])
-        .execute();
+    try {
+      // Start building the query
+      let query = this.db.select().from(properties);
       
-      // Apply remaining conditions via filter
-      for (let i = 1; i < conditions.length; i++) {
-        const condition = conditions[i];
-        results = results.filter((p: Property) => {
-          try {
-            return condition(p as any);
-          } catch (error) {
-            console.error("Error filtering property:", error);
-            return false;
-          }
-        });
+      // Apply filters with AND logic in a simplified approach
+      if (filters.area) {
+        query = query.where(eq(properties.area, filters.area));
       }
-    } else {
-      results = await this.db.select().from(properties).execute();
+      
+      let qResult = await query;
+      let results = [...qResult]; // Make a copy to avoid type issues
+      
+      // Apply remaining filters manually since the query building is causing type issues
+      if (filters.minPrice !== undefined) {
+        results = results.filter(p => p.price >= filters.minPrice!);
+      }
+      
+      if (filters.maxPrice !== undefined) {
+        results = results.filter(p => p.price <= filters.maxPrice!);
+      }
+      
+      if (filters.bedrooms !== undefined) {
+        results = results.filter(p => p.bedrooms >= filters.bedrooms!);
+      }
+      
+      if (filters.maxGuests !== undefined) {
+        results = results.filter(p => p.maxGuests >= filters.maxGuests!);
+      }
+      
+      // Filter by amenities
+      if (filters.amenities && filters.amenities.length > 0) {
+        results = results.filter((p: Property) => 
+          filters.amenities!.every(amenity => p.amenities.includes(amenity))
+        );
+      }
+      
+      return results;
+    } catch (error: any) {
+      console.error("Error searching properties:", error);
+      throw new Error(`Failed to search properties: ${error.message}`);
     }
-    
-    // Filter by amenities
-    if (filters.amenities && filters.amenities.length > 0) {
-      results = results.filter((p: Property) => 
-        filters.amenities!.every(amenity => p.amenities.includes(amenity))
-      );
-    }
-    
-    return results;
   }
 
   async createProperty(property: InsertProperty): Promise<Property> {
-    const result = await this.db.insert(properties).values(property).returning().execute();
-    return result[0];
+    try {
+      const result = await this.db.insert(properties).values(property).returning();
+      return result[0];
+    } catch (error: any) {
+      console.error("Error creating property:", error);
+      throw new Error(`Failed to create property: ${error.message}`);
+    }
   }
 
   async updateProperty(id: number, updates: Partial<Property>): Promise<Property | undefined> {
-    const result = await this.db
-      .update(properties)
-      .set(updates)
-      .where(eq(properties.id, id))
-      .returning()
-      .execute();
-      
-    return result.length > 0 ? result[0] : undefined;
+    try {
+      const result = await this.db
+        .update(properties)
+        .set(updates)
+        .where(eq(properties.id, id))
+        .returning();
+        
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error: any) {
+      console.error("Error updating property:", error);
+      throw new Error(`Failed to update property: ${error.message}`);
+    }
   }
 
   async deleteProperty(id: number): Promise<boolean> {
-    const result = await this.db
-      .delete(properties)
-      .where(eq(properties.id, id))
-      .returning({ id: properties.id })
-      .execute();
-      
-    return result.length > 0;
+    try {
+      const result = await this.db
+        .delete(properties)
+        .where(eq(properties.id, id))
+        .returning({ id: properties.id });
+        
+      return result.length > 0;
+    } catch (error: any) {
+      console.error("Error deleting property:", error);
+      throw new Error(`Failed to delete property: ${error.message}`);
+    }
   }
   
   // Booking operations
   async getBookings(): Promise<Booking[]> {
-    return await this.db.select().from(bookings).execute();
+    try {
+      return await this.db.select().from(bookings);
+    } catch (error: any) {
+      console.error("Error fetching bookings:", error);
+      throw new Error(`Failed to fetch bookings: ${error.message}`);
+    }
   }
 
   async getBooking(id: number): Promise<Booking | undefined> {
-    const result = await this.db.select().from(bookings).where(eq(bookings.id, id)).execute();
-    return result.length > 0 ? result[0] : undefined;
+    try {
+      const result = await this.db.select().from(bookings).where(eq(bookings.id, id));
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error: any) {
+      console.error("Error fetching booking:", error);
+      throw new Error(`Failed to fetch booking: ${error.message}`);
+    }
   }
 
   async getBookingsByPropertyId(propertyId: number): Promise<Booking[]> {
-    return await this.db
-      .select()
-      .from(bookings)
-      .where(eq(bookings.propertyId, propertyId))
-      .execute();
+    try {
+      return await this.db
+        .select()
+        .from(bookings)
+        .where(eq(bookings.propertyId, propertyId));
+    } catch (error: any) {
+      console.error("Error fetching bookings by property ID:", error);
+      throw new Error(`Failed to fetch bookings by property ID: ${error.message}`);
+    }
   }
 
   async createBooking(booking: InsertBooking): Promise<Booking> {
-    const result = await this.db.insert(bookings).values(booking).returning().execute();
-    return result[0];
+    try {
+      const result = await this.db.insert(bookings).values(booking).returning();
+      return result[0];
+    } catch (error: any) {
+      console.error("Error creating booking:", error);
+      throw new Error(`Failed to create booking: ${error.message}`);
+    }
   }
 
   async updateBookingStatus(id: number, status: string): Promise<Booking | undefined> {
-    const result = await this.db
-      .update(bookings)
-      .set({ status })
-      .where(eq(bookings.id, id))
-      .returning()
-      .execute();
-      
-    return result.length > 0 ? result[0] : undefined;
+    try {
+      const result = await this.db
+        .update(bookings)
+        .set({ status })
+        .where(eq(bookings.id, id))
+        .returning();
+        
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error: any) {
+      console.error("Error updating booking status:", error);
+      throw new Error(`Failed to update booking status: ${error.message}`);
+    }
   }
   
   // Inquiry operations
   async getInquiries(): Promise<Inquiry[]> {
-    return await this.db.select().from(inquiries).execute();
+    try {
+      return await this.db.select().from(inquiries);
+    } catch (error: any) {
+      console.error("Error fetching inquiries:", error);
+      throw new Error(`Failed to fetch inquiries: ${error.message}`);
+    }
   }
 
   async getInquiry(id: number): Promise<Inquiry | undefined> {
-    const result = await this.db.select().from(inquiries).where(eq(inquiries.id, id)).execute();
-    return result.length > 0 ? result[0] : undefined;
+    try {
+      const result = await this.db.select().from(inquiries).where(eq(inquiries.id, id));
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error: any) {
+      console.error("Error fetching inquiry:", error);
+      throw new Error(`Failed to fetch inquiry: ${error.message}`);
+    }
   }
 
   async getInquiriesByPropertyId(propertyId: number): Promise<Inquiry[]> {
-    return await this.db
-      .select()
-      .from(inquiries)
-      .where(eq(inquiries.propertyId, propertyId))
-      .execute();
+    try {
+      return await this.db
+        .select()
+        .from(inquiries)
+        .where(eq(inquiries.propertyId, propertyId));
+    } catch (error: any) {
+      console.error("Error fetching inquiries by property ID:", error);
+      throw new Error(`Failed to fetch inquiries by property ID: ${error.message}`);
+    }
   }
 
   async createInquiry(inquiry: InsertInquiry): Promise<Inquiry> {
-    const result = await this.db
-      .insert(inquiries)
-      .values({
-        ...inquiry,
-        responded: false,
-      })
-      .returning()
-      .execute();
-      
-    return result[0];
+    try {
+      const result = await this.db
+        .insert(inquiries)
+        .values({
+          ...inquiry,
+          responded: false,
+        })
+        .returning();
+        
+      return result[0];
+    } catch (error: any) {
+      console.error("Error creating inquiry:", error);
+      throw new Error(`Failed to create inquiry: ${error.message}`);
+    }
   }
 
   async markInquiryAsResponded(id: number): Promise<Inquiry | undefined> {
-    const result = await this.db
-      .update(inquiries)
-      .set({ responded: true })
-      .where(eq(inquiries.id, id))
-      .returning()
-      .execute();
-      
-    return result.length > 0 ? result[0] : undefined;
+    try {
+      const result = await this.db
+        .update(inquiries)
+        .set({ responded: true })
+        .where(eq(inquiries.id, id))
+        .returning();
+        
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error: any) {
+      console.error("Error marking inquiry as responded:", error);
+      throw new Error(`Failed to mark inquiry as responded: ${error.message}`);
+    }
   }
   
   // Owner operations
   async getOwners(): Promise<Owner[]> {
-    return await this.db.select().from(owners).execute();
+    try {
+      return await this.db.select().from(owners);
+    } catch (error: any) {
+      console.error("Error fetching owners:", error);
+      throw new Error(`Failed to fetch owners: ${error.message}`);
+    }
   }
 
   async getOwner(id: number): Promise<Owner | undefined> {
-    const result = await this.db.select().from(owners).where(eq(owners.id, id)).execute();
-    return result.length > 0 ? result[0] : undefined;
+    try {
+      const result = await this.db.select().from(owners).where(eq(owners.id, id));
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error: any) {
+      console.error("Error fetching owner:", error);
+      throw new Error(`Failed to fetch owner: ${error.message}`);
+    }
   }
 
   async createOwner(owner: InsertOwner): Promise<Owner> {
-    const result = await this.db.insert(owners).values(owner).returning().execute();
-    return result[0];
+    try {
+      const result = await this.db.insert(owners).values(owner).returning();
+      return result[0];
+    } catch (error: any) {
+      console.error("Error creating owner:", error);
+      throw new Error(`Failed to create owner: ${error.message}`);
+    }
   }
 
   async addPropertyToOwner(ownerId: number, propertyId: number): Promise<Owner | undefined> {
-    // First get the owner
-    const owner = await this.getOwner(ownerId);
-    if (!owner) return undefined;
-    
-    // Update the owner's properties list
-    const properties = owner.properties || [];
-    if (!properties.includes(propertyId)) {
-      const result = await this.db
-        .update(owners)
-        .set({ properties: [...properties, propertyId] })
-        .where(eq(owners.id, ownerId))
-        .returning()
-        .execute();
-        
-      return result.length > 0 ? result[0] : undefined;
+    try {
+      // First get the owner
+      const owner = await this.getOwner(ownerId);
+      if (!owner) return undefined;
+      
+      // Update the owner's properties list
+      const properties = owner.properties || [];
+      if (!properties.includes(propertyId)) {
+        const result = await this.db
+          .update(owners)
+          .set({ properties: [...properties, propertyId] })
+          .where(eq(owners.id, ownerId))
+          .returning();
+          
+        return result.length > 0 ? result[0] : undefined;
+      }
+      
+      return owner;
+    } catch (error: any) {
+      console.error("Error adding property to owner:", error);
+      throw new Error(`Failed to add property to owner: ${error.message}`);
     }
-    
-    return owner;
   }
 }
 
