@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/lib/auth";
+import LanguageSwitcher from "./LanguageSwitcher";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -141,6 +142,8 @@ export default function Navbar() {
                 <span className="sr-only">Search</span>
               </Button>
               
+              <LanguageSwitcher />
+              
               {isAuthenticated && (
                 <Link 
                   href="/list-property" 
@@ -248,6 +251,11 @@ export default function Navbar() {
           )}
           
           <div className="mt-auto pt-6 border-t border-white/10">
+            <div className="flex items-center justify-center mb-4">
+              <span className="text-white/80 mr-3">تغيير اللغة</span>
+              <LanguageSwitcher />
+            </div>
+            
             {!isAuthenticated ? (
               <Link href="/login">
                 <Button 
@@ -268,8 +276,8 @@ export default function Navbar() {
                   className="w-full rounded-full py-6 text-lg border-teal-500/30 text-teal-300 hover:bg-teal-600/20 hover:text-teal-200 hover:border-teal-500/50"
                   onClick={handleLogout}
                 >
-                  <LogOut className="mr-2 h-5 w-5" />
-                  Log Out
+                  <LogOut className="mr-2 h-5 w-5 rtl-mr" />
+                  <span>Log Out</span>
                 </Button>
               </div>
             )}
