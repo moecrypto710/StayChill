@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -15,7 +14,7 @@ interface Panorama360GalleryProps {
 export default function Panorama360Gallery({ propertyTitle, panoramas }: Panorama360GalleryProps) {
   const [activePanorama, setActivePanorama] = useState<Panorama | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  
+
   if (panoramas.length === 0) {
     return null;
   }
@@ -39,21 +38,21 @@ export default function Panorama360Gallery({ propertyTitle, panoramas }: Panoram
           360° Experience
         </Badge>
       </div>
-      
+
       <div className="bg-gray-50 rounded-xl p-4 border">
         <p className="text-sm text-gray-600 mb-4 flex items-center">
           <Compass className="h-4 w-4 mr-2 text-primary" />
           Explore this property in immersive 360° views. Click on any panorama to start the virtual tour.
         </p>
-        
+
         <div className="relative">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {panoramas.map((panorama, index) => (
               <div 
                 key={panorama.id}
                 className={cn(
-                  "aspect-square relative rounded-lg overflow-hidden cursor-pointer group transition-all duration-300",
-                  index === activeIndex && "ring-2 ring-primary ring-offset-2"
+                  "aspect-square relative rounded-lg overflow-hidden cursor-pointer group transition-all duration-500 transform hover:scale-105",
+                  index === activeIndex && "ring-2 ring-primary ring-offset-2 shadow-lg"
                 )}
                 onClick={() => {
                   setActiveIndex(index);
@@ -74,7 +73,7 @@ export default function Panorama360Gallery({ propertyTitle, panoramas }: Panoram
               </div>
             ))}
           </div>
-          
+
           {panoramas.length > 4 && (
             <>
               <Button
@@ -96,7 +95,7 @@ export default function Panorama360Gallery({ propertyTitle, panoramas }: Panoram
             </>
           )}
         </div>
-        
+
         <Button 
           variant="default" 
           className="mt-6 w-full"
@@ -106,7 +105,7 @@ export default function Panorama360Gallery({ propertyTitle, panoramas }: Panoram
           Start Virtual Tour
         </Button>
       </div>
-      
+
       {activePanorama && (
         <VirtualTour
           panoramaUrl={activePanorama.url}

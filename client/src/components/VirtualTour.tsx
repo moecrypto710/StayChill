@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { Button } from './ui/button';
 import { X, RotateCcw, ZoomIn, ZoomOut, Maximize2, Compass } from 'lucide-react';
@@ -26,7 +25,7 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
 
   useEffect(() => {
     if (!viewerContainerRef.current || viewer) return;
-    
+
     const linkEl = document.createElement('link');
     linkEl.rel = 'stylesheet';
     linkEl.href = 'https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css';
@@ -43,7 +42,7 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
 
     function initViewer() {
       if (!viewerContainerRef.current) return;
-      
+
       const newViewer = window.pannellum.viewer(viewerContainerRef.current, {
         type: 'equirectangular',
         panorama: panoramaUrl,
@@ -53,10 +52,30 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
         hfov: 100,
         compass: showCompass,
         northOffset: 247.5,
-        hotSpots: [],
-        onLoad: () => setIsLoading(false)
+        hotSpotDebug: true,
+        keyboardZoom: true,
+        mouseZoom: true,
+        draggable: true,
+        disableKeyboardCtrl: false,
+        touchPanSpeedCoeffFactor: 1.5,
+        autoRotate: -2,
+        autoRotateInactivityDelay: 3000,
+        hotSpots: [
+          {
+            pitch: -2.1,
+            yaw: 132.9,
+            type: "info",
+            text: "Living Room",
+            cssClass: "custom-hotspot"
+          }
+        ],
+        onLoad: () => {
+          setIsLoading(false);
+          // Auto-rotate will stop when user interacts
+          viewer?.startAutoRotate();
+        }
       });
-      
+
       setViewer(newViewer);
     }
 
@@ -73,7 +92,7 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
         onClose();
       }
     };
-    
+
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
@@ -82,7 +101,7 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
 
   const toggleFullscreen = () => {
     if (!tourRef.current) return;
-    
+
     if (!isFullscreen) {
       if (tourRef.current.requestFullscreen) {
         tourRef.current.requestFullscreen();
@@ -98,7 +117,7 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
-    
+
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
@@ -148,7 +167,7 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
             </div>
           </div>
         )}
-        
+
         <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
           <Button 
             variant="secondary" 
@@ -205,14 +224,14 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
             <X className="h-4 w-4" />
           </Button>
         </div>
-        
+
         <div className="absolute bottom-4 left-4 z-10">
           <div className="bg-black/50 py-2 px-4 rounded-lg text-white">
             <p className="text-sm font-medium">{propertyTitle}</p>
             <Badge variant="secondary" className="mt-1">Virtual Tour</Badge>
           </div>
         </div>
-        
+
         <div 
           ref={viewerContainerRef} 
           className="w-full h-full"
