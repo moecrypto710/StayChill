@@ -13,7 +13,17 @@ import {
   type InsertOwner,
   type PropertySearch
 } from "@shared/schema";
-import { users, type User, type InsertUser } from "@shared/schema";
+import { eq, gte, lte, inArray } from "drizzle-orm";
+import { db } from "./db";
+
+// Define a simplified User type since it's not in our schema yet
+type User = {
+  id: number;
+  username: string;
+  password: string;
+};
+
+type InsertUser = Omit<User, "id">;
 
 // modify the interface with any CRUD methods
 // you might need
@@ -268,7 +278,15 @@ export class MemStorage implements IStorage {
 
   async createProperty(property: InsertProperty): Promise<Property> {
     const id = this.propertyCurrentId++;
-    const newProperty: Property = { ...property, id };
+    // Fix type issues by ensuring all fields have proper values
+    const newProperty: Property = { 
+      ...property, 
+      id,
+      featured: property.featured ?? false,
+      isNew: property.isNew ?? false,
+      rating: property.rating ?? 0,
+      reviewCount: property.reviewCount ?? 0 
+    };
     this.properties.set(id, newProperty);
     return newProperty;
   }
@@ -302,7 +320,12 @@ export class MemStorage implements IStorage {
 
   async createBooking(booking: InsertBooking): Promise<Booking> {
     const id = this.bookingCurrentId++;
-    const newBooking: Booking = { ...booking, id };
+    const newBooking: Booking = { 
+      ...booking, 
+      id,
+      message: booking.message ?? null,
+      status: booking.status ?? "pending"
+    };
     this.bookings.set(id, newBooking);
     return newBooking;
   }
@@ -332,7 +355,13 @@ export class MemStorage implements IStorage {
   async createInquiry(inquiry: InsertInquiry): Promise<Inquiry> {
     const id = this.inquiryCurrentId++;
     const now = new Date();
-    const newInquiry: Inquiry = { ...inquiry, id, createdAt: now, responded: false };
+    const newInquiry: Inquiry = { 
+      ...inquiry, 
+      id, 
+      propertyId: inquiry.propertyId ?? null,
+      createdAt: now, 
+      responded: false 
+    };
     this.inquiries.set(id, newInquiry);
     return newInquiry;
   }
@@ -356,7 +385,11 @@ export class MemStorage implements IStorage {
 
   async createOwner(owner: InsertOwner): Promise<Owner> {
     const id = this.ownerCurrentId++;
-    const newOwner: Owner = { ...owner, id };
+    const newOwner: Owner = { 
+      ...owner, 
+      id,
+      properties: owner.properties ?? []
+    };
     this.owners.set(id, newOwner);
     return newOwner;
   }
@@ -374,4 +407,323 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class PostgresStorage implements IStorage {
+  constructor() {
+    this.initializeProperties();
+  }
+  
+  // Use the imported db
+  private readonly db = db;
+  
+  // Initialize with sample data if DB is empty
+  private async initializeProperties() {
+    try {
+      const existingProperties = await this.getProperties();
+      
+      // If no properties exist, seed the database
+      if (existingProperties.length === 0) {
+        const dummyProperties: InsertProperty[] = [
+          {
+            title: "Luxurious Beachfront Villa",
+            description: "Stunning villa right on the beach with private access to the sea. Perfect for family getaways.",
+            location: "North Coast, Sahel",
+            area: "Sahel",
+            price: 350,
+            bedrooms: 4,
+            bathrooms: 3,
+            maxGuests: 8,
+            images: [
+              "https://images.unsplash.com/photo-1582610116397-edb318620f90?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+            ],
+            amenities: ["Beachfront", "Private Pool", "Wi-Fi", "Air Conditioning", "BBQ"],
+            featured: true,
+            isNew: false,
+            rating: 50,
+            reviewCount: 15
+          },
+          {
+            title: "Ras El Hekma Chalet",
+            description: "Beautiful chalet with amazing sea views, just a few steps from the beach.",
+            location: "Ras El Hekma",
+            area: "Ras El Hekma",
+            price: 220,
+            bedrooms: 3,
+            bathrooms: 2,
+            maxGuests: 6,
+            images: [
+              "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+            ],
+            amenities: ["Sea View", "Shared Pool", "Wi-Fi", "Air Conditioning"],
+            featured: true,
+            isNew: true,
+            rating: 45,
+            reviewCount: 8
+          },
+          {
+            title: "Modern Sahel Apartment",
+            description: "Contemporary apartment near the marina with all modern amenities for a comfortable stay.",
+            location: "Marina, Sahel",
+            area: "Sahel",
+            price: 180,
+            bedrooms: 2,
+            bathrooms: 1,
+            maxGuests: 4,
+            images: [
+              "https://images.unsplash.com/photo-1613553507747-5f8d62ad5904?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+            ],
+            amenities: ["Beach Nearby", "Pool Access", "Wi-Fi", "Air Conditioning"],
+            featured: true,
+            isNew: false,
+            rating: 40,
+            reviewCount: 12
+          }
+        ];
+        
+        // Insert sample properties
+        for (const property of dummyProperties) {
+          await this.createProperty(property);
+        }
+        
+        console.log("Database seeded with initial properties");
+      }
+    } catch (error) {
+      console.error("Error initializing properties:", error);
+    }
+  }
+  
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    // Will implement when users table is added to schema
+    return undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    // Will implement when users table is added to schema
+    return undefined;
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    // Will implement when users table is added to schema
+    throw new Error("User functionality not implemented yet");
+  }
+  
+  // Property operations
+  async getProperties(): Promise<Property[]> {
+    return await this.db.select().from(properties).execute();
+  }
+
+  async getProperty(id: number): Promise<Property | undefined> {
+    const result = await this.db.select().from(properties).where(eq(properties.id, id)).execute();
+    return result.length > 0 ? result[0] : undefined;
+  }
+
+  async getFeaturedProperties(limit: number = 3): Promise<Property[]> {
+    return await this.db
+      .select()
+      .from(properties)
+      .where(eq(properties.featured, true))
+      .limit(limit)
+      .execute();
+  }
+
+  async searchProperties(filters: PropertySearch): Promise<Property[]> {
+    // Build up conditions for the query
+    const conditions: any[] = [];
+    
+    if (filters.area) {
+      conditions.push(eq(properties.area, filters.area));
+    }
+    
+    if (filters.minPrice !== undefined) {
+      conditions.push(gte(properties.price, filters.minPrice));
+    }
+    
+    if (filters.maxPrice !== undefined) {
+      conditions.push(lte(properties.price, filters.maxPrice));
+    }
+    
+    if (filters.bedrooms !== undefined) {
+      conditions.push(gte(properties.bedrooms, filters.bedrooms));
+    }
+    
+    if (filters.maxGuests !== undefined) {
+      conditions.push(gte(properties.maxGuests, filters.maxGuests));
+    }
+    
+    // Execute query
+    let results: Property[] = [];
+    if (conditions.length > 0) {
+      results = await this.db
+        .select()
+        .from(properties)
+        .where(conditions[0])
+        .execute();
+      
+      // Apply remaining conditions via filter
+      for (let i = 1; i < conditions.length; i++) {
+        const condition = conditions[i];
+        results = results.filter((p: Property) => {
+          try {
+            return condition(p as any);
+          } catch (error) {
+            console.error("Error filtering property:", error);
+            return false;
+          }
+        });
+      }
+    } else {
+      results = await this.db.select().from(properties).execute();
+    }
+    
+    // Filter by amenities
+    if (filters.amenities && filters.amenities.length > 0) {
+      results = results.filter((p: Property) => 
+        filters.amenities!.every(amenity => p.amenities.includes(amenity))
+      );
+    }
+    
+    return results;
+  }
+
+  async createProperty(property: InsertProperty): Promise<Property> {
+    const result = await this.db.insert(properties).values(property).returning().execute();
+    return result[0];
+  }
+
+  async updateProperty(id: number, updates: Partial<Property>): Promise<Property | undefined> {
+    const result = await this.db
+      .update(properties)
+      .set(updates)
+      .where(eq(properties.id, id))
+      .returning()
+      .execute();
+      
+    return result.length > 0 ? result[0] : undefined;
+  }
+
+  async deleteProperty(id: number): Promise<boolean> {
+    const result = await this.db
+      .delete(properties)
+      .where(eq(properties.id, id))
+      .returning({ id: properties.id })
+      .execute();
+      
+    return result.length > 0;
+  }
+  
+  // Booking operations
+  async getBookings(): Promise<Booking[]> {
+    return await this.db.select().from(bookings).execute();
+  }
+
+  async getBooking(id: number): Promise<Booking | undefined> {
+    const result = await this.db.select().from(bookings).where(eq(bookings.id, id)).execute();
+    return result.length > 0 ? result[0] : undefined;
+  }
+
+  async getBookingsByPropertyId(propertyId: number): Promise<Booking[]> {
+    return await this.db
+      .select()
+      .from(bookings)
+      .where(eq(bookings.propertyId, propertyId))
+      .execute();
+  }
+
+  async createBooking(booking: InsertBooking): Promise<Booking> {
+    const result = await this.db.insert(bookings).values(booking).returning().execute();
+    return result[0];
+  }
+
+  async updateBookingStatus(id: number, status: string): Promise<Booking | undefined> {
+    const result = await this.db
+      .update(bookings)
+      .set({ status })
+      .where(eq(bookings.id, id))
+      .returning()
+      .execute();
+      
+    return result.length > 0 ? result[0] : undefined;
+  }
+  
+  // Inquiry operations
+  async getInquiries(): Promise<Inquiry[]> {
+    return await this.db.select().from(inquiries).execute();
+  }
+
+  async getInquiry(id: number): Promise<Inquiry | undefined> {
+    const result = await this.db.select().from(inquiries).where(eq(inquiries.id, id)).execute();
+    return result.length > 0 ? result[0] : undefined;
+  }
+
+  async getInquiriesByPropertyId(propertyId: number): Promise<Inquiry[]> {
+    return await this.db
+      .select()
+      .from(inquiries)
+      .where(eq(inquiries.propertyId, propertyId))
+      .execute();
+  }
+
+  async createInquiry(inquiry: InsertInquiry): Promise<Inquiry> {
+    const result = await this.db
+      .insert(inquiries)
+      .values({
+        ...inquiry,
+        responded: false,
+      })
+      .returning()
+      .execute();
+      
+    return result[0];
+  }
+
+  async markInquiryAsResponded(id: number): Promise<Inquiry | undefined> {
+    const result = await this.db
+      .update(inquiries)
+      .set({ responded: true })
+      .where(eq(inquiries.id, id))
+      .returning()
+      .execute();
+      
+    return result.length > 0 ? result[0] : undefined;
+  }
+  
+  // Owner operations
+  async getOwners(): Promise<Owner[]> {
+    return await this.db.select().from(owners).execute();
+  }
+
+  async getOwner(id: number): Promise<Owner | undefined> {
+    const result = await this.db.select().from(owners).where(eq(owners.id, id)).execute();
+    return result.length > 0 ? result[0] : undefined;
+  }
+
+  async createOwner(owner: InsertOwner): Promise<Owner> {
+    const result = await this.db.insert(owners).values(owner).returning().execute();
+    return result[0];
+  }
+
+  async addPropertyToOwner(ownerId: number, propertyId: number): Promise<Owner | undefined> {
+    // First get the owner
+    const owner = await this.getOwner(ownerId);
+    if (!owner) return undefined;
+    
+    // Update the owner's properties list
+    const properties = owner.properties || [];
+    if (!properties.includes(propertyId)) {
+      const result = await this.db
+        .update(owners)
+        .set({ properties: [...properties, propertyId] })
+        .where(eq(owners.id, ownerId))
+        .returning()
+        .execute();
+        
+      return result.length > 0 ? result[0] : undefined;
+    }
+    
+    return owner;
+  }
+}
+
+// Create and export the storage instance
+// Use PostgresStorage instead of MemStorage
+export const storage = new PostgresStorage();
