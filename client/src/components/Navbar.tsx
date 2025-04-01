@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/lib/auth";
 import LanguageSwitcher from "./LanguageSwitcher";
+import ThemeSwitcher from "./ThemeSwitcher";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -144,6 +145,8 @@ export default function Navbar() {
               
               <LanguageSwitcher />
               
+              <ThemeSwitcher />
+              
               {isAuthenticated && (
                 <Link 
                   href="/list-property" 
@@ -251,9 +254,15 @@ export default function Navbar() {
           )}
           
           <div className="mt-auto pt-6 border-t border-white/10">
-            <div className="flex items-center justify-center mb-4">
-              <span className="text-white/80 mr-3">تغيير اللغة</span>
-              <LanguageSwitcher />
+            <div className="flex flex-col gap-4 mb-6">
+              <div className="flex items-center justify-center">
+                <span className="text-white/80 mr-3">تغيير اللغة</span>
+                <LanguageSwitcher />
+              </div>
+              <div className="flex items-center justify-center">
+                <span className="text-white/80 mr-3">وضع الإضاءة</span>
+                <ThemeSwitcher />
+              </div>
             </div>
             
             {!isAuthenticated ? (

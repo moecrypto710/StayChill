@@ -48,7 +48,6 @@ export default function VirtualTour({ panoramaUrl, propertyTitle, onClose }: Vir
         panorama: panoramaUrl,
         autoLoad: true,
         showControls: false,
-        mouseZoom: true,
         hfov: 100,
         compass: showCompass,
         northOffset: 247.5,

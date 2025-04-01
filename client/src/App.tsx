@@ -15,6 +15,7 @@ import Login from "./pages/Login";
 import NotFound from "./pages/not-found";
 import { useAuth } from "./lib/auth";
 import LanguageSwitcher, { LanguageContext } from "./components/LanguageSwitcher";
+import { ThemeProvider } from "./components/ThemeSwitcher";
 import { useState, useEffect, useContext } from "react";
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
@@ -143,9 +144,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <LanguageContext.Provider value={{ currentLanguage, setAppLanguage }}>
-          <Router />
-        </LanguageContext.Provider>
+        <ThemeProvider>
+          <LanguageContext.Provider value={{ currentLanguage, setAppLanguage }}>
+            <Router />
+          </LanguageContext.Provider>
+        </ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
