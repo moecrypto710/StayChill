@@ -2,6 +2,15 @@ import { pgTable, text, serial, integer, boolean, jsonb, timestamp, varchar } fr
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// User model
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull().unique(),
+  password: text("password").notNull(),
+  email: text("email").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Property model
 export const properties = pgTable("properties", {
   id: serial("id").primaryKey(),
@@ -88,7 +97,22 @@ export const inquiryValidationSchema = insertInquirySchema.extend({
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
+// User schemas
+export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
+export const loginSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+export const registerSchema = insertUserSchema.extend({
+  confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
 // Types
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Property = typeof properties.$inferSelect;
 export type InsertProperty = z.infer<typeof insertPropertySchema>;
 export type Booking = typeof bookings.$inferSelect;
