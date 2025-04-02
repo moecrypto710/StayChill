@@ -84,14 +84,14 @@ export default function DestinationGuide() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Breadcrumb navigation */}
-      <div className="flex items-center text-sm text-muted-foreground mb-4">
+      <div className="flex items-center text-sm text-foreground mb-4">
         <Link href="/destinations">
-          <a className="hover:text-primary transition-colors">
+          <a className="hover:text-primary-foreground transition-colors">
             {t('destinations')}
           </a>
         </Link>
         <ChevronRight className="h-4 w-4 mx-2" />
-        <span className="font-medium text-foreground">{locationName}</span>
+        <span className="font-medium text-primary">{locationName}</span>
       </div>
 
       {/* Hero section with main image */}
@@ -101,10 +101,10 @@ export default function DestinationGuide() {
           alt={locationName} 
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-background/70 to-transparent"></div>
         <div className="absolute bottom-0 left-0 w-full p-6">
           <Badge className="mb-2 bg-primary/90">{regionName}</Badge>
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{locationName}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-2">{locationName}</h1>
         </div>
       </div>
 
