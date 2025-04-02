@@ -115,25 +115,34 @@ export default function Navbar() {
             }`}
             dir={currentLanguage.direction}
           >
-            {t('properties')}
+            {t('explore')}
           </Link>
           <Link 
-            href="/about" 
+            href="/bookings" 
             className={`font-medium transition-colors hover:text-emerald-500 ${
-              isActive('/about') ? 'text-emerald-500' : 'text-gray-700 dark:text-gray-300'
+              isActive('/bookings') ? 'text-emerald-500' : 'text-gray-700 dark:text-gray-300'
             }`}
             dir={currentLanguage.direction}
           >
-            {t('aboutUs')}
+            {t('bookings')}
           </Link>
           <Link 
-            href="/contact" 
+            href="/trips" 
             className={`font-medium transition-colors hover:text-emerald-500 ${
-              isActive('/contact') ? 'text-emerald-500' : 'text-gray-700 dark:text-gray-300'
+              isActive('/trips') ? 'text-emerald-500' : 'text-gray-700 dark:text-gray-300'
             }`}
             dir={currentLanguage.direction}
           >
-            {t('contact')}
+            {t('trips')}
+          </Link>
+          <Link 
+            href="/inbox" 
+            className={`font-medium transition-colors hover:text-emerald-500 ${
+              isActive('/inbox') ? 'text-emerald-500' : 'text-gray-700 dark:text-gray-300'
+            }`}
+            dir={currentLanguage.direction}
+          >
+            {t('inbox')}
           </Link>
           
           {/* Language and Theme Switchers */}
@@ -250,23 +259,31 @@ export default function Navbar() {
             onClick={closeMenu}
             dir={currentLanguage.direction}
           >
-            {t('properties')}
+            {t('explore')}
           </Link>
           <Link 
-            href="/about" 
+            href="/bookings" 
             className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
             onClick={closeMenu}
             dir={currentLanguage.direction}
           >
-            {t('aboutUs')}
+            {t('bookings')}
           </Link>
           <Link 
-            href="/contact" 
+            href="/trips" 
             className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
             onClick={closeMenu}
             dir={currentLanguage.direction}
           >
-            {t('contact')}
+            {t('trips')}
+          </Link>
+          <Link 
+            href="/inbox" 
+            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
+            onClick={closeMenu}
+            dir={currentLanguage.direction}
+          >
+            {t('inbox')}
           </Link>
           
           <div className="my-4 border-t border-gray-200 dark:border-gray-700 pt-4">
