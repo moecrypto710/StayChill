@@ -64,9 +64,9 @@ export default function HeroSection() {
           <div className="text-center space-y-2">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
               {isRtl ? (
-                <>اعثر على المكان المثالي لل<span className="text-primary">{t('stayInEgypt')}</span></>
+                <>اعثر على المكان المثالي لل<span className="text-emerald-500">{t('stayInEgypt')}</span></>
               ) : (
-                <>Find the perfect place to <span className="text-primary">{t('stayInEgypt')}</span></>
+                <>Find the perfect place to <span className="text-emerald-500">{t('stayInEgypt')}</span></>
               )}
             </h1>
             <p className="text-sm sm:text-md text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
