@@ -17,16 +17,18 @@ import { useAuth } from "./lib/auth";
 import LanguageSwitcher, { LanguageContext } from "./components/LanguageSwitcher";
 import { ThemeProvider } from "./components/ThemeSwitcher";
 import { useState, useEffect, useContext } from "react";
+import Dashboard from "./pages/Dashboard"; // Import the Dashboard component
+
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
   // Get the current language from context
   const { currentLanguage } = useContext(LanguageContext);
-  
+
   // Set document direction based on language
   useEffect(() => {
     document.documentElement.dir = currentLanguage.direction;
     document.documentElement.lang = currentLanguage.code;
-    
+
     // Apply language-specific class to body for RTL/LTR text rendering
     if (currentLanguage.code === 'ar') {
       document.body.classList.add('ar');
@@ -36,7 +38,7 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
       document.body.classList.remove('ar');
     }
   }, [currentLanguage]);
-  
+
   return (
     <div className={`flex flex-col min-h-screen ${currentLanguage.code === 'ar' ? 'ar' : ''}`}>
       <Navbar />
@@ -60,7 +62,7 @@ function Router() {
           </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/properties">
         <ProtectedRoute>
           <AuthenticatedLayout>
@@ -68,7 +70,7 @@ function Router() {
           </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/property/:id">
         {(params) => (
           <ProtectedRoute>
@@ -78,7 +80,7 @@ function Router() {
           </ProtectedRoute>
         )}
       </Route>
-      
+
       <Route path="/about">
         <ProtectedRoute>
           <AuthenticatedLayout>
@@ -86,7 +88,7 @@ function Router() {
           </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/contact">
         <ProtectedRoute>
           <AuthenticatedLayout>
@@ -94,7 +96,7 @@ function Router() {
           </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/list-property">
         <ProtectedRoute>
           <AuthenticatedLayout>
@@ -102,7 +104,15 @@ function Router() {
           </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
-      
+
+      <Route path="/dashboard"> {/* Added dashboard route */}
+        <ProtectedRoute>
+          <AuthenticatedLayout>
+            <Dashboard />
+          </AuthenticatedLayout>
+        </ProtectedRoute>
+      </Route>
+
       {/* Catch all route */}
       <Route>
         <ProtectedRoute>
@@ -123,7 +133,7 @@ function App() {
     direction: 'ltr' | 'rtl';
     nativeName: string;
   };
-  
+
   // Create language state for the app
   const [currentLanguage, setCurrentLanguage] = useState<LanguageOption>({
     code: (localStorage.getItem('language') as 'en' | 'ar') || 'en',
