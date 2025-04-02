@@ -48,9 +48,9 @@ import { Slider } from '@/components/ui/slider';
 import { Sparkles, Save, Heart, Eye, RefreshCw } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 // Import PropertyCard component
-import { PropertyCard } from '../components/PropertyCard';
+import { PropertyCard } from '@/components/PropertyCard';
 // Import EmptyState component  
-import { EmptyState } from '../components/EmptyState';
+import { EmptyState } from '@/components/EmptyState';
 
 // Define the preferences schema
 const preferencesSchema = z.object({
