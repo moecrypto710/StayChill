@@ -96,7 +96,7 @@ export default function Navbar() {
             <span className="sm:hidden tracking-tight">sc</span>
           </Link>
         </div>
-        
+
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           <Link 
@@ -144,14 +144,14 @@ export default function Navbar() {
           >
             {t('inbox')}
           </Link>
-          
+
           {/* Language and Theme Switchers */}
           <div className="flex items-center gap-2 ml-4">
             <LanguageSwitcher />
             <ThemeSwitcher />
           </div>
         </nav>
-        
+
         {/* Desktop Actions */}
         <div className="flex items-center gap-2 md:gap-4">
           {!isMobile && (
@@ -164,7 +164,7 @@ export default function Navbar() {
                 <Search className="h-4 w-4 mr-2" />
                 <span>{t('search')}</span>
               </Button>
-              
+
               {isAuthenticated && (
                 <Link 
                   href="/list-property" 
@@ -182,7 +182,7 @@ export default function Navbar() {
               )}
             </>
           )}
-          
+
           {!isAuthenticated ? (
             <Button 
               variant="default" 
@@ -227,7 +227,7 @@ export default function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          
+
           <button 
             className="md:hidden flex items-center justify-center text-gray-700 dark:text-gray-300" 
             onClick={toggleMenu}
@@ -241,7 +241,7 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-      
+
       {/* Mobile menu with animation */}
       <div className={`fixed inset-0 z-50 transform ${isMenuOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out md:hidden`}>
         <div className="min-h-screen px-4 bg-white dark:bg-gray-900">
@@ -253,7 +253,7 @@ export default function Navbar() {
               <XIcon className="h-6 w-6" />
             </button>
           </div>
-          
+
           <nav className="mt-6">
             <div className="flex flex-col gap-2">
               <Link 
@@ -296,73 +296,73 @@ export default function Navbar() {
                 <MessageSquare className="h-5 w-5 mr-3" />
                 {t('inbox')}
               </Link>
-          
-          <div className="my-4 border-t border-gray-200 dark:border-gray-700 pt-4">
-            {isAuthenticated && (
-              <Link 
-                href="/list-property" 
-                className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
-                onClick={closeMenu}
-                dir={currentLanguage.direction}
-              >
-                {t('listProperty')}
-              </Link>
-            )}
-          </div>
-          
-          <div className="mt-auto pt-6 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-gray-700 dark:text-gray-300" dir={currentLanguage.direction}>{t('language')}</span>
-              <LanguageSwitcher />
+
             </div>
-            <div className="flex items-center justify-between mb-6">
-              <span className="text-gray-700 dark:text-gray-300">
-                {currentLanguage.code === 'ar' ? 'المظهر' : 'Theme'}
-              </span>
-              <ThemeSwitcher />
-            </div>
-            
-            {!isAuthenticated ? (
-              <Button 
-                className="w-full rounded-full py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
-                onClick={() => {
-                  closeMenu();
-                  setIsLoginModalOpen(true);
-                }}
-                dir={currentLanguage.direction}
-              >
-                {t('signIn')}
-              </Button>
-            ) : (
-              <div className="space-y-4">
-                <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                  <p className="font-medium text-gray-600 dark:text-gray-400" dir={currentLanguage.direction}>
-                    {currentLanguage.code === 'ar' ? 'مسجل الدخول كـ:' : 'Signed in as:'}
-                  </p>
-                  <p className="font-bold text-gray-800 dark:text-gray-200">{user?.username}</p>
-                </div>
-                <Button 
-                  variant="outline"
-                  className="w-full rounded-full py-5 text-emerald-500 border-emerald-200 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-900 dark:hover:bg-emerald-900/20"
-                  onClick={handleLogout}
+            <div className="my-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+              {isAuthenticated && (
+                <Link 
+                  href="/list-property" 
+                  className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
+                  onClick={closeMenu}
                   dir={currentLanguage.direction}
                 >
-                  <LogOut className={`${currentLanguage.code === 'ar' ? 'ml-2' : 'mr-2'} h-5 w-5`} />
-                  <span>{t('logOut')}</span>
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
+                  {t('listProperty')}
+                </Link>
+              )}
+            </div>
 
-      {/* Login Modal */}
-      <LoginModal 
-        isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)} 
-      />
-    </div>
-  </div>
-  </header>
+            <div className="mt-auto pt-6 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-gray-700 dark:text-gray-300" dir={currentLanguage.direction}>{t('language')}</span>
+                <LanguageSwitcher />
+              </div>
+              <div className="flex items-center justify-between mb-6">
+                <span className="text-gray-700 dark:text-gray-300">
+                  {currentLanguage.code === 'ar' ? 'المظهر' : 'Theme'}
+                </span>
+                <ThemeSwitcher />
+              </div>
+
+              {!isAuthenticated ? (
+                <Button 
+                  className="w-full rounded-full py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
+                  onClick={() => {
+                    closeMenu();
+                    setIsLoginModalOpen(true);
+                  }}
+                  dir={currentLanguage.direction}
+                >
+                  {t('signIn')}
+                </Button>
+              ) : (
+                <div className="space-y-4">
+                  <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                    <p className="font-medium text-gray-600 dark:text-gray-400" dir={currentLanguage.direction}>
+                      {currentLanguage.code === 'ar' ? 'مسجل الدخول كـ:' : 'Signed in as:'}
+                    </p>
+                    <p className="font-bold text-gray-800 dark:text-gray-200">{user?.username}</p>
+                  </div>
+                  <Button 
+                    variant="outline"
+                    className="w-full rounded-full py-5 text-emerald-500 border-emerald-200 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-900 dark:hover:bg-emerald-900/20"
+                    onClick={handleLogout}
+                    dir={currentLanguage.direction}
+                  >
+                    <LogOut className={`${currentLanguage.code === 'ar' ? 'ml-2' : 'mr-2'} h-5 w-5`} />
+                    <span>{t('logOut')}</span>
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </nav>
+
+        {/* Login Modal */}
+        <LoginModal 
+          isOpen={isLoginModalOpen} 
+          onClose={() => setIsLoginModalOpen(false)} 
+        />
+      </div>
+    </header>
   );
 }
