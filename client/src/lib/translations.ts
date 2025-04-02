@@ -39,7 +39,17 @@ export type TranslationKey =
   | 'registerSuccess'
   | 'continueAsGuest'
   | 'termsAgreement'
-  | 'loginSuccess';
+  | 'loginSuccess'
+  | 'stayInEgypt'
+  | 'discoverProperties'
+  | 'where'
+  | 'when'
+  | 'who'
+  | 'addGuests'
+  | 'anywhere'
+  | 'verifiedProperties'
+  | 'averageRating'
+  | 'primeLocations';
 
 export type Language = 'en' | 'ar';
 
@@ -83,7 +93,17 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     registerSuccess: 'Registration successful! You can now log in to your account',
     continueAsGuest: 'Continue as Guest',
     termsAgreement: 'By continuing, you agree to Stay Chill\'s Terms of Service and Privacy Policy.',
-    loginSuccess: 'Login successful!'
+    loginSuccess: 'Login successful!',
+    stayInEgypt: 'stay in Egypt',
+    discoverProperties: 'Discover amazing properties in Sahel & Ras El Hekma with panoramic sea views',
+    where: 'Where',
+    when: 'When',
+    who: 'Who',
+    addGuests: 'Add guests',
+    anywhere: 'Anywhere',
+    verifiedProperties: '200+ Verified Properties',
+    averageRating: '4.8 Average Rating',
+    primeLocations: 'Prime Beachfront Locations'
   },
   ar: {
     home: 'الرئيسية',
@@ -123,7 +143,17 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     registerSuccess: 'تم التسجيل بنجاح! يمكنك الآن تسجيل الدخول إلى حسابك',
     continueAsGuest: 'المتابعة كضيف',
     termsAgreement: 'بالمتابعة، فإنك توافق على شروط الخدمة وسياسة الخصوصية الخاصة بستاي تشيل.',
-    loginSuccess: 'تم تسجيل الدخول بنجاح!'
+    loginSuccess: 'تم تسجيل الدخول بنجاح!',
+    stayInEgypt: 'إقامة في مصر',
+    discoverProperties: 'اكتشف عقارات رائعة في الساحل ورأس الحكمة مع إطلالات بانورامية على البحر',
+    where: 'أين',
+    when: 'متى',
+    who: 'من',
+    addGuests: 'إضافة ضيوف',
+    anywhere: 'أي مكان',
+    verifiedProperties: '+200 عقار موثق',
+    averageRating: 'متوسط تقييم 4.8',
+    primeLocations: 'مواقع مميزة على الشاطئ'
   }
 };
 
