@@ -22,8 +22,8 @@ export default {
           foreground: "hsl(var(--popover-foreground))",
         },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#34D399", // Emerald green for primary
+          foreground: "#F0FDF4" // Lighter shade for text on primary
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
