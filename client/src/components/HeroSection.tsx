@@ -9,14 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { DateRange } from "@/lib/types";
-import { Search, Calendar, Users, MapPin, Home, Star, ArrowRight } from "lucide-react";
+import { Search, MapPin, Home, Star } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-// Higher quality beach image with vibrant colors
-const heroImageUrl = "https://images.unsplash.com/photo-1559494007-9f5847c49d94?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80";
+import { useLanguage } from './LanguageSwitcher';
+import { useTranslation } from "@/lib/translations";
 
 export default function HeroSection() {
   const [, setLocation] = useLocation();
@@ -28,6 +25,9 @@ export default function HeroSection() {
   const [guestCount, setGuestCount] = useState("1 Person");
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
+  const { currentLanguage } = useLanguage();
+  const { t } = useTranslation(currentLanguage.code);
+  const isRtl = currentLanguage.direction === 'rtl';
 
   // Make sure component is mounted before rendering
   useEffect(() => {
@@ -54,116 +54,100 @@ export default function HeroSection() {
     setLocation(`/properties?${searchParams.toString()}`);
   };
 
-  // Set CSS variable for hero image to avoid style attribute
-  useEffect(() => {
-    document.documentElement.style.setProperty('--hero-image', `url(${heroImageUrl})`);
-  }, []);
-
   if (!mounted) return null;
 
   return (
-    <section className="py-6 md:py-12 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <section className="py-6 md:py-8 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4">
-        <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-5 duration-700">
+        <div className="max-w-4xl mx-auto space-y-4 animate-in fade-in slide-in-from-bottom-5 duration-700">
           {/* Hero text */}
-          <div className="text-center space-y-4">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight">
-              Find the perfect place to <span className="text-emerald-500">stay in Egypt</span>
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
+              {isRtl ? (
+                <>اعثر على المكان المثالي لل<span className="text-emerald-500">{t('stayInEgypt')}</span></>
+              ) : (
+                <>Find the perfect place to <span className="text-emerald-500">{t('stayInEgypt')}</span></>
+              )}
             </h1>
-            <p className="text-md sm:text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Discover amazing properties in Sahel & Ras El Hekma with panoramic sea views and luxury amenities
+            <p className="text-sm sm:text-md text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              {t('discoverProperties')}
             </p>
           </div>
           
-          {/* Search Form - Airbnb-like design */}
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 mx-auto max-w-4xl">
-            <div className="flex flex-col md:flex-row md:items-center divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-700">
-              <div className="p-2 md:p-3 md:pl-6 flex-1">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-800 dark:text-gray-200">Where</p>
-                  <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                    <SelectTrigger className="w-full border-0 p-0 shadow-none focus:ring-0 text-gray-600 dark:text-gray-300">
-                      <SelectValue placeholder="Select a destination" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="All Locations">Anywhere</SelectItem>
-                      <SelectItem value="Sahel">Sahel</SelectItem>
-                      <SelectItem value="Ras El Hekma">Ras El Hekma</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+          {/* Compact Search Form */}
+          <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-200 dark:divide-gray-700">
+              <div className="p-2 flex-1">
+                <p className="text-xs font-medium text-gray-800 dark:text-gray-200">{t('where')}</p>
+                <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                  <SelectTrigger className="w-full border-0 p-0 shadow-none focus:ring-0 text-gray-600 dark:text-gray-300 h-7 text-sm">
+                    <SelectValue placeholder={t('anywhere')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All Locations">{t('anywhere')}</SelectItem>
+                    <SelectItem value="Sahel">Sahel</SelectItem>
+                    <SelectItem value="Ras El Hekma">Ras El Hekma</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
-              <div className="p-2 md:p-3 md:px-6 flex-1">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-800 dark:text-gray-200">When</p>
-                  <DateRangePicker 
-                    date={dateRange} 
-                    onDateChange={(date) => date && setDateRange(date as any)}
-                    className="border-0 p-0 shadow-none focus:ring-0"
-                  />
-                </div>
+              <div className="p-2 flex-1">
+                <p className="text-xs font-medium text-gray-800 dark:text-gray-200">{t('when')}</p>
+                <DateRangePicker 
+                  date={dateRange} 
+                  onDateChange={(date) => date && setDateRange(date as any)}
+                  className="border-0 p-0 shadow-none focus:ring-0 text-sm"
+                />
               </div>
               
-              <div className="p-2 md:p-3 md:px-6 flex-1 md:flex md:items-center md:justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-800 dark:text-gray-200">Who</p>
+              <div className="p-2 flex-1 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-gray-800 dark:text-gray-200">{t('who')}</p>
                   <Select value={guestCount} onValueChange={setGuestCount}>
-                    <SelectTrigger className="w-full border-0 p-0 shadow-none focus:ring-0 text-gray-600 dark:text-gray-300">
-                      <SelectValue placeholder="Add guests" />
+                    <SelectTrigger className="w-full border-0 p-0 shadow-none focus:ring-0 text-gray-600 dark:text-gray-300 h-7 text-sm">
+                      <SelectValue placeholder={t('addGuests')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1 Person">1 Person</SelectItem>
-                      <SelectItem value="2 People">2 People</SelectItem>
-                      <SelectItem value="3 People">3 People</SelectItem>
-                      <SelectItem value="4 People">4 People</SelectItem>
-                      <SelectItem value="5+ People">5+ People</SelectItem>
+                      <SelectItem value="1 Person">1 {t('guests')}</SelectItem>
+                      <SelectItem value="2 People">2 {t('guests')}</SelectItem>
+                      <SelectItem value="3 People">3 {t('guests')}</SelectItem>
+                      <SelectItem value="4 People">4 {t('guests')}</SelectItem>
+                      <SelectItem value="5+ People">5+ {t('guests')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 
                 <Button 
-                  className="hidden md:flex mt-3 md:mt-0 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
+                  className="rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
                   size="sm"
                   onClick={handleSearch}
                 >
-                  <Search className="h-4 w-4 mr-2" />
-                  Search
+                  <Search className="h-4 w-4 mr-1" />
+                  <span>{t('search')}</span>
                 </Button>
               </div>
             </div>
-            
-            {/* Mobile search button */}
-            <div className="mt-4 md:hidden">
-              <Button 
-                className="w-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
-                onClick={handleSearch}
-              >
-                <Search className="h-4 w-4 mr-2" />
-                Search
-              </Button>
-            </div>
           </div>
           
-          {/* Stats bar - Similar to Airbnb's trust indicators */}
-          <div className="flex flex-wrap gap-6 justify-center mt-12 text-center">
-            <div className="flex flex-col items-center">
-              <div className="mb-2 p-2 rounded-full bg-emerald-100 dark:bg-emerald-900/20">
-                <Home className="h-5 w-5 text-emerald-500" />
+          {/* Compact Stats bar */}
+          <div className="flex flex-wrap gap-4 justify-center mt-6 text-center">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/20">
+                <Home className="h-4 w-4 text-emerald-500" />
               </div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">200+ Verified Properties</p>
+              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('verifiedProperties')}</span>
             </div>
-            <div className="flex flex-col items-center">
-              <div className="mb-2 p-2 rounded-full bg-emerald-100 dark:bg-emerald-900/20">
-                <Star className="h-5 w-5 text-emerald-500" />
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/20">
+                <Star className="h-4 w-4 text-emerald-500" />
               </div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">4.8 Average Rating</p>
+              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('averageRating')}</span>
             </div>
-            <div className="flex flex-col items-center">
-              <div className="mb-2 p-2 rounded-full bg-emerald-100 dark:bg-emerald-900/20">
-                <MapPin className="h-5 w-5 text-emerald-500" />
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/20">
+                <MapPin className="h-4 w-4 text-emerald-500" />
               </div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Prime Beachfront Locations</p>
+              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('primeLocations')}</span>
             </div>
           </div>
         </div>

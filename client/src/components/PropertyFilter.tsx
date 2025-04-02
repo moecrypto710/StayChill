@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useSearch } from "wouter";
+import { useLocation } from "wouter";
 import { queryClient } from "@/lib/queryClient";
 import PropertyCard from "./PropertyCard";
 import { Button } from "@/components/ui/button";
@@ -18,8 +18,8 @@ import { Property, PropertySearch } from "@shared/schema";
 import { PropertyFilters } from "@/lib/types";
 
 export default function PropertyFilter() {
-  const [search] = useSearch();
-  const searchParams = new URLSearchParams(search);
+  const [path] = useLocation();
+  const searchParams = new URLSearchParams(path.includes('?') ? path.split('?')[1] : '');
   
   // Get initial values from URL if present
   const initialLocation = searchParams.get('location') || undefined;
