@@ -2,15 +2,16 @@ import {
   UmbrellaIcon, 
   Facebook, 
   Instagram, 
-  Twitter, 
-  Send,
+  Twitter,
   Mail,
   Phone,
-  MapPin
+  MapPin,
+  ChevronRight
 } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 
 export default function Footer() {
@@ -26,265 +27,156 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-gradient-to-br from-slate-900 via-blue-900 to-teal-800 text-white pt-16 pb-8">
+    <footer className="bg-gray-900 text-white py-8">
       <div className="container">
-        {/* Wave divider at the top */}
-        <div className="absolute top-0 inset-x-0 h-16 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIyMDBweCIgdmlld0JveD0iMCAwIDEyODAgMTQwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGZpbGw9IiMwMzY0ODAyMCI+PHBhdGggZD0iTTEyODAgMEw2NDAgNzAgMCAwdjE0MGgxMjgweiIvPjwvZz48L3N2Zz4=')] bg-bottom bg-no-repeat opacity-30 transform rotate-180"></div>
-      
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 mb-12">
-          {/* Logo & About - 4 columns on large screens */}
-          <div className="lg:col-span-4">
-            <div className="flex flex-col items-center text-center lg:items-start lg:text-left mb-6">
-              <div className="bg-white/10 backdrop-blur-sm p-3 rounded-full mb-3">
-                <UmbrellaIcon className="h-8 w-8 text-amber-400" />
-              </div>
-              <h2 className="text-3xl font-bold tracking-wider">STAY CHILL</h2>
-              <div className="h-0.5 w-24 bg-gradient-to-r from-teal-400 via-blue-400 to-amber-400 mx-auto lg:mx-0 mt-3"></div>
+        {/* Compact footer top section */}
+        <div className="flex flex-col md:flex-row gap-8 mb-8">
+          {/* Logo and subscription */}
+          <div className="md:w-1/3">
+            <div className="flex items-center gap-2 mb-4">
+              <UmbrellaIcon className="h-5 w-5 text-emerald-400" />
+              <h2 className="text-xl font-bold">StayChill</h2>
             </div>
             
-            <p className="text-white/80 mb-6 text-sm leading-relaxed text-center lg:text-left">
-              Premium vacation rentals in Egypt's most beautiful coastal destinations. 
-              Find your perfect beachside getaway in Sahel and Ras El Hekma.
+            <p className="text-gray-400 text-sm mb-4">
+              Premium vacation rentals in Egypt's coastal destinations
             </p>
             
-            {/* Newsletter */}
-            <div className="mb-6 bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <h4 className="text-base font-semibold mb-3 text-center lg:text-left">Subscribe to our newsletter</h4>
-              <form onSubmit={handleSubmit} className="flex items-center gap-2">
-                <Input
-                  type="email"
-                  placeholder="Your email"
-                  className="bg-white/10 border-white/20 text-white text-sm focus:border-teal-400/50 focus:ring-teal-400/20"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <Button 
-                  type="submit" 
-                  size="sm"
-                  className="bg-gradient-to-r from-primary/90 to-primary hover:from-primary hover:to-primary/90 text-white rounded-full"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </form>
-            </div>
+            {/* Simplified newsletter */}
+            <form onSubmit={handleSubmit} className="flex mb-4">
+              <Input
+                type="email"
+                placeholder="Email for updates"
+                className="bg-gray-800 border-gray-700 text-sm rounded-l-md rounded-r-none"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <Button 
+                type="submit"
+                size="sm"
+                className="bg-emerald-500 hover:bg-emerald-600 rounded-l-none"
+              >
+                Join
+              </Button>
+            </form>
             
-            {/* Social Links */}
-            <div className="flex space-x-4 justify-center lg:justify-start">
-              <a 
-                href="#" 
-                className="bg-white/10 backdrop-blur-sm p-2.5 rounded-full hover:bg-white/20 transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook className="h-5 w-5 text-white" />
+            {/* Simplified social icons */}
+            <div className="flex gap-3">
+              <a href="#" className="text-gray-400 hover:text-white" aria-label="Facebook">
+                <Facebook className="h-4 w-4" />
               </a>
-              <a 
-                href="#" 
-                className="bg-white/10 backdrop-blur-sm p-2.5 rounded-full hover:bg-white/20 transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram className="h-5 w-5 text-white" />
+              <a href="#" className="text-gray-400 hover:text-white" aria-label="Instagram">
+                <Instagram className="h-4 w-4" />
               </a>
-              <a 
-                href="#" 
-                className="bg-white/10 backdrop-blur-sm p-2.5 rounded-full hover:bg-white/20 transition-colors"
-                aria-label="Twitter"
-              >
-                <Twitter className="h-5 w-5 text-white" />
+              <a href="#" className="text-gray-400 hover:text-white" aria-label="Twitter">
+                <Twitter className="h-4 w-4" />
               </a>
             </div>
           </div>
           
-          {/* Quick Links - 2 columns on large screens */}
-          <div className="lg:col-span-2">
-            <h4 className="text-lg font-bold mb-4 text-teal-300">Destinations</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link 
-                  href="/properties?location=Sahel" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  Sahel
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/properties?location=Ras%20El%20Hekma" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  Ras El Hekma
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/properties" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  North Coast
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/properties" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  Marina
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/properties" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  Marassi
-                </Link>
-              </li>
-            </ul>
-          </div>
-          
-          {/* Company - 2 columns on large screens */}
-          <div className="lg:col-span-2">
-            <h4 className="text-lg font-bold mb-4 text-teal-300">Company</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link 
-                  href="/about" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/about" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  How It Works
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/list-property" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  List Your Property
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/about" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/contact" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  Contact Us
-                </Link>
-              </li>
-            </ul>
-          </div>
-          
-          {/* Support - 2 columns on large screens */}
-          <div className="lg:col-span-2">
-            <h4 className="text-lg font-bold mb-4 text-teal-300">Support</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link 
-                  href="/contact" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  Help Center
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/about" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  Safety Information
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/about" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  Cancellation Options
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/about" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  Trust & Safety
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/contact" 
-                  className="text-white/80 hover:text-amber-300 transition-colors flex items-center"
-                >
-                  FAQ
-                </Link>
-              </li>
-            </ul>
-          </div>
-          
-          {/* Contact Info - 2 columns on large screens */}
-          <div className="lg:col-span-2">
-            <h4 className="text-lg font-bold mb-4 text-teal-300">Contact Us</h4>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-amber-400 mt-0.5 shrink-0" />
-                <span className="text-white/80">
-                  123 Beach Road, North Coast, Egypt
-                </span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="h-5 w-5 text-amber-400 shrink-0" />
-                <span className="text-white/80">+20 123 456 7890</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-amber-400 shrink-0" />
-                <span className="text-white/80">info@staychill.com</span>
-              </li>
-            </ul>
+          {/* Mobile-friendly tabs for links */}
+          <div className="md:w-2/3">
+            <Tabs defaultValue="destinations" className="w-full">
+              <TabsList className="w-full bg-gray-800 mb-3 h-10">
+                <TabsTrigger value="destinations" className="text-xs">Destinations</TabsTrigger>
+                <TabsTrigger value="company" className="text-xs">Company</TabsTrigger>
+                <TabsTrigger value="support" className="text-xs">Support</TabsTrigger>
+                <TabsTrigger value="contact" className="text-xs">Contact</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="destinations" className="mt-0">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {["Sahel", "Ras El Hekma", "North Coast", "Marina", "Marassi"].map(dest => (
+                    <Link 
+                      key={dest}
+                      href={`/properties?location=${encodeURIComponent(dest)}`}
+                      className="text-gray-400 hover:text-emerald-400 text-sm flex items-center"
+                    >
+                      <ChevronRight className="h-3 w-3 mr-1" />
+                      {dest}
+                    </Link>
+                  ))}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="company" className="mt-0">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {[
+                    {name: "About Us", href: "/about"}, 
+                    {name: "How It Works", href: "/about"}, 
+                    {name: "List Property", href: "/list-property"},
+                    {name: "Careers", href: "/about"},
+                    {name: "Contact", href: "/contact"}
+                  ].map(item => (
+                    <Link 
+                      key={item.name}
+                      href={item.href}
+                      className="text-gray-400 hover:text-emerald-400 text-sm flex items-center"
+                    >
+                      <ChevronRight className="h-3 w-3 mr-1" />
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="support" className="mt-0">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {[
+                    {name: "Help Center", href: "/contact"}, 
+                    {name: "Safety Info", href: "/about"}, 
+                    {name: "Cancellations", href: "/about"},
+                    {name: "Trust & Safety", href: "/about"},
+                    {name: "FAQ", href: "/contact"}
+                  ].map(item => (
+                    <Link 
+                      key={item.name}
+                      href={item.href}
+                      className="text-gray-400 hover:text-emerald-400 text-sm flex items-center"
+                    >
+                      <ChevronRight className="h-3 w-3 mr-1" />
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="contact" className="mt-0">
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <MapPin className="h-4 w-4 text-emerald-400 mt-0.5 shrink-0" />
+                    <span className="text-gray-400 text-sm">123 Beach Road, North Coast, Egypt</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-emerald-400 shrink-0" />
+                    <span className="text-gray-400 text-sm">+20 123 456 7890</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-emerald-400 shrink-0" />
+                    <span className="text-gray-400 text-sm">info@staychill.com</span>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
         
-        {/* Bottom footer - Copyright & Legal Links */}
-        <div className="border-t border-white/10 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-white/60 text-sm text-center md:text-left">
-              © {currentYear} STAY CHILL. All rights reserved.
-            </p>
-            <div className="flex flex-wrap justify-center gap-6">
+        {/* Simplified bottom footer */}
+        <div className="border-t border-gray-800 pt-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+          <p className="text-gray-500 text-xs">
+            © {currentYear} StayChill. All rights reserved.
+          </p>
+          <div className="flex gap-4">
+            {["Privacy", "Terms", "Cookies"].map(item => (
               <Link 
+                key={item}
                 href="/about" 
-                className="text-white/60 hover:text-amber-300 transition-colors text-sm"
+                className="text-gray-500 hover:text-emerald-400 text-xs"
               >
-                Privacy Policy
+                {item}
               </Link>
-              <Link 
-                href="/about" 
-                className="text-white/60 hover:text-amber-300 transition-colors text-sm"
-              >
-                Terms of Service
-              </Link>
-              <Link 
-                href="/about" 
-                className="text-white/60 hover:text-amber-300 transition-colors text-sm"
-              >
-                Cookie Policy
-              </Link>
-            </div>
+            ))}
           </div>
         </div>
       </div>
