@@ -14,7 +14,8 @@ import Contact from "./pages/Contact";
 import ListProperty from "./pages/ListProperty";
 import NotFound from "./pages/not-found";
 import { useAuth } from "./lib/auth";
-import LanguageSwitcher, { LanguageContext } from "./components/LanguageSwitcher";
+import LanguageSwitcher from "./components/LanguageSwitcher";
+import { LanguageContext } from "./components/LanguageSwitcher";
 import { ThemeProvider } from "./components/ThemeSwitcher";
 import { useState, useEffect, useContext } from "react";
 import Dashboard from "./pages/Dashboard"; // Import the Dashboard component
@@ -23,7 +24,7 @@ import BookingDetail from "./pages/BookingDetail"; // Import the BookingDetail c
 import Inbox from "./pages/Inbox"; // Import the Inbox component
 import Rewards from "./pages/Rewards"; // Import the Rewards component
 import Profile from "./pages/Profile"; // Import the Profile component
-import { Recommendations } from "./pages/Recommendations"; // Import the Recommendations component
+import Recommendations from "./pages/Recommendations"; // Import the Recommendations component
 
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {

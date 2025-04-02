@@ -68,7 +68,7 @@ const preferencesSchema = z.object({
 // Type for form data
 type TravelPreferencesFormValues = z.infer<typeof preferencesSchema>;
 
-export function Recommendations() {
+export default function Recommendations() {
   const { t, isRtl } = useTranslation();
   const { toast } = useToast();
   const { user, isLoggedIn } = useAuth();
@@ -406,7 +406,7 @@ export function Recommendations() {
                                         />
                                       </FormControl>
                                       <FormLabel className="font-normal">
-                                        {t(option.label)}
+                                        {option.label}
                                       </FormLabel>
                                     </FormItem>
                                   )
@@ -458,7 +458,7 @@ export function Recommendations() {
                                         />
                                       </FormControl>
                                       <FormLabel className="font-normal">
-                                        {t(option.label)}
+                                        {option.label}
                                       </FormLabel>
                                     </FormItem>
                                   )
@@ -510,7 +510,7 @@ export function Recommendations() {
                                         />
                                       </FormControl>
                                       <FormLabel className="font-normal">
-                                        {t(option.label)}
+                                        {option.label}
                                       </FormLabel>
                                     </FormItem>
                                   )
