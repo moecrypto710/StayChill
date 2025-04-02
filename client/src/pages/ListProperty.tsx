@@ -115,6 +115,12 @@ export default function ListProperty() {
     setNewImageUrl("");
   };
 
+  const removeImage = (index: number) => {
+    const updatedImages = imageUrls.filter((_, i) => i !== index);
+    setImageUrls(updatedImages);
+    form.setValue("images", updatedImages);
+  };
+
   const onSubmit = (data: FormValues) => {
     createPropertyMutation.mutate(data);
   };
@@ -404,8 +410,4 @@ export default function ListProperty() {
   );
 }
 
-const removeImage = (index: number) => {
-    const updatedImages = imageUrls.filter((_, i) => i !== index);
-    setImageUrls(updatedImages);
-    form.setValue("images", updatedImages);
-  };
+// Component content ends here
