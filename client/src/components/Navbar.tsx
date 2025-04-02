@@ -361,6 +361,7 @@ export default function Navbar() {
         isOpen={isLoginModalOpen} 
         onClose={() => setIsLoginModalOpen(false)} 
       />
-    </header>
+    </div>
+  </header>
   );
 }
