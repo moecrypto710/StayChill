@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Home, Upload, CheckCircle } from "lucide-react";
+import { Home, Upload, CheckCircle, PlusCircle, X } from "lucide-react";
 import { z } from "zod";
 
 const listPropertySchema = insertPropertySchema.extend({
