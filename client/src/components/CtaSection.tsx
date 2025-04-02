@@ -1,29 +1,35 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { Home, Info } from "lucide-react";
 
 export default function CtaSection() {
   return (
-    <section className="py-16 bg-emerald-600 relative">
-      <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{backgroundImage: "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80')"}}>
-      </div>
-      <div className="container mx-auto px-4 relative">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Own a Property in Sahel or Ras El Hekma?</h2>
-          <p className="text-xl text-white mb-8">Join our community of property owners and start earning from your vacation home today</p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
+    <section className="py-8 bg-gradient-to-br from-emerald-600 to-emerald-700">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div className="mb-6 md:mb-0 md:mr-6 md:max-w-md">
+            <h2 className="text-2xl font-bold text-white">Own a property in Sahel?</h2>
+            <p className="text-emerald-100 mt-2 text-sm md:text-base">List your vacation home and start earning today</p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-3">
             <Link href="/list-property">
               <Button 
-                className="px-8 py-6 bg-white text-emerald-600 hover:bg-gray-100 w-full sm:w-auto"
+                size="sm"
+                className="bg-white text-emerald-600 hover:bg-emerald-50 flex items-center"
               >
+                <Home className="h-4 w-4 mr-2" />
                 List Your Property
               </Button>
             </Link>
             <Link href="/about">
               <Button 
                 variant="outline" 
-                className="px-8 py-6 bg-transparent border-2 border-white text-white hover:bg-white/10 w-full sm:w-auto"
+                size="sm"
+                className="border border-white text-white hover:bg-white/10 flex items-center"
               >
-                Learn How It Works
+                <Info className="h-4 w-4 mr-2" />
+                How It Works
               </Button>
             </Link>
           </div>

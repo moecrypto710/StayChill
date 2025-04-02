@@ -1,50 +1,58 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { Home, Bell, Shield } from "lucide-react";
+import { Home, Bell, Shield, ChevronRight } from "lucide-react";
 
 export default function BrandPromiseSection() {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-8 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Why Choose Stay Chill?</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">We're committed to providing the best vacation rental experience in Egypt's most beautiful coastal destinations</p>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold">Why StayChill?</h2>
+          <Link href="/about" className="text-emerald-500 text-sm flex items-center hover:underline">
+            Learn more <ChevronRight className="h-3 w-3 ml-1" />
+          </Link>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-emerald-100 rounded-full text-emerald-600">
-              <Home className="h-6 w-6" />
+        <div className="flex overflow-x-auto pb-4 gap-4 hide-scrollbar">
+          <div className="flex-shrink-0 w-64 border border-gray-100 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full text-emerald-600">
+                <Home className="h-4 w-4" />
+              </div>
+              <h3 className="font-semibold">Curated Properties</h3>
             </div>
-            <h3 className="text-xl font-bold mb-3">Curated Properties</h3>
-            <p className="text-gray-600">We personally verify all properties to ensure they meet our high standards of quality, comfort, and location</p>
+            <p className="text-gray-600 text-sm">Verified properties meeting our high quality standards</p>
           </div>
           
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-emerald-100 rounded-full text-emerald-600">
-              <Bell className="h-6 w-6" />
+          <div className="flex-shrink-0 w-64 border border-gray-100 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full text-emerald-600">
+                <Bell className="h-4 w-4" />
+              </div>
+              <h3 className="font-semibold">24/7 Support</h3>
             </div>
-            <h3 className="text-xl font-bold mb-3">Local Support</h3>
-            <p className="text-gray-600">Our team is available 24/7 to assist you during your stay and ensure everything goes smoothly</p>
+            <p className="text-gray-600 text-sm">Local team available anytime during your stay</p>
           </div>
           
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-emerald-100 rounded-full text-emerald-600">
-              <Shield className="h-6 w-6" />
+          <div className="flex-shrink-0 w-64 border border-gray-100 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full text-emerald-600">
+                <Shield className="h-4 w-4" />
+              </div>
+              <h3 className="font-semibold">Secure Booking</h3>
             </div>
-            <h3 className="text-xl font-bold mb-3">Secure Booking</h3>
-            <p className="text-gray-600">Book with confidence knowing that your reservation and payment are protected by our secure system</p>
+            <p className="text-gray-600 text-sm">Protected reservations and secure payment system</p>
           </div>
         </div>
         
-        <div className="mt-16 bg-emerald-50 rounded-lg p-8 flex flex-col md:flex-row items-center justify-between">
-          <div className="mb-6 md:mb-0 md:mr-8">
-            <h3 className="text-2xl font-bold mb-2">Ready to Experience the Perfect Getaway?</h3>
-            <p className="text-gray-600">Find your dream vacation rental in Sahel or Ras El Hekma today</p>
+        <div className="mt-6 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg p-4 flex items-center justify-between">
+          <div className="text-white">
+            <h3 className="font-bold">Find your perfect getaway</h3>
+            <p className="text-emerald-50 text-sm">Explore Sahel & Ras El Hekma</p>
           </div>
           <Link href="/properties">
-            <Button className="px-8 py-6 bg-emerald-500 hover:bg-emerald-600 text-white whitespace-nowrap">
-              Start Browsing
+            <Button size="sm" variant="secondary" className="whitespace-nowrap bg-white text-emerald-600 hover:bg-emerald-50">
+              Browse Now
             </Button>
           </Link>
         </div>
