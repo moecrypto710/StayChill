@@ -42,7 +42,7 @@ export default function Home() {
       description: currentLanguage.code === 'ar' 
         ? 'تمتع بجمال الشواطئ البكر، والمياه الفيروزية، والرمال البيضاء في واحدة من أجمل وجهات الساحل الشمالي.'
         : 'Experience pristine beaches, turquoise waters, and white sand in one of North Coast\'s most beautiful destinations.',
-      image: 'https://images.unsplash.com/photo-1578922178232-aaf01a8eaa17?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cmFzJTIwZWwlMjBoZWttYXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&w=1000&q=80',
+      image: 'https://images.unsplash.com/photo-1535049883634-993346531df0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3',
       highlights: [
         { 
           icon: <Umbrella className="h-5 w-5" />,
@@ -66,7 +66,7 @@ export default function Home() {
       description: currentLanguage.code === 'ar'
         ? 'الوجهة الصيفية المفضلة للمصريين، مع شواطئ جميلة وحياة ليلية نابضة بالحياة ومجموعة متنوعة من الأنشطة.'
         : 'Egyptians\' favorite summer destination, with beautiful beaches, vibrant nightlife and a variety of activities.',
-      image: 'https://images.unsplash.com/photo-1564419188205-4a8078f77e56?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8YmVhY2glMjBlZ3lwdHxlbnwwfHwwfHw%3D&w=1000&q=80',
+      image: 'https://images.unsplash.com/photo-1531761535209-180857e963b9?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3',
       highlights: [
         { 
           icon: <Waves className="h-5 w-5" />,
@@ -130,8 +130,8 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/30 z-10"></div>
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop"
-            alt="Beachfront"
+            src="https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3"
+            alt="Mediterranean Beach"
             className="w-full h-full object-cover"
           />
         </div>
