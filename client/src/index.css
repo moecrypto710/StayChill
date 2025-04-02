@@ -3,6 +3,42 @@
 @import '@fontsource/tajawal/500.css';
 @import '@fontsource/tajawal/700.css';
 
+/* Mobile First Approach */
+body, html {
+  font-size: 16px;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.container {
+  @apply px-2;
+}
+
+nav,
+footer {
+  @apply flex-col;
+}
+
+button {
+  padding: 8px;
+  @apply text-sm;
+}
+
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Adjustments for larger screens */
+@media only screen and (min-width: 768px) {
+  body, html {
+    font-size: 18px;
+  }
+  .container {
+    @apply px-6;
+  }
+}
+
 /* Custom Hotspot Style */
 .custom-hotspot {
   width: 30px;
