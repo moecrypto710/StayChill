@@ -19,8 +19,8 @@ export default function BottomNavigation() {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-lg py-2">
-        <div className="grid grid-cols-5 gap-1">
+      <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white dark:bg-gray-900 shadow-lg py-3 border-t border-gray-300 dark:border-gray-700">
+        <div className="flex justify-around">
           <NavItem
             icon={<Home size={20} />}
             label={t('home')}
@@ -84,7 +84,7 @@ interface NavItemProps {
 function NavItem({ icon, label, active, onClick }: NavItemProps) {
   return (
     <button
-      className={`flex flex-col items-center justify-center py-1 transition-colors ${
+      className={`flex flex-col items-center justify-center py-2 transition-transform transform hover:scale-105 duration-150 ${
         active 
           ? 'text-emerald-500' 
           : 'text-gray-600 dark:text-gray-400 hover:text-emerald-500 dark:hover:text-emerald-400'
