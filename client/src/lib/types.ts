@@ -38,6 +38,14 @@ export type GuestRating =
   | '4.5+ Stars' 
   | '5 Stars';
 
+export type CategoryFilter =
+  | 'All'
+  | 'Desert'
+  | 'Cabins'
+  | 'Beachfront'
+  | 'Treehouses'
+  | 'Lake';
+
 export interface PropertyFilters {
   propertyType?: PropertyType;
   priceRange?: PriceRange;
@@ -49,6 +57,7 @@ export interface PropertyFilters {
   keywords?: string;
   dateRange?: DateRange;
   guests?: number;
+  category?: CategoryFilter;
 }
 
 // VR and 360° Experience Types

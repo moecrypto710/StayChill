@@ -84,6 +84,7 @@ export const propertySearchSchema = z.object({
   bedrooms: z.number().optional(),
   amenities: z.array(z.string()).optional(),
   maxGuests: z.number().optional(),
+  propertyType: z.string().optional(),
 });
 
 // Add validation to booking schema

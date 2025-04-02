@@ -34,6 +34,7 @@ export default function PropertyFilter() {
     distanceToBeach: 'Any Distance',
     guestRating: 'Any Rating',
     keywords: '',
+    category: 'All',
   });
   
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -72,6 +73,21 @@ export default function PropertyFilter() {
       params.amenities = filters.amenities;
     }
     
+    if (filters.category && filters.category !== 'All') {
+      // Add the category filter logic
+      if (filters.category === 'Desert') {
+        params.amenities = [...(params.amenities || []), 'Desert View'];
+      } else if (filters.category === 'Beachfront') {
+        params.amenities = [...(params.amenities || []), 'Beachfront'];
+      } else if (filters.category === 'Cabins') {
+        params.propertyType = 'Cabin';
+      } else if (filters.category === 'Treehouses') {
+        params.propertyType = 'Treehouse';
+      } else if (filters.category === 'Lake') {
+        params.amenities = [...(params.amenities || []), 'Lake View'];
+      }
+    }
+    
     return params;
   };
   
@@ -108,6 +124,7 @@ export default function PropertyFilter() {
       distanceToBeach: 'Any Distance',
       guestRating: 'Any Rating',
       keywords: '',
+      category: 'All',
     });
     
     // Reset to default properties
@@ -147,34 +164,74 @@ export default function PropertyFilter() {
         <div className="mb-6 overflow-x-auto">
           <div className="flex space-x-8 pb-2 justify-center">
             <div className="flex flex-col items-center space-y-2">
-              <Button variant="ghost" className="rounded-full h-16 w-16 p-0 bg-gray-100 hover:bg-gray-200">
-                <Palmtree className="h-6 w-6 text-teal-700" />
+              <Button 
+                variant="ghost" 
+                className={`rounded-full h-16 w-16 p-0 ${filters.category === 'Desert' ? 'bg-teal-100 border-2 border-teal-500' : 'bg-gray-100 hover:bg-gray-200'}`}
+                onClick={() => {
+                  setFilters({...filters, category: filters.category === 'Desert' ? 'All' : 'Desert'});
+                  // Apply filter immediately
+                  searchMutation.mutate(getSearchParams());
+                }}
+              >
+                <Palmtree className={`h-6 w-6 ${filters.category === 'Desert' ? 'text-teal-600' : 'text-teal-700'}`} />
               </Button>
-              <span className="text-xs">Desert</span>
+              <span className={`text-xs ${filters.category === 'Desert' ? 'font-medium text-teal-600' : ''}`}>Desert</span>
             </div>
             <div className="flex flex-col items-center space-y-2">
-              <Button variant="ghost" className="rounded-full h-16 w-16 p-0 bg-gray-100 hover:bg-gray-200">
-                <Home className="h-6 w-6 text-teal-700" />
+              <Button 
+                variant="ghost" 
+                className={`rounded-full h-16 w-16 p-0 ${filters.category === 'Cabins' ? 'bg-teal-100 border-2 border-teal-500' : 'bg-gray-100 hover:bg-gray-200'}`}
+                onClick={() => {
+                  setFilters({...filters, category: filters.category === 'Cabins' ? 'All' : 'Cabins'});
+                  // Apply filter immediately
+                  searchMutation.mutate(getSearchParams());
+                }}
+              >
+                <Home className={`h-6 w-6 ${filters.category === 'Cabins' ? 'text-teal-600' : 'text-teal-700'}`} />
               </Button>
-              <span className="text-xs">Cabins</span>
+              <span className={`text-xs ${filters.category === 'Cabins' ? 'font-medium text-teal-600' : ''}`}>Cabins</span>
             </div>
             <div className="flex flex-col items-center space-y-2">
-              <Button variant="ghost" className="rounded-full h-16 w-16 p-0 bg-gray-100 hover:bg-gray-200">
-                <Waves className="h-6 w-6 text-teal-700" />
+              <Button 
+                variant="ghost" 
+                className={`rounded-full h-16 w-16 p-0 ${filters.category === 'Beachfront' ? 'bg-teal-100 border-2 border-teal-500' : 'bg-gray-100 hover:bg-gray-200'}`}
+                onClick={() => {
+                  setFilters({...filters, category: filters.category === 'Beachfront' ? 'All' : 'Beachfront'});
+                  // Apply filter immediately
+                  searchMutation.mutate(getSearchParams());
+                }}
+              >
+                <Waves className={`h-6 w-6 ${filters.category === 'Beachfront' ? 'text-teal-600' : 'text-teal-700'}`} />
               </Button>
-              <span className="text-xs">Beachfront</span>
+              <span className={`text-xs ${filters.category === 'Beachfront' ? 'font-medium text-teal-600' : ''}`}>Beachfront</span>
             </div>
             <div className="flex flex-col items-center space-y-2">
-              <Button variant="ghost" className="rounded-full h-16 w-16 p-0 bg-gray-100 hover:bg-gray-200">
-                <Trees className="h-6 w-6 text-teal-700" />
+              <Button 
+                variant="ghost" 
+                className={`rounded-full h-16 w-16 p-0 ${filters.category === 'Treehouses' ? 'bg-teal-100 border-2 border-teal-500' : 'bg-gray-100 hover:bg-gray-200'}`}
+                onClick={() => {
+                  setFilters({...filters, category: filters.category === 'Treehouses' ? 'All' : 'Treehouses'});
+                  // Apply filter immediately
+                  searchMutation.mutate(getSearchParams());
+                }}
+              >
+                <Trees className={`h-6 w-6 ${filters.category === 'Treehouses' ? 'text-teal-600' : 'text-teal-700'}`} />
               </Button>
-              <span className="text-xs">Treehouses</span>
+              <span className={`text-xs ${filters.category === 'Treehouses' ? 'font-medium text-teal-600' : ''}`}>Treehouses</span>
             </div>
             <div className="flex flex-col items-center space-y-2">
-              <Button variant="ghost" className="rounded-full h-16 w-16 p-0 bg-gray-100 hover:bg-gray-200">
-                <Droplets className="h-6 w-6 text-teal-700" />
+              <Button 
+                variant="ghost" 
+                className={`rounded-full h-16 w-16 p-0 ${filters.category === 'Lake' ? 'bg-teal-100 border-2 border-teal-500' : 'bg-gray-100 hover:bg-gray-200'}`}
+                onClick={() => {
+                  setFilters({...filters, category: filters.category === 'Lake' ? 'All' : 'Lake'});
+                  // Apply filter immediately
+                  searchMutation.mutate(getSearchParams());
+                }}
+              >
+                <Droplets className={`h-6 w-6 ${filters.category === 'Lake' ? 'text-teal-600' : 'text-teal-700'}`} />
               </Button>
-              <span className="text-xs">Lake</span>
+              <span className={`text-xs ${filters.category === 'Lake' ? 'font-medium text-teal-600' : ''}`}>Lake</span>
             </div>
           </div>
         </div>
