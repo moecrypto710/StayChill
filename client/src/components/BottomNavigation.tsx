@@ -84,10 +84,10 @@ interface NavItemProps {
 function NavItem({ icon, label, active, onClick }: NavItemProps) {
   return (
     <button
-      className={`flex flex-col items-center justify-center py-2 transition-transform transform hover:scale-105 duration-150 ${
+      className={`flex flex-col items-center justify-center py-2 transition-all transform hover:scale-110 duration-200 ease-in-out ${
         active 
-          ? 'text-emerald-500' 
-          : 'text-gray-600 dark:text-gray-400 hover:text-emerald-500 dark:hover:text-emerald-400'
+          ? 'text-green-600' 
+          : 'text-gray-500 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400'
       }`}
       onClick={onClick}
     >
