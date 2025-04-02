@@ -51,7 +51,9 @@ import {
   Loader2,
   Calendar,
   Image as ImageIcon,
-  Camera
+  Camera,
+  Star,
+  Settings
 } from 'lucide-react';
 
 // Define the form schema
@@ -932,7 +934,7 @@ export default function Profile() {
 }
 
 // Missing Components
-const Star = ({ className }: { className?: string }) => (
+const StarIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
@@ -947,7 +949,7 @@ const Star = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const Settings = ({ className }: { className?: string }) => (
+const SettingsIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
