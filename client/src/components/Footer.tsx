@@ -6,16 +6,17 @@ import {
   Mail,
   Phone,
   MapPin,
-  ChevronRight
+  ChevronRight,
+  ExternalLink
 } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
+  const [activeSection, setActiveSection] = useState<string>("destinations");
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,18 +28,18 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-gray-900 text-white py-8">
+    <footer className="bg-white dark:bg-gray-900 py-8 border-t border-gray-200 dark:border-gray-800">
       <div className="container">
         {/* Compact footer top section */}
         <div className="flex flex-col md:flex-row gap-8 mb-8">
           {/* Logo and subscription */}
           <div className="md:w-1/3">
             <div className="flex items-center gap-2 mb-4">
-              <UmbrellaIcon className="h-5 w-5 text-emerald-400" />
+              <UmbrellaIcon className="h-5 w-5 text-emerald-500" />
               <h2 className="text-xl font-bold">StayChill</h2>
             </div>
             
-            <p className="text-gray-400 text-sm mb-4">
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
               Premium vacation rentals in Egypt's coastal destinations
             </p>
             
@@ -47,7 +48,7 @@ export default function Footer() {
               <Input
                 type="email"
                 placeholder="Email for updates"
-                className="bg-gray-800 border-gray-700 text-sm rounded-l-md rounded-r-none"
+                className="rounded-l-md rounded-r-none focus:ring-emerald-500"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -55,7 +56,7 @@ export default function Footer() {
               <Button 
                 type="submit"
                 size="sm"
-                className="bg-emerald-500 hover:bg-emerald-600 rounded-l-none"
+                className="bg-emerald-500 hover:bg-emerald-600 rounded-l-none text-white"
               >
                 Join
               </Button>
@@ -63,107 +64,114 @@ export default function Footer() {
             
             {/* Simplified social icons */}
             <div className="flex gap-3">
-              <a href="#" className="text-gray-400 hover:text-white" aria-label="Facebook">
+              <a href="#" className="text-gray-500 hover:text-emerald-500" aria-label="Facebook">
                 <Facebook className="h-4 w-4" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white" aria-label="Instagram">
+              <a href="#" className="text-gray-500 hover:text-emerald-500" aria-label="Instagram">
                 <Instagram className="h-4 w-4" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white" aria-label="Twitter">
+              <a href="#" className="text-gray-500 hover:text-emerald-500" aria-label="Twitter">
                 <Twitter className="h-4 w-4" />
               </a>
             </div>
           </div>
           
-          {/* Mobile-friendly tabs for links */}
+          {/* Mobile-friendly footer sections */}
           <div className="md:w-2/3">
-            <Tabs defaultValue="destinations" className="w-full">
-              <TabsList className="w-full bg-gray-800 mb-3 h-10">
-                <TabsTrigger value="destinations" className="text-xs">Destinations</TabsTrigger>
-                <TabsTrigger value="company" className="text-xs">Company</TabsTrigger>
-                <TabsTrigger value="support" className="text-xs">Support</TabsTrigger>
-                <TabsTrigger value="contact" className="text-xs">Contact</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="destinations" className="mt-0">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {["Sahel", "Ras El Hekma", "North Coast", "Marina", "Marassi"].map(dest => (
-                    <Link 
-                      key={dest}
-                      href={`/properties?location=${encodeURIComponent(dest)}`}
-                      className="text-gray-400 hover:text-emerald-400 text-sm flex items-center"
-                    >
-                      <ChevronRight className="h-3 w-3 mr-1" />
-                      {dest}
-                    </Link>
-                  ))}
+            <div className="flex mb-4 border-b border-gray-200 dark:border-gray-800">
+              {["destinations", "company", "support", "contact"].map((section) => (
+                <button
+                  key={section}
+                  onClick={() => setActiveSection(section)}
+                  className={`px-3 py-2 text-xs font-medium transition-colors ${
+                    activeSection === section 
+                      ? "text-emerald-500 border-b-2 border-emerald-500" 
+                      : "text-gray-600 dark:text-gray-400 hover:text-emerald-500"
+                  }`}
+                >
+                  {section.charAt(0).toUpperCase() + section.slice(1)}
+                </button>
+              ))}
+            </div>
+            
+            {activeSection === "destinations" && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {["Sahel", "Ras El Hekma", "North Coast", "Marina", "Marassi"].map(dest => (
+                  <Link 
+                    key={dest}
+                    href={`/properties?location=${encodeURIComponent(dest)}`}
+                    className="text-gray-600 dark:text-gray-400 hover:text-emerald-500 text-sm flex items-center"
+                  >
+                    <ChevronRight className="h-3 w-3 mr-1" />
+                    {dest}
+                  </Link>
+                ))}
+              </div>
+            )}
+            
+            {activeSection === "company" && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {[
+                  {name: "About Us", href: "/about"}, 
+                  {name: "How It Works", href: "/about"}, 
+                  {name: "List Property", href: "/list-property"},
+                  {name: "Careers", href: "/about"},
+                  {name: "Contact", href: "/contact"}
+                ].map(item => (
+                  <Link 
+                    key={item.name}
+                    href={item.href}
+                    className="text-gray-600 dark:text-gray-400 hover:text-emerald-500 text-sm flex items-center"
+                  >
+                    <ChevronRight className="h-3 w-3 mr-1" />
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+            
+            {activeSection === "support" && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {[
+                  {name: "Help Center", href: "/contact"}, 
+                  {name: "Safety Info", href: "/about"}, 
+                  {name: "Cancellations", href: "/about"},
+                  {name: "Trust & Safety", href: "/about"},
+                  {name: "FAQ", href: "/contact"}
+                ].map(item => (
+                  <Link 
+                    key={item.name}
+                    href={item.href}
+                    className="text-gray-600 dark:text-gray-400 hover:text-emerald-500 text-sm flex items-center"
+                  >
+                    <ChevronRight className="h-3 w-3 mr-1" />
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+            
+            {activeSection === "contact" && (
+              <div className="space-y-2">
+                <div className="flex items-start gap-2">
+                  <MapPin className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <span className="text-gray-600 dark:text-gray-400 text-sm">123 Beach Road, North Coast, Egypt</span>
                 </div>
-              </TabsContent>
-              
-              <TabsContent value="company" className="mt-0">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {[
-                    {name: "About Us", href: "/about"}, 
-                    {name: "How It Works", href: "/about"}, 
-                    {name: "List Property", href: "/list-property"},
-                    {name: "Careers", href: "/about"},
-                    {name: "Contact", href: "/contact"}
-                  ].map(item => (
-                    <Link 
-                      key={item.name}
-                      href={item.href}
-                      className="text-gray-400 hover:text-emerald-400 text-sm flex items-center"
-                    >
-                      <ChevronRight className="h-3 w-3 mr-1" />
-                      {item.name}
-                    </Link>
-                  ))}
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-emerald-500 shrink-0" />
+                  <span className="text-gray-600 dark:text-gray-400 text-sm">+20 123 456 7890</span>
                 </div>
-              </TabsContent>
-              
-              <TabsContent value="support" className="mt-0">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {[
-                    {name: "Help Center", href: "/contact"}, 
-                    {name: "Safety Info", href: "/about"}, 
-                    {name: "Cancellations", href: "/about"},
-                    {name: "Trust & Safety", href: "/about"},
-                    {name: "FAQ", href: "/contact"}
-                  ].map(item => (
-                    <Link 
-                      key={item.name}
-                      href={item.href}
-                      className="text-gray-400 hover:text-emerald-400 text-sm flex items-center"
-                    >
-                      <ChevronRight className="h-3 w-3 mr-1" />
-                      {item.name}
-                    </Link>
-                  ))}
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-emerald-500 shrink-0" />
+                  <span className="text-gray-600 dark:text-gray-400 text-sm">info@staychill.com</span>
                 </div>
-              </TabsContent>
-              
-              <TabsContent value="contact" className="mt-0">
-                <div className="space-y-2">
-                  <div className="flex items-start gap-2">
-                    <MapPin className="h-4 w-4 text-emerald-400 mt-0.5 shrink-0" />
-                    <span className="text-gray-400 text-sm">123 Beach Road, North Coast, Egypt</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-emerald-400 shrink-0" />
-                    <span className="text-gray-400 text-sm">+20 123 456 7890</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-emerald-400 shrink-0" />
-                    <span className="text-gray-400 text-sm">info@staychill.com</span>
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
+              </div>
+            )}
           </div>
         </div>
         
         {/* Simplified bottom footer */}
-        <div className="border-t border-gray-800 pt-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <div className="border-t border-gray-200 dark:border-gray-800 pt-4 flex flex-col sm:flex-row justify-between items-center gap-2">
           <p className="text-gray-500 text-xs">
             © {currentYear} StayChill. All rights reserved.
           </p>
@@ -172,7 +180,7 @@ export default function Footer() {
               <Link 
                 key={item}
                 href="/about" 
-                className="text-gray-500 hover:text-emerald-400 text-xs"
+                className="text-gray-500 hover:text-emerald-500 text-xs"
               >
                 {item}
               </Link>
