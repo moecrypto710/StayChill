@@ -3,6 +3,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { queryClient } from "@/lib/queryClient";
 import PropertyCard from "./PropertyCard";
+import { PropertyListSkeleton } from "./PropertyListSkeleton";
+import { PropertyCardSkeletonGrid } from "./PropertyCardSkeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronDown, ChevronUp, Palmtree, Home, Waves, Trees, Droplets } from "lucide-react";
@@ -394,23 +396,7 @@ export default function PropertyFilter() {
         
         {/* Property Results */}
         {isLoading || searchMutation.isPending ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-lg overflow-hidden shadow-md animate-pulse">
-                <div className="h-60 bg-gray-200"></div>
-                <div className="p-6">
-                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
-                  <div className="flex gap-2 mb-4">
-                    <div className="h-6 bg-gray-200 rounded w-1/4"></div>
-                    <div className="h-6 bg-gray-200 rounded w-1/4"></div>
-                    <div className="h-6 bg-gray-200 rounded w-1/4"></div>
-                  </div>
-                  <div className="h-10 bg-gray-200 rounded w-full mt-6"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <PropertyCardSkeletonGrid count={6} />
         ) : isError ? (
           <div className="text-center p-8 bg-white rounded-lg shadow">
             <p className="text-red-500">Error loading properties. Please try again later.</p>

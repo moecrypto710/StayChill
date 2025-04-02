@@ -1,12 +1,23 @@
-import { useEffect } from "react";
-import { useSearch } from "wouter";
+import { useEffect, useState } from "react";
 import PropertyFilter from "../components/PropertyFilter";
+import { PropertyListSkeleton } from "../components/PropertyListSkeleton";
 import { Helmet } from "react-helmet";
 
 export default function Properties() {
-  const [search] = useSearch();
-  const searchParams = new URLSearchParams(search);
+  // Get the search query from the URL
+  const searchString = window.location.search;
+  const searchParams = new URLSearchParams(searchString);
   const location = searchParams.get('location');
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Simulate a short loading time for demonstration
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   // Create page title based on search parameters
   const getPageTitle = () => {
@@ -32,7 +43,12 @@ export default function Properties() {
           </p>
         </div>
       </div>
-      <PropertyFilter />
+      
+      {isLoading ? (
+        <PropertyListSkeleton />
+      ) : (
+        <PropertyFilter />
+      )}
     </>
   );
 }
