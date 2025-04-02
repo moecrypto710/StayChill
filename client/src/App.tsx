@@ -22,6 +22,7 @@ import BookingChat from "./pages/BookingChat"; // Import the BookingChat compone
 import BookingDetail from "./pages/BookingDetail"; // Import the BookingDetail component
 import Inbox from "./pages/Inbox"; // Import the Inbox component
 import Rewards from "./pages/Rewards"; // Import the Rewards component
+import Profile from "./pages/Profile"; // Import the Profile component
 
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
@@ -145,6 +146,14 @@ function Router() {
         <ProtectedRoute>
           <AuthenticatedLayout>
             <Rewards />
+          </AuthenticatedLayout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/profile"> {/* Profile route */}
+        <ProtectedRoute>
+          <AuthenticatedLayout>
+            <Profile />
           </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
