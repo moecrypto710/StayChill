@@ -87,13 +87,9 @@ export default function Navbar() {
             className="text-xl md:text-2xl font-bold text-emerald-500 flex items-center group"
             onClick={closeMenu}
           >
-            <div className="p-1 mr-2 group-hover:text-emerald-400 transition-all duration-300">
-              <UmbrellaIcon className="w-8 h-8" />
-            </div>
-            <div className="flex flex-col">
-              <span className="hidden sm:inline tracking-tight">staychill</span>
-              <span className="sm:hidden tracking-tight">sc</span>
-            </div>
+            <UmbrellaIcon className="w-8 h-8 p-1 mr-2 group-hover:text-emerald-400 transition-all duration-300" />
+            <span className="hidden sm:inline tracking-tight">staychill</span>
+            <span className="sm:hidden tracking-tight">sc</span>
           </Link>
         </div>
         
