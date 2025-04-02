@@ -84,10 +84,10 @@ export default function Navbar() {
         <div className="flex items-center">
           <Link 
             href="/" 
-            className="text-xl md:text-2xl font-bold text-primary flex items-center group"
+            className="text-xl md:text-2xl font-bold text-emerald-500 flex items-center group"
             onClick={closeMenu}
           >
-            <div className="p-1 mr-2 group-hover:text-primary/80 transition-all duration-300">
+            <div className="p-1 mr-2 group-hover:text-emerald-400 transition-all duration-300">
               <UmbrellaIcon className="w-8 h-8" />
             </div>
             <div className="flex flex-col">
@@ -101,8 +101,8 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center space-x-8">
           <Link 
             href="/" 
-            className={`font-medium transition-colors hover:text-primary ${
-              isActive('/') ? 'text-primary' : 'text-gray-700 dark:text-gray-300'
+            className={`font-medium transition-colors hover:text-emerald-500 ${
+              isActive('/') ? 'text-emerald-500' : 'text-gray-700 dark:text-gray-300'
             }`}
             dir={currentLanguage.direction}
           >
@@ -110,8 +110,8 @@ export default function Navbar() {
           </Link>
           <Link 
             href="/properties" 
-            className={`font-medium transition-colors hover:text-primary ${
-              isActive('/properties') ? 'text-primary' : 'text-gray-700 dark:text-gray-300'
+            className={`font-medium transition-colors hover:text-emerald-500 ${
+              isActive('/properties') ? 'text-emerald-500' : 'text-gray-700 dark:text-gray-300'
             }`}
             dir={currentLanguage.direction}
           >
@@ -119,8 +119,8 @@ export default function Navbar() {
           </Link>
           <Link 
             href="/about" 
-            className={`font-medium transition-colors hover:text-primary ${
-              isActive('/about') ? 'text-primary' : 'text-gray-700 dark:text-gray-300'
+            className={`font-medium transition-colors hover:text-emerald-500 ${
+              isActive('/about') ? 'text-emerald-500' : 'text-gray-700 dark:text-gray-300'
             }`}
             dir={currentLanguage.direction}
           >
@@ -128,8 +128,8 @@ export default function Navbar() {
           </Link>
           <Link 
             href="/contact" 
-            className={`font-medium transition-colors hover:text-primary ${
-              isActive('/contact') ? 'text-primary' : 'text-gray-700 dark:text-gray-300'
+            className={`font-medium transition-colors hover:text-emerald-500 ${
+              isActive('/contact') ? 'text-emerald-500' : 'text-gray-700 dark:text-gray-300'
             }`}
             dir={currentLanguage.direction}
           >
@@ -178,7 +178,7 @@ export default function Navbar() {
             <Button 
               variant="default" 
               size="sm"
-              className="rounded-full bg-primary hover:bg-primary/90 text-white"
+              className="rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
               onClick={() => setIsLoginModalOpen(true)}
               dir={currentLanguage.direction}
             >
@@ -238,7 +238,7 @@ export default function Navbar() {
         <nav className="flex flex-col gap-6 p-4">
           <Link 
             href="/" 
-            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-primary dark:hover:text-primary transition-colors"
+            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
             onClick={closeMenu}
             dir={currentLanguage.direction}
           >
@@ -246,7 +246,7 @@ export default function Navbar() {
           </Link>
           <Link 
             href="/properties" 
-            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-primary dark:hover:text-primary transition-colors"
+            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
             onClick={closeMenu}
             dir={currentLanguage.direction}
           >
@@ -254,7 +254,7 @@ export default function Navbar() {
           </Link>
           <Link 
             href="/about" 
-            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-primary dark:hover:text-primary transition-colors"
+            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
             onClick={closeMenu}
             dir={currentLanguage.direction}
           >
@@ -262,7 +262,7 @@ export default function Navbar() {
           </Link>
           <Link 
             href="/contact" 
-            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-primary dark:hover:text-primary transition-colors"
+            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
             onClick={closeMenu}
             dir={currentLanguage.direction}
           >
@@ -273,7 +273,7 @@ export default function Navbar() {
             {isAuthenticated && (
               <Link 
                 href="/list-property" 
-                className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-primary dark:hover:text-primary transition-colors"
+                className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
                 onClick={closeMenu}
                 dir={currentLanguage.direction}
               >
@@ -296,7 +296,7 @@ export default function Navbar() {
             
             {!isAuthenticated ? (
               <Button 
-                className="w-full rounded-full py-5 bg-primary hover:bg-primary/90 text-white"
+                className="w-full rounded-full py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
                 onClick={() => {
                   closeMenu();
                   setIsLoginModalOpen(true);
@@ -315,7 +315,7 @@ export default function Navbar() {
                 </div>
                 <Button 
                   variant="outline"
-                  className="w-full rounded-full py-5 text-primary border-primary/20 hover:bg-primary/10 dark:text-primary/80 dark:border-primary/30 dark:hover:bg-primary/20"
+                  className="w-full rounded-full py-5 text-emerald-500 border-emerald-200 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-900 dark:hover:bg-emerald-900/20"
                   onClick={handleLogout}
                   dir={currentLanguage.direction}
                 >

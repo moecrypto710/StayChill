@@ -5,6 +5,7 @@ import { AuthProvider } from "./lib/auth";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import BottomNavigation from "./components/BottomNavigation";
 import Home from "./pages/Home";
 import Properties from "./pages/Properties";
 import PropertyDetail from "./pages/PropertyDetail";
@@ -43,6 +44,7 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <Footer />
+      <BottomNavigation />
     </div>
   );
 }

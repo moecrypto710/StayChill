@@ -49,7 +49,9 @@ export type TranslationKey =
   | 'anywhere'
   | 'verifiedProperties'
   | 'averageRating'
-  | 'primeLocations';
+  | 'primeLocations'
+  | 'favorites'
+  | 'account';
 
 export type Language = 'en' | 'ar';
 
@@ -103,7 +105,9 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     anywhere: 'Anywhere',
     verifiedProperties: '200+ Verified Properties',
     averageRating: '4.8 Average Rating',
-    primeLocations: 'Prime Beachfront Locations'
+    primeLocations: 'Prime Beachfront Locations',
+    favorites: 'Favorites',
+    account: 'Account'
   },
   ar: {
     home: 'الرئيسية',
@@ -153,7 +157,9 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     anywhere: 'أي مكان',
     verifiedProperties: '+200 عقار موثق',
     averageRating: 'متوسط تقييم 4.8',
-    primeLocations: 'مواقع مميزة على الشاطئ'
+    primeLocations: 'مواقع مميزة على الشاطئ',
+    favorites: 'المفضلة',
+    account: 'الحساب'
   }
 };
 
