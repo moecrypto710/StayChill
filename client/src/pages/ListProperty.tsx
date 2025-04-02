@@ -32,16 +32,54 @@ import { Home, Upload, CheckCircle, PlusCircle, X } from "lucide-react";
 import { z } from "zod";
 
 const listPropertySchema = insertPropertySchema.extend({
-  title: z.string().min(5, "العنوان يجب أن يكون 5 أحرف على الأقل"),
-  description: z.string().min(20, "الوصف يجب أن يكون 20 حرف على الأقل"),
-  location: z.string().min(5, "الموقع يجب أن يكون 5 أحرف على الأقل"),
+  title: z.string()
+    .min(5, "العنوان يجب أن يكون 5 أحرف على الأقل")
+    .max(100, "العنوان لا يجب أن يتجاوز 100 حرف")
+    .refine(value => /^[\u0600-\u06FFa-zA-Z0-9\s.,'-]+$/.test(value), {
+      message: "العنوان يجب أن يحتوي على حروف وأرقام فقط"
+    }),
+  description: z.string()
+    .min(20, "الوصف يجب أن يكون 20 حرف على الأقل")
+    .max(2000, "الوصف لا يجب أن يتجاوز 2000 حرف")
+    .refine(value => value.split(' ').length >= 5, {
+      message: "الوصف يجب أن يحتوي على 5 كلمات على الأقل"
+    }),
+  location: z.string()
+    .min(5, "الموقع يجب أن يكون 5 أحرف على الأقل")
+    .refine(value => /^[\u0600-\u06FFa-zA-Z0-9\s.,'-]+$/.test(value), {
+      message: "الموقع يجب أن يحتوي على حروف وأرقام فقط"
+    }),
   area: z.enum(["Sahel", "Ras El Hekma"]),
-  price: z.coerce.number().min(1, "السعر يجب أن يكون أكبر من 0"),
-  bedrooms: z.coerce.number().min(1, "يجب أن تحتوي العقار على غرفة نوم واحدة على الأقل"),
-  bathrooms: z.coerce.number().min(1, "يجب أن يحتوي العقار على حمام واحد على الأقل"),
-  maxGuests: z.coerce.number().min(1, "يجب أن يستوعب العقار ضيف واحد على الأقل"),
-  images: z.array(z.string()).min(1, "يرجى إضافة صورة واحدة على الأقل"),
-  amenities: z.array(z.string()).min(1, "يرجى اختيار ميزة واحدة على الأقل"),
+  price: z.coerce.number()
+    .min(1, "السعر يجب أن يكون أكبر من 0")
+    .max(10000, "السعر لا يجب أن يتجاوز 10000 دولار")
+    .refine(value => Number.isInteger(value), {
+      message: "السعر يجب أن يكون رقم صحيح"
+    }),
+  bedrooms: z.coerce.number()
+    .min(1, "يجب أن تحتوي العقار على غرفة نوم واحدة على الأقل")
+    .max(20, "عدد غرف النوم لا يجب أن يتجاوز 20")
+    .refine(value => Number.isInteger(value), {
+      message: "عدد غرف النوم يجب أن يكون رقم صحيح"
+    }),
+  bathrooms: z.coerce.number()
+    .min(1, "يجب أن يحتوي العقار على حمام واحد على الأقل")
+    .max(20, "عدد الحمامات لا يجب أن يتجاوز 20")
+    .refine(value => Number.isInteger(value), {
+      message: "عدد الحمامات يجب أن يكون رقم صحيح"
+    }),
+  maxGuests: z.coerce.number()
+    .min(1, "يجب أن يستوعب العقار ضيف واحد على الأقل")
+    .max(50, "عدد الضيوف لا يجب أن يتجاوز 50")
+    .refine(value => Number.isInteger(value), {
+      message: "عدد الضيوف يجب أن يكون رقم صحيح"
+    }),
+  images: z.array(z.string().url("يجب أن يكون رابط صورة صالح"))
+    .min(1, "يرجى إضافة صورة واحدة على الأقل")
+    .max(10, "لا يمكن إضافة أكثر من 10 صور"),
+  amenities: z.array(z.string())
+    .min(1, "يرجى اختيار ميزة واحدة على الأقل")
+    .max(10, "لا يمكن اختيار أكثر من 10 ميزات"),
 });
 
 type FormValues = z.infer<typeof listPropertySchema>;
@@ -108,12 +146,55 @@ export default function ListProperty() {
     },
   });
 
-  const handleAddImage = () => {
+  const validateImageUrl = async (url: string): Promise<boolean> => {
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      const contentType = response.headers.get('content-type');
+      return contentType?.startsWith('image/') ?? false;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleAddImage = async () => {
     if (!newImageUrl) return;
+    
+    // Show loading state
+    toast({
+      title: "جاري التحقق من الصورة...",
+      description: "يرجى الانتظار",
+    });
+
+    // Validate image URL
+    const isValid = await validateImageUrl(newImageUrl);
+    if (!isValid) {
+      toast({
+        title: "خطأ في إضافة الصورة",
+        description: "يرجى التأكد من أن الرابط يشير إلى صورة صالحة",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check max images limit
+    if (imageUrls.length >= 10) {
+      toast({
+        title: "تم الوصول للحد الأقصى",
+        description: "لا يمكن إضافة أكثر من 10 صور",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const updatedImages = [...imageUrls, newImageUrl];
     setImageUrls(updatedImages);
     form.setValue("images", updatedImages);
     setNewImageUrl("");
+    
+    toast({
+      title: "تم إضافة الصورة بنجاح",
+      description: `تم إضافة ${updatedImages.length} من 10 صور`,
+    });
   };
 
   const removeImage = (index: number) => {
