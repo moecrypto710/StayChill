@@ -4,7 +4,7 @@ import { Property } from "@shared/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { Building, DollarSign, Users, Star, Plus, Calendar, Tools, TrendingUp } from "lucide-react";
+import { Building, DollarSign, Users, Star, Plus, Calendar, Wrench, TrendingUp } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -118,7 +118,7 @@ export default function Dashboard() {
               {properties?.map((property) => (
                 <div key={property.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center">
-                    <Tools className="h-4 w-4 mr-2 text-gray-500" />
+                    <Wrench className="h-4 w-4 mr-2 text-gray-500" />
                     <span>{property.title}</span>
                   </div>
                   <Button variant="outline" size="sm">Schedule</Button>

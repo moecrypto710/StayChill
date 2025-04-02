@@ -23,10 +23,20 @@ import Stripe from "stripe";
 // Create memory store for sessions
 const MemoryStore = memorystore(session);
 
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16' as any, // Cast to any to fix TypeScript compatibility issues
-});
+// Initialize Stripe if API key is available
+let stripe: Stripe | undefined;
+try {
+  if (process.env.STRIPE_SECRET_KEY) {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2023-10-16' as any, // Cast to any to fix TypeScript compatibility issues
+    });
+    console.log('Stripe initialized successfully');
+  } else {
+    console.warn('STRIPE_SECRET_KEY is not set. Payment features will be disabled.');
+  }
+} catch (error) {
+  console.error('Failed to initialize Stripe:', error);
+}
 
 function handleZodError(error: unknown, res: Response) {
   if (error instanceof ZodError) {
@@ -346,6 +356,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create payment intent
   paymentRouter.post("/create-payment-intent", isAuthenticated, async (req, res) => {
     try {
+      // Check if Stripe is configured
+      if (!stripe) {
+        return res.status(503).json({ error: "Payment service is not available. STRIPE_SECRET_KEY is not configured." });
+      }
+
       const paymentData = paymentIntentSchema.parse(req.body);
       const { bookingId, amount, currency = "usd", description } = paymentData;
 
@@ -385,6 +400,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Process a payment
   paymentRouter.post("/process-payment", isAuthenticated, async (req, res) => {
     try {
+      // Check if Stripe is configured
+      if (!stripe) {
+        return res.status(503).json({ error: "Payment service is not available. STRIPE_SECRET_KEY is not configured." });
+      }
+
       const { paymentIntentId, bookingId } = req.body;
       
       if (!paymentIntentId || !bookingId) {
@@ -438,6 +458,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Webhook for payment events from Stripe
   paymentRouter.post("/webhook", express.raw({ type: 'application/json' }), async (req, res) => {
     try {
+      // Check if Stripe is configured
+      if (!stripe) {
+        return res.status(503).json({ error: "Payment service is not available. STRIPE_SECRET_KEY is not configured." });
+      }
+
       // Verify the webhook signature
       const signature = req.headers['stripe-signature'];
       
