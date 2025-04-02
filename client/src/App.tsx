@@ -18,6 +18,8 @@ import LanguageSwitcher, { LanguageContext } from "./components/LanguageSwitcher
 import { ThemeProvider } from "./components/ThemeSwitcher";
 import { useState, useEffect, useContext } from "react";
 import Dashboard from "./pages/Dashboard"; // Import the Dashboard component
+import BookingChat from "./pages/BookingChat"; // Import the BookingChat component
+import BookingDetail from "./pages/BookingDetail"; // Import the BookingDetail component
 
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
@@ -109,6 +111,22 @@ function Router() {
         <ProtectedRoute>
           <AuthenticatedLayout>
             <Dashboard />
+          </AuthenticatedLayout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/bookings/:id/chat"> {/* Chat route for a specific booking */}
+        <ProtectedRoute>
+          <AuthenticatedLayout>
+            <BookingChat />
+          </AuthenticatedLayout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/bookings/:id"> {/* Booking detail route */}
+        <ProtectedRoute>
+          <AuthenticatedLayout>
+            <BookingDetail />
           </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>

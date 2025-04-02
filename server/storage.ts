@@ -5,6 +5,9 @@ import {
   owners,
   users,
   favorites,
+  chatRooms,
+  chatParticipants,
+  messages,
   type Property, 
   type InsertProperty, 
   type Booking, 
@@ -17,7 +20,13 @@ import {
   type User,
   type InsertUser,
   type PricePoint,
-  type AvailabilityData
+  type AvailabilityData,
+  type ChatRoom,
+  type InsertChatRoom,
+  type ChatParticipant,
+  type InsertChatParticipant,
+  type Message,
+  type InsertMessage
 } from "@shared/schema";
 import { eq, gte, lte, inArray } from "drizzle-orm";
 import { db } from "./db";
@@ -71,6 +80,16 @@ export interface IStorage {
   // Availability and pricing operations
   getAvailabilityData(propertyId: number, startDate?: string, endDate?: string): Promise<AvailabilityData>;
   updateAvailabilityData(propertyId: number, data: PricePoint[]): Promise<AvailabilityData>;
+
+  // Chat and messaging operations
+  createChatRoom(chatRoom: InsertChatRoom): Promise<ChatRoom>;
+  getChatRoom(id: number): Promise<ChatRoom | undefined>;
+  getChatRoomsByBookingId(bookingId: number): Promise<ChatRoom[]>;
+  addParticipantToRoom(participant: InsertChatParticipant): Promise<ChatParticipant>;
+  getParticipantsByRoomId(roomId: number): Promise<ChatParticipant[]>;
+  sendMessage(message: InsertMessage): Promise<Message>;
+  getMessagesByRoomId(roomId: number): Promise<Message[]>;
+  markMessagesAsRead(roomId: number, userId: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -80,12 +99,18 @@ export class MemStorage implements IStorage {
   private inquiries: Map<number, Inquiry>;
   private owners: Map<number, Owner>;
   private favorites: Map<number, number[]>; // Add favorites map
+  private chatRooms: Map<number, ChatRoom>;
+  private chatParticipants: Map<number, ChatParticipant>;
+  private messages: Map<number, Message>;
 
   private userCurrentId: number;
   private propertyCurrentId: number;
   private bookingCurrentId: number;
   private inquiryCurrentId: number;
   private ownerCurrentId: number;
+  private chatRoomCurrentId: number;
+  private chatParticipantCurrentId: number;
+  private messageCurrentId: number;
 
   constructor() {
     this.users = new Map();
@@ -94,12 +119,18 @@ export class MemStorage implements IStorage {
     this.inquiries = new Map();
     this.owners = new Map();
     this.favorites = new Map(); // Initialize favorites map
+    this.chatRooms = new Map();
+    this.chatParticipants = new Map();
+    this.messages = new Map();
 
     this.userCurrentId = 1;
     this.propertyCurrentId = 1;
     this.bookingCurrentId = 1;
     this.inquiryCurrentId = 1;
     this.ownerCurrentId = 1;
+    this.chatRoomCurrentId = 1;
+    this.chatParticipantCurrentId = 1;
+    this.messageCurrentId = 1;
 
     // Add some initial dummy properties and guest user
     this.initializeProperties();
@@ -588,6 +619,84 @@ export class MemStorage implements IStorage {
     this.availabilityData.set(propertyId, updatedData);
     
     return updatedData;
+  }
+  
+  // Chat and messaging operations
+  async createChatRoom(chatRoom: InsertChatRoom): Promise<ChatRoom> {
+    const id = this.chatRoomCurrentId++;
+    const now = new Date();
+    const newChatRoom: ChatRoom = {
+      ...chatRoom,
+      id,
+      createdAt: now,
+      lastMessageAt: now
+    };
+    this.chatRooms.set(id, newChatRoom);
+    return newChatRoom;
+  }
+
+  async getChatRoom(id: number): Promise<ChatRoom | undefined> {
+    return this.chatRooms.get(id);
+  }
+
+  async getChatRoomsByBookingId(bookingId: number): Promise<ChatRoom[]> {
+    return Array.from(this.chatRooms.values())
+      .filter(chatRoom => chatRoom.bookingId === bookingId);
+  }
+
+  async addParticipantToRoom(participant: InsertChatParticipant): Promise<ChatParticipant> {
+    const id = this.chatParticipantCurrentId++;
+    const now = new Date();
+    const newParticipant: ChatParticipant = {
+      ...participant,
+      id,
+      joinedAt: now
+    };
+    this.chatParticipants.set(id, newParticipant);
+    return newParticipant;
+  }
+
+  async getParticipantsByRoomId(roomId: number): Promise<ChatParticipant[]> {
+    return Array.from(this.chatParticipants.values())
+      .filter(participant => participant.roomId === roomId);
+  }
+
+  async sendMessage(message: InsertMessage): Promise<Message> {
+    const id = this.messageCurrentId++;
+    const now = new Date();
+    const newMessage: Message = {
+      ...message,
+      id,
+      createdAt: now,
+      readBy: message.readBy || [message.senderId] // Message is read by the sender by default
+    };
+    this.messages.set(id, newMessage);
+
+    // Update lastMessageAt in chat room
+    const chatRoom = this.chatRooms.get(message.roomId);
+    if (chatRoom) {
+      chatRoom.lastMessageAt = now;
+    }
+
+    return newMessage;
+  }
+
+  async getMessagesByRoomId(roomId: number): Promise<Message[]> {
+    return Array.from(this.messages.values())
+      .filter(message => message.roomId === roomId)
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  }
+
+  async markMessagesAsRead(roomId: number, userId: number): Promise<boolean> {
+    const messages = Array.from(this.messages.values())
+      .filter(message => message.roomId === roomId && !message.readBy.includes(userId));
+
+    messages.forEach(message => {
+      message.readBy = [...message.readBy, userId];
+      this.messages.set(message.id, message);
+    });
+
+    return true;
   }
 }
 
@@ -1197,8 +1306,117 @@ export class PostgresStorage implements IStorage {
     
     return updatedData;
   }
+  // Chat and messaging operations
+  async createChatRoom(chatRoom: InsertChatRoom): Promise<ChatRoom> {
+    try {
+      const result = await this.db.insert(chatRooms).values({
+        ...chatRoom,
+        createdAt: new Date(),
+        lastMessageAt: new Date()
+      }).returning();
+      return result[0];
+    } catch (error: any) {
+      console.error("Error creating chat room:", error);
+      throw new Error(`Failed to create chat room: ${error.message}`);
+    }
+  }
+
+  async getChatRoom(id: number): Promise<ChatRoom | undefined> {
+    try {
+      const result = await this.db.select().from(chatRooms).where(eq(chatRooms.id, id));
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error: any) {
+      console.error("Error fetching chat room:", error);
+      throw new Error(`Failed to fetch chat room: ${error.message}`);
+    }
+  }
+
+  async getChatRoomsByBookingId(bookingId: number): Promise<ChatRoom[]> {
+    try {
+      return await this.db.select().from(chatRooms).where(eq(chatRooms.bookingId, bookingId));
+    } catch (error: any) {
+      console.error("Error fetching chat rooms by booking ID:", error);
+      throw new Error(`Failed to fetch chat rooms by booking ID: ${error.message}`);
+    }
+  }
+
+  async addParticipantToRoom(participant: InsertChatParticipant): Promise<ChatParticipant> {
+    try {
+      const result = await this.db.insert(chatParticipants).values({
+        ...participant,
+        joinedAt: new Date()
+      }).returning();
+      return result[0];
+    } catch (error: any) {
+      console.error("Error adding participant to chat room:", error);
+      throw new Error(`Failed to add participant to chat room: ${error.message}`);
+    }
+  }
+
+  async getParticipantsByRoomId(roomId: number): Promise<ChatParticipant[]> {
+    try {
+      return await this.db.select().from(chatParticipants).where(eq(chatParticipants.roomId, roomId));
+    } catch (error: any) {
+      console.error("Error fetching participants by room ID:", error);
+      throw new Error(`Failed to fetch participants by room ID: ${error.message}`);
+    }
+  }
+
+  async sendMessage(message: InsertMessage): Promise<Message> {
+    try {
+      // Insert message with the current timestamp
+      const result = await this.db.insert(messages).values({
+        ...message,
+        createdAt: new Date(),
+        readBy: message.readBy || [message.senderId]
+      }).returning();
+
+      // Update lastMessageAt in the chat room
+      await this.db.update(chatRooms)
+        .set({ lastMessageAt: new Date() })
+        .where(eq(chatRooms.id, message.roomId));
+
+      return result[0];
+    } catch (error: any) {
+      console.error("Error sending message:", error);
+      throw new Error(`Failed to send message: ${error.message}`);
+    }
+  }
+
+  async getMessagesByRoomId(roomId: number): Promise<Message[]> {
+    try {
+      const result = await this.db.select().from(messages)
+        .where(eq(messages.roomId, roomId))
+        .orderBy(messages.createdAt);
+      return result;
+    } catch (error: any) {
+      console.error("Error fetching messages by room ID:", error);
+      throw new Error(`Failed to fetch messages by room ID: ${error.message}`);
+    }
+  }
+
+  async markMessagesAsRead(roomId: number, userId: number): Promise<boolean> {
+    try {
+      // Find messages that haven't been read by this user
+      const unreadMessages = await this.db.select().from(messages)
+        .where(eq(messages.roomId, roomId));
+      
+      // Filter and update messages that don't have the userId in readBy
+      const messagesToUpdate = unreadMessages.filter(msg => !msg.readBy.includes(userId));
+      
+      for (const msg of messagesToUpdate) {
+        const updatedReadBy = [...msg.readBy, userId];
+        await this.db.update(messages)
+          .set({ readBy: updatedReadBy })
+          .where(eq(messages.id, msg.id));
+      }
+      
+      return true;
+    } catch (error: any) {
+      console.error("Error marking messages as read:", error);
+      throw new Error(`Failed to mark messages as read: ${error.message}`);
+    }
+  }
 }
 
-// Create and export the storage instance
-// Use PostgresStorage instead of MemStorage
 export const storage = new PostgresStorage();

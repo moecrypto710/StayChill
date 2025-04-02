@@ -14,7 +14,10 @@ import {
   loginSchema,
   registerSchema,
   pricePointSchema,
-  paymentIntentSchema
+  paymentIntentSchema,
+  insertChatRoomSchema,
+  insertChatParticipantSchema,
+  insertMessageSchema
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -218,6 +221,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Booking routes
+  apiRouter.get("/bookings", isAuthenticated, async (req, res) => {
+    try {
+      const bookings = await storage.getBookings();
+      res.json(bookings);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      res.status(500).json({ error: "Failed to fetch bookings" });
+    }
+  });
+
+  apiRouter.get("/bookings/:id", isAuthenticated, async (req, res) => {
+    try {
+      const bookingId = parseInt(req.params.id);
+      const booking = await storage.getBooking(bookingId);
+      
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+      
+      res.json(booking);
+    } catch (error) {
+      console.error("Error fetching booking:", error);
+      res.status(500).json({ error: "Failed to fetch booking" });
+    }
+  });
+
   apiRouter.post("/bookings", isAuthenticated, async (req, res) => {
     try {
       const bookingData = bookingValidationSchema.parse(req.body);
@@ -551,6 +580,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Mount payment router
   apiRouter.use("/payments", paymentRouter);
+  
+  // Chat routes
+  const chatRouter = express.Router();
+  
+  // Create a chat room
+  chatRouter.post("/rooms", isAuthenticated, async (req, res) => {
+    try {
+      const roomData = insertChatRoomSchema.parse(req.body);
+      const room = await storage.createChatRoom(roomData);
+      res.status(201).json(room);
+    } catch (error) {
+      handleZodError(error, res);
+    }
+  });
+  
+  // Get chat rooms by booking ID
+  chatRouter.get("/rooms/by-booking/:bookingId", isAuthenticated, async (req, res) => {
+    try {
+      const bookingId = parseInt(req.params.bookingId);
+      const rooms = await storage.getChatRoomsByBookingId(bookingId);
+      res.json(rooms);
+    } catch (error) {
+      console.error("Error fetching chat rooms:", error);
+      res.status(500).json({ error: "Failed to fetch chat rooms" });
+    }
+  });
+  
+  // Get a specific chat room
+  chatRouter.get("/rooms/:roomId", isAuthenticated, async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId);
+      const room = await storage.getChatRoom(roomId);
+      
+      if (!room) {
+        return res.status(404).json({ error: "Chat room not found" });
+      }
+      
+      res.json(room);
+    } catch (error) {
+      console.error("Error fetching chat room:", error);
+      res.status(500).json({ error: "Failed to fetch chat room" });
+    }
+  });
+  
+  // Add a participant to a chat room
+  chatRouter.post("/rooms/:roomId/participants", isAuthenticated, async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId);
+      const participantData = insertChatParticipantSchema.parse({
+        ...req.body,
+        roomId
+      });
+      
+      const participant = await storage.addParticipantToRoom(participantData);
+      res.status(201).json(participant);
+    } catch (error) {
+      handleZodError(error, res);
+    }
+  });
+  
+  // Get participants in a chat room
+  chatRouter.get("/rooms/:roomId/participants", isAuthenticated, async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId);
+      const participants = await storage.getParticipantsByRoomId(roomId);
+      res.json(participants);
+    } catch (error) {
+      console.error("Error fetching participants:", error);
+      res.status(500).json({ error: "Failed to fetch participants" });
+    }
+  });
+  
+  // Send a message to a chat room
+  chatRouter.post("/rooms/:roomId/messages", isAuthenticated, async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId);
+      const userId = req.session.userId as number;
+      
+      const messageData = insertMessageSchema.parse({
+        ...req.body,
+        roomId,
+        senderId: userId
+      });
+      
+      const message = await storage.sendMessage(messageData);
+      res.status(201).json(message);
+    } catch (error) {
+      handleZodError(error, res);
+    }
+  });
+  
+  // Get messages in a chat room
+  chatRouter.get("/rooms/:roomId/messages", isAuthenticated, async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId);
+      const messages = await storage.getMessagesByRoomId(roomId);
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      res.status(500).json({ error: "Failed to fetch messages" });
+    }
+  });
+  
+  // Mark messages as read
+  chatRouter.post("/rooms/:roomId/read", isAuthenticated, async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId);
+      const userId = req.session.userId as number;
+      
+      await storage.markMessagesAsRead(roomId, userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking messages as read:", error);
+      res.status(500).json({ error: "Failed to mark messages as read" });
+    }
+  });
+  
+  // Mount chat router
+  apiRouter.use("/chat", chatRouter);
   
   // Mount API router
   app.use("/api", apiRouter);
