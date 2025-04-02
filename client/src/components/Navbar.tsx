@@ -353,8 +353,8 @@ export default function Navbar() {
               </div>
             )}
           </div>
-        </nav>
-      </div>
+        </div>
+      </nav>
 
       {/* Login Modal */}
       <LoginModal 
