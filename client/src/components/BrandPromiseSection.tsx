@@ -13,7 +13,7 @@ export default function BrandPromiseSection() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-ocean-100 rounded-full text-ocean-600">
+            <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-emerald-100 rounded-full text-emerald-600">
               <Home className="h-6 w-6" />
             </div>
             <h3 className="text-xl font-bold mb-3">Curated Properties</h3>
@@ -21,7 +21,7 @@ export default function BrandPromiseSection() {
           </div>
           
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-ocean-100 rounded-full text-ocean-600">
+            <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-emerald-100 rounded-full text-emerald-600">
               <Bell className="h-6 w-6" />
             </div>
             <h3 className="text-xl font-bold mb-3">Local Support</h3>
@@ -29,7 +29,7 @@ export default function BrandPromiseSection() {
           </div>
           
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-ocean-100 rounded-full text-ocean-600">
+            <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-emerald-100 rounded-full text-emerald-600">
               <Shield className="h-6 w-6" />
             </div>
             <h3 className="text-xl font-bold mb-3">Secure Booking</h3>
@@ -37,13 +37,13 @@ export default function BrandPromiseSection() {
           </div>
         </div>
         
-        <div className="mt-16 bg-sand-100 rounded-lg p-8 flex flex-col md:flex-row items-center justify-between">
+        <div className="mt-16 bg-emerald-50 rounded-lg p-8 flex flex-col md:flex-row items-center justify-between">
           <div className="mb-6 md:mb-0 md:mr-8">
             <h3 className="text-2xl font-bold mb-2">Ready to Experience the Perfect Getaway?</h3>
             <p className="text-gray-600">Find your dream vacation rental in Sahel or Ras El Hekma today</p>
           </div>
           <Link href="/properties">
-            <Button className="px-8 py-6 bg-coral-500 hover:bg-coral-600 text-white whitespace-nowrap">
+            <Button className="px-8 py-6 bg-emerald-500 hover:bg-emerald-600 text-white whitespace-nowrap">
               Start Browsing
             </Button>
           </Link>

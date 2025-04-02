@@ -80,10 +80,10 @@ export default function Navbar() {
         <div className="flex items-center">
           <Link 
             href="/" 
-            className="text-xl md:text-2xl font-bold text-rose-500 flex items-center group"
+            className="text-xl md:text-2xl font-bold text-emerald-500 flex items-center group"
             onClick={closeMenu}
           >
-            <div className="p-1 mr-2 group-hover:text-rose-600 transition-all duration-300">
+            <div className="p-1 mr-2 group-hover:text-emerald-600 transition-all duration-300">
               <UmbrellaIcon className="w-8 h-8" />
             </div>
             <div className="flex flex-col">
@@ -97,32 +97,32 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center space-x-8">
           <Link 
             href="/" 
-            className={`font-medium transition-colors hover:text-rose-500 ${
-              isActive('/') ? 'text-rose-500' : 'text-gray-700 dark:text-gray-300'
+            className={`font-medium transition-colors hover:text-emerald-500 ${
+              isActive('/') ? 'text-emerald-500' : 'text-gray-700 dark:text-gray-300'
             }`}
           >
             Home
           </Link>
           <Link 
             href="/properties" 
-            className={`font-medium transition-colors hover:text-rose-500 ${
-              isActive('/properties') ? 'text-rose-500' : 'text-gray-700 dark:text-gray-300'
+            className={`font-medium transition-colors hover:text-emerald-500 ${
+              isActive('/properties') ? 'text-emerald-500' : 'text-gray-700 dark:text-gray-300'
             }`}
           >
             Properties
           </Link>
           <Link 
             href="/about" 
-            className={`font-medium transition-colors hover:text-rose-500 ${
-              isActive('/about') ? 'text-rose-500' : 'text-gray-700 dark:text-gray-300'
+            className={`font-medium transition-colors hover:text-emerald-500 ${
+              isActive('/about') ? 'text-emerald-500' : 'text-gray-700 dark:text-gray-300'
             }`}
           >
             About Us
           </Link>
           <Link 
             href="/contact" 
-            className={`font-medium transition-colors hover:text-rose-500 ${
-              isActive('/contact') ? 'text-rose-500' : 'text-gray-700 dark:text-gray-300'
+            className={`font-medium transition-colors hover:text-emerald-500 ${
+              isActive('/contact') ? 'text-emerald-500' : 'text-gray-700 dark:text-gray-300'
             }`}
           >
             Contact
@@ -170,7 +170,7 @@ export default function Navbar() {
               <Button 
                 variant="default" 
                 size="sm"
-                className="rounded-full bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white"
+                className="rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
               >
                 {isMobile ? <User className="h-4 w-4" /> : "Sign In"}
               </Button>
@@ -229,28 +229,28 @@ export default function Navbar() {
         <nav className="flex flex-col gap-6 p-4">
           <Link 
             href="/" 
-            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-rose-500 dark:hover:text-rose-500 transition-colors"
+            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
             onClick={closeMenu}
           >
             Home
           </Link>
           <Link 
             href="/properties" 
-            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-rose-500 dark:hover:text-rose-500 transition-colors"
+            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
             onClick={closeMenu}
           >
             Properties
           </Link>
           <Link 
             href="/about" 
-            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-rose-500 dark:hover:text-rose-500 transition-colors"
+            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
             onClick={closeMenu}
           >
             About Us
           </Link>
           <Link 
             href="/contact" 
-            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-rose-500 dark:hover:text-rose-500 transition-colors"
+            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
             onClick={closeMenu}
           >
             Contact
@@ -260,7 +260,7 @@ export default function Navbar() {
             {isAuthenticated && (
               <Link 
                 href="/list-property" 
-                className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-rose-500 dark:hover:text-rose-500 transition-colors"
+                className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
                 onClick={closeMenu}
               >
                 List Your Property
@@ -281,7 +281,7 @@ export default function Navbar() {
             {!isAuthenticated ? (
               <Link href="/login">
                 <Button 
-                  className="w-full rounded-full py-5 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white"
+                  className="w-full rounded-full py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
                   onClick={closeMenu}
                 >
                   Sign In
@@ -295,7 +295,7 @@ export default function Navbar() {
                 </div>
                 <Button 
                   variant="outline"
-                  className="w-full rounded-full py-5 text-rose-500 border-rose-200 hover:bg-rose-50 dark:text-rose-400 dark:border-rose-900 dark:hover:bg-rose-900/20"
+                  className="w-full rounded-full py-5 text-emerald-500 border-emerald-200 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-900 dark:hover:bg-emerald-900/20"
                   onClick={handleLogout}
                 >
                   <LogOut className="mr-2 h-5 w-5 rtl-mr" />

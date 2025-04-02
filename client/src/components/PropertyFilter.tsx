@@ -290,7 +290,7 @@ export default function PropertyFilter() {
               <Button
                 size="sm"
                 onClick={handleApplyFilters}
-                className="bg-rose-500 hover:bg-rose-600 text-white"
+                className="bg-emerald-500 hover:bg-emerald-600 text-white"
                 disabled={isLoading || searchMutation.isPending}
               >
                 {searchMutation.isPending ? 'Applying...' : 'Show Results'}

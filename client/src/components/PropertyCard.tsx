@@ -95,7 +95,7 @@ export default function PropertyCard({
           <div className="absolute top-3 left-3 flex flex-col gap-2">
             {featured && (
               <Badge 
-                className="bg-rose-500 text-white hover:bg-rose-600"
+                className="bg-emerald-500 text-white hover:bg-emerald-600"
                 variant="secondary"
               >
                 {currentLanguage.code === 'ar' ? 'مميز' : 'Superhost'}
@@ -119,7 +119,7 @@ export default function PropertyCard({
           >
             <Heart 
               className={`h-6 w-6 drop-shadow-xl transition-colors ${
-                isFavorite ? 'fill-rose-500 text-rose-500' : 'fill-white/80 text-white/80 stroke-gray-600/50'
+                isFavorite ? 'fill-emerald-500 text-emerald-500' : 'fill-white/80 text-white/80 stroke-gray-600/50'
               }`}
               strokeWidth={1.5}
             />
@@ -139,7 +139,7 @@ export default function PropertyCard({
           {/* Rating */}
           {showRating && property.reviewCount && property.reviewCount > 0 && (
             <div className="flex items-center">
-              <Star className="h-4 w-4 fill-current text-rose-500 mr-1" />
+              <Star className="h-4 w-4 fill-current text-emerald-500 mr-1" />
               <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">
                 {rating.toFixed(1)}
               </span>

@@ -68,7 +68,7 @@ export default function HeroSection() {
           {/* Hero text */}
           <div className="text-center space-y-4">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight">
-              Find the perfect place to <span className="text-rose-500">stay in Egypt</span>
+              Find the perfect place to <span className="text-emerald-500">stay in Egypt</span>
             </h1>
             <p className="text-md sm:text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Discover amazing properties in Sahel & Ras El Hekma with panoramic sea views and luxury amenities
@@ -123,7 +123,7 @@ export default function HeroSection() {
                 </div>
                 
                 <Button 
-                  className="hidden md:flex mt-3 md:mt-0 rounded-full bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white"
+                  className="hidden md:flex mt-3 md:mt-0 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
                   size="sm"
                   onClick={handleSearch}
                 >
@@ -136,7 +136,7 @@ export default function HeroSection() {
             {/* Mobile search button */}
             <div className="mt-4 md:hidden">
               <Button 
-                className="w-full rounded-full bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white"
+                className="w-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
                 onClick={handleSearch}
               >
                 <Search className="h-4 w-4 mr-2" />
@@ -148,20 +148,20 @@ export default function HeroSection() {
           {/* Stats bar - Similar to Airbnb's trust indicators */}
           <div className="flex flex-wrap gap-6 justify-center mt-12 text-center">
             <div className="flex flex-col items-center">
-              <div className="mb-2 p-2 rounded-full bg-rose-100 dark:bg-rose-900/20">
-                <Home className="h-5 w-5 text-rose-500" />
+              <div className="mb-2 p-2 rounded-full bg-emerald-100 dark:bg-emerald-900/20">
+                <Home className="h-5 w-5 text-emerald-500" />
               </div>
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300">200+ Verified Properties</p>
             </div>
             <div className="flex flex-col items-center">
-              <div className="mb-2 p-2 rounded-full bg-rose-100 dark:bg-rose-900/20">
-                <Star className="h-5 w-5 text-rose-500" />
+              <div className="mb-2 p-2 rounded-full bg-emerald-100 dark:bg-emerald-900/20">
+                <Star className="h-5 w-5 text-emerald-500" />
               </div>
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300">4.8 Average Rating</p>
             </div>
             <div className="flex flex-col items-center">
-              <div className="mb-2 p-2 rounded-full bg-rose-100 dark:bg-rose-900/20">
-                <MapPin className="h-5 w-5 text-rose-500" />
+              <div className="mb-2 p-2 rounded-full bg-emerald-100 dark:bg-emerald-900/20">
+                <MapPin className="h-5 w-5 text-emerald-500" />
               </div>
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Prime Beachfront Locations</p>
             </div>
