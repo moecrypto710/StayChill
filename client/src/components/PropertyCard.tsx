@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "wouter";
-import { Heart, MapPin, Star, Bed, Bath, Users, ArrowRight } from "lucide-react";
+import { Heart, MapPin, Star, Bed, Bath, Users, View } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Property } from "@shared/schema";
+import { Property, Panorama } from "@shared/schema";
 import { useLanguage } from './LanguageSwitcher';
 import { useTranslation } from "@/lib/translations";
+import VirtualTour from "./VirtualTour";
 
 interface PropertyCardProps {
   property: Property;
@@ -25,6 +26,7 @@ export default function PropertyCard({
   const [isFavorite, setIsFavorite] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [showVirtualTour, setShowVirtualTour] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Intersection Observer for lazy loading and animation
@@ -64,12 +66,32 @@ export default function PropertyCard({
     ? 'opacity-100 translate-y-0' 
     : 'opacity-0 translate-y-8';
   
+  // Determine which panorama to show
+  const getFirstPanoramaUrl = () => {
+    if (!property.panoramas || (property.panoramas as any[]).length === 0) {
+      return '';
+    }
+    return (property.panoramas as any[])[0].url;
+  };
+
+  const handleCloseVirtualTour = () => {
+    setShowVirtualTour(false);
+  };
+
   return (
-    <div 
-      ref={cardRef}
-      className={`group flex flex-col bg-white dark:bg-gray-900 overflow-hidden transition-all duration-500 ${animationClass}`}
-    >
-      <div className="relative">
+    <>
+      {showVirtualTour && (
+        <VirtualTour 
+          panoramaUrl={getFirstPanoramaUrl()} 
+          propertyTitle={property.title}
+          onClose={handleCloseVirtualTour}
+        />
+      )}
+      <div 
+        ref={cardRef}
+        className={`group flex flex-col bg-white dark:bg-gray-900 overflow-hidden transition-all duration-500 ${animationClass}`}
+      >
+        <div className="relative">
         {/* Image container with aspect ratio */}
         <div className="relative aspect-[1/1] sm:aspect-[4/3] overflow-hidden rounded-xl">
           {/* Skeleton loader */}
@@ -124,6 +146,24 @@ export default function PropertyCard({
               strokeWidth={1.5}
             />
           </button>
+          
+          {/* Virtual Tour button - only show if property has panorama */}
+          {property.hasPanorama && (
+            <button 
+              className="absolute bottom-3 right-3 p-2 bg-black/60 hover:bg-black/80 rounded-full hover:scale-110 transition-all z-20"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowVirtualTour(true);
+              }}
+              aria-label="View 360° tour"
+            >
+              <View 
+                className="h-5 w-5 text-white"
+                strokeWidth={1.5}
+              />
+            </button>
+          )}
         </div>
       </div>
       

@@ -28,6 +28,8 @@ export const properties = pgTable("properties", {
   isNew: boolean("is_new").default(false),
   rating: integer("rating").default(0), // out of 5, multiplied by 10 (e.g., 4.5 = 45)
   reviewCount: integer("review_count").default(0),
+  hasPanorama: boolean("has_panorama").default(false),
+  panoramas: jsonb("panoramas").default([]),
 });
 
 // Booking model
@@ -144,8 +146,29 @@ export const availabilityDataSchema = z.object({
   data: z.array(pricePointSchema)
 });
 
+// Define schemas for panorama and virtual tour data
+export const hotspotSchema = z.object({
+  id: z.string(),
+  pitch: z.number(),
+  yaw: z.number(),
+  type: z.enum(['info', 'link']),
+  text: z.string().optional(),
+  URL: z.string().optional(),
+  targetPanoramaId: z.string().optional()
+});
+
+export const panoramaSchema = z.object({
+  id: z.string(),
+  url: z.string(),
+  title: z.string(),
+  thumbnail: z.string(),
+  hotspots: z.array(hotspotSchema).optional()
+});
+
 export type PropertySearch = z.infer<typeof propertySearchSchema>;
 export type Favorite = typeof favorites.$inferSelect;
 export type InsertFavorite = typeof favorites.$inferInsert;
 export type PricePoint = z.infer<typeof pricePointSchema>;
 export type AvailabilityData = z.infer<typeof availabilityDataSchema>;
+export type Hotspot = z.infer<typeof hotspotSchema>;
+export type Panorama = z.infer<typeof panoramaSchema>;
