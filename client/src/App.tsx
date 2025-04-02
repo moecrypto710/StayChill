@@ -20,6 +20,8 @@ import { useState, useEffect, useContext } from "react";
 import Dashboard from "./pages/Dashboard"; // Import the Dashboard component
 import BookingChat from "./pages/BookingChat"; // Import the BookingChat component
 import BookingDetail from "./pages/BookingDetail"; // Import the BookingDetail component
+import Inbox from "./pages/Inbox"; // Import the Inbox component
+import Rewards from "./pages/Rewards"; // Import the Rewards component
 
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
@@ -127,6 +129,22 @@ function Router() {
         <ProtectedRoute>
           <AuthenticatedLayout>
             <BookingDetail />
+          </AuthenticatedLayout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/inbox"> {/* Inbox/Messages route */}
+        <ProtectedRoute>
+          <AuthenticatedLayout>
+            <Inbox />
+          </AuthenticatedLayout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/rewards"> {/* Rewards route */}
+        <ProtectedRoute>
+          <AuthenticatedLayout>
+            <Rewards />
           </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
