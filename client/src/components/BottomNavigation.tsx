@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { Home, Search, Heart, User, Building2 } from "lucide-react";
+import { Home, Search, User, Building2, Gift, Trophy } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useTranslation } from "@/lib/translations";
 import { useLanguage } from "./LanguageSwitcher";
@@ -40,12 +40,12 @@ export default function BottomNavigation() {
             onClick={() => navigate('/properties')}
           />
           <NavItem
-            icon={<Heart size={20} />}
-            label={t('favorites')}
-            active={isActive('/favorites')}
+            icon={<Trophy size={20} />}
+            label={t('rewards')}
+            active={isActive('/rewards')}
             onClick={() => {
               if (isAuthenticated) {
-                navigate('/favorites');
+                navigate('/rewards');
               } else {
                 setIsLoginModalOpen(true);
               }

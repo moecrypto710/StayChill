@@ -51,6 +51,7 @@ export type TranslationKey =
   | 'averageRating'
   | 'primeLocations'
   | 'favorites'
+  | 'rewards'
   | 'account'
   | 'explore'
   | 'bookings'
@@ -111,6 +112,7 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     averageRating: '4.8 Average Rating',
     primeLocations: 'Prime Beachfront Locations',
     favorites: 'Favorites',
+    rewards: 'Rewards',
     account: 'Account',
     explore: 'Explore',
     bookings: 'Bookings',
@@ -167,6 +169,7 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     averageRating: 'متوسط تقييم 4.8',
     primeLocations: 'مواقع مميزة على الشاطئ',
     favorites: 'المفضلة',
+    rewards: 'المكافآت والنقاط',
     account: 'الحساب',
     explore: 'استكشاف',
     bookings: 'الحجوزات',
