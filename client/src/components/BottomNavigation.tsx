@@ -52,16 +52,17 @@ export default function BottomNavigation() {
             }}
           />
           <NavItem
-            icon={<User size={20} />}
-            label={t('account')}
-            active={isActive('/profile')}
+            icon={<Trophy size={20} />}
+            label={currentLanguage.code === 'ar' ? 'النقاط' : 'Points'}
+            active={isActive('/rewards')}
             onClick={() => {
               if (isAuthenticated) {
-                navigate('/profile');
+                navigate('/rewards');
               } else {
                 setIsLoginModalOpen(true);
               }
             }}
+            badge="120"
           />
         </div>
       </div>
@@ -79,9 +80,10 @@ interface NavItemProps {
   label: string;
   active: boolean;
   onClick: () => void;
+  badge?: string;
 }
 
-function NavItem({ icon, label, active, onClick }: NavItemProps) {
+function NavItem({ icon, label, active, onClick, badge }: NavItemProps) {
   return (
     <button
       className={`flex flex-col items-center justify-center py-2 transition-all transform hover:scale-110 duration-200 ease-in-out ${
@@ -91,7 +93,14 @@ function NavItem({ icon, label, active, onClick }: NavItemProps) {
       }`}
       onClick={onClick}
     >
-      <div className="mb-1.5">{icon}</div>
+      <div className="mb-1.5 relative">
+        {icon}
+        {badge && (
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+            {badge}
+          </span>
+        )}
+      </div>
       <span className="text-[11px] font-medium leading-none">{label}</span>
     </button>
   );

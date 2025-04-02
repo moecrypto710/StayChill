@@ -10,7 +10,8 @@ import {
   Home,
   Building2,
   Compass,
-  MessageSquare
+  MessageSquare,
+  Trophy
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -164,6 +165,26 @@ export default function Navbar() {
                 <Search className="h-4 w-4 mr-2" />
                 <span>{t('search')}</span>
               </Button>
+              
+              {isAuthenticated && (
+                <Link 
+                  href="/rewards" 
+                  className="hidden md:inline-block"
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    dir={currentLanguage.direction}
+                  >
+                    <Trophy className="h-4 w-4 mr-2" />
+                    <span className="flex items-center gap-1">
+                      {currentLanguage.code === 'ar' ? 'النقاط' : 'Points'}
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold bg-red-500 text-white rounded-full">120</span>
+                    </span>
+                  </Button>
+                </Link>
+              )}
 
               {isAuthenticated && (
                 <Link 
@@ -300,14 +321,27 @@ export default function Navbar() {
             </div>
             <div className="my-4 border-t border-gray-200 dark:border-gray-700 pt-4">
               {isAuthenticated && (
-                <Link 
-                  href="/list-property" 
-                  className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
-                  onClick={closeMenu}
-                  dir={currentLanguage.direction}
-                >
-                  {t('listProperty')}
-                </Link>
+                <>
+                  <Link 
+                    href="/rewards"
+                    className="flex items-center justify-between px-4 py-3 text-base font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 mb-2"
+                    onClick={closeMenu}
+                  >
+                    <div className="flex items-center">
+                      <Trophy className="h-5 w-5 mr-3 text-emerald-500" />
+                      {currentLanguage.code === 'ar' ? 'النقاط والجوائز' : 'Points & Rewards'}
+                    </div>
+                    <span className="px-2 py-1 text-xs font-bold bg-red-500 text-white rounded-full">120</span>
+                  </Link>
+                  <Link 
+                    href="/list-property" 
+                    className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors px-4"
+                    onClick={closeMenu}
+                    dir={currentLanguage.direction}
+                  >
+                    {t('listProperty')}
+                  </Link>
+                </>
               )}
             </div>
 
