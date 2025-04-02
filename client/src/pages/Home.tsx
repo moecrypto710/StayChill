@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { Property } from "@shared/schema";
 import { useState, useEffect } from "react";
+import { PropertyCardSkeleton, PropertyCardSkeletonGrid } from "../components/PropertyCardSkeleton";
 
 // New home page that focuses on rich destination content
 export default function Home() {
@@ -31,7 +32,7 @@ export default function Home() {
   const [activeDestination, setActiveDestination] = useState<string>("ras-el-hekma");
   
   // Fetch featured properties
-  const { data: featuredProperties } = useQuery<Property[]>({
+  const { data: featuredProperties, isLoading: isLoadingProperties } = useQuery<Property[]>({
     queryKey: ['/api/properties/featured'],
   });
   
@@ -327,45 +328,51 @@ export default function Home() {
               </Button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredProperties?.slice(0, 3).map((property) => (
-                <Card key={property.id} className="overflow-hidden group cursor-pointer hover:shadow-md transition-shadow duration-300">
-                  <div 
-                    className="relative h-56 overflow-hidden"
-                    onClick={() => setLocation(`/property/${property.id}`)}
-                  >
-                    <img
-                      src={property.images[0] || 'https://placehold.co/600x400?text=No+Image'}
-                      alt={property.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <button className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white/80 flex items-center justify-center hover:bg-white transition-colors duration-200">
-                      <Heart className="h-4 w-4 text-red-500" />
-                    </button>
-                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
-                      <div className="flex justify-between items-center">
-                        <Badge className="bg-primary hover:bg-primary">${property.price}/night</Badge>
-                        <div className="flex items-center text-white">
-                          <MapPin className="h-3.5 w-3.5 mr-1" />
-                          <span className="text-sm">{property.location}</span>
+            {isLoadingProperties ? (
+              // Show skeleton loading when properties are loading
+              <PropertyCardSkeletonGrid count={3} />
+            ) : (
+              // Show actual properties when data is loaded
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {featuredProperties?.slice(0, 3).map((property) => (
+                  <Card key={property.id} className="overflow-hidden group cursor-pointer hover:shadow-md transition-shadow duration-300">
+                    <div 
+                      className="relative h-56 overflow-hidden"
+                      onClick={() => setLocation(`/property/${property.id}`)}
+                    >
+                      <img
+                        src={property.images[0] || 'https://placehold.co/600x400?text=No+Image'}
+                        alt={property.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <button className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white/80 flex items-center justify-center hover:bg-white transition-colors duration-200">
+                        <Heart className="h-4 w-4 text-red-500" />
+                      </button>
+                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+                        <div className="flex justify-between items-center">
+                          <Badge className="bg-primary hover:bg-primary">${property.price}/night</Badge>
+                          <div className="flex items-center text-white">
+                            <MapPin className="h-3.5 w-3.5 mr-1" />
+                            <span className="text-sm">{property.location}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <CardContent className="p-4">
-                    <div onClick={() => setLocation(`/property/${property.id}`)}>
-                      <h3 className="text-lg font-semibold mb-2 line-clamp-1 group-hover:text-primary transition-colors">
-                        {property.title}
-                      </h3>
-                      <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
-                        <div>{property.bedrooms} {currentLanguage.code === 'ar' ? 'غرف نوم' : 'Bedrooms'}</div>
-                        <div>{property.bathrooms} {currentLanguage.code === 'ar' ? 'حمامات' : 'Bathrooms'}</div>
+                    <CardContent className="p-4">
+                      <div onClick={() => setLocation(`/property/${property.id}`)}>
+                        <h3 className="text-lg font-semibold mb-2 line-clamp-1 group-hover:text-primary transition-colors">
+                          {property.title}
+                        </h3>
+                        <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
+                          <div>{property.bedrooms} {currentLanguage.code === 'ar' ? 'غرف نوم' : 'Bedrooms'}</div>
+                          <div>{property.bathrooms} {currentLanguage.code === 'ar' ? 'حمامات' : 'Bathrooms'}</div>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
