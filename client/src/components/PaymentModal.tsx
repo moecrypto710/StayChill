@@ -17,7 +17,8 @@ import { Loader2 } from 'lucide-react';
 
 // Load Stripe outside of a component's render to avoid recreating the Stripe object on every render.
 // Use the publishable key from environment variables
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+const PUBLISHABLE_KEY = 'pk_test_51R9FWLQEan6IxyRl6urQrdEjjPGIEFO3xsGEF4julA0Dkyt3HywfduFHTPr6TuP76mxw4kTqEgMN750Pmsy3Ikl300nzjNcNBz';
+const stripePromise = loadStripe(PUBLISHABLE_KEY);
 
 interface PaymentModalProps {
   isOpen: boolean;
