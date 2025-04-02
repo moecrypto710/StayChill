@@ -11,7 +11,6 @@ import PropertyDetail from "./pages/PropertyDetail";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import ListProperty from "./pages/ListProperty";
-import Login from "./pages/Login";
 import NotFound from "./pages/not-found";
 import { useAuth } from "./lib/auth";
 import LanguageSwitcher, { LanguageContext } from "./components/LanguageSwitcher";
@@ -51,11 +50,6 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
 function Router() {
   return (
     <Switch>
-      {/* Public route - Login page */}
-      <Route path="/login">
-        <Login />
-      </Route>
-      
       {/* Protected routes - Require authentication */}
       <Route path="/">
         <ProtectedRoute>

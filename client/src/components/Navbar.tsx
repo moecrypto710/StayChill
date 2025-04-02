@@ -13,6 +13,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/lib/auth";
 import LanguageSwitcher from "./LanguageSwitcher";
 import ThemeSwitcher from "./ThemeSwitcher";
+import LoginModal from "./LoginModal";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +29,7 @@ export default function Navbar() {
   const [location, navigate] = useLocation();
   const isMobile = useIsMobile();
   const { user, isAuthenticated, logout } = useAuth();
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // Add scroll effect for navbar
   useEffect(() => {
@@ -60,7 +62,6 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
     closeMenu();
   };
 
@@ -166,15 +167,14 @@ export default function Navbar() {
           )}
           
           {!isAuthenticated ? (
-            <Link href="/login">
-              <Button 
-                variant="default" 
-                size="sm"
-                className="rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
-              >
-                {isMobile ? <User className="h-4 w-4" /> : "Sign In"}
-              </Button>
-            </Link>
+            <Button 
+              variant="default" 
+              size="sm"
+              className="rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
+              onClick={() => setIsLoginModalOpen(true)}
+            >
+              {isMobile ? <User className="h-4 w-4" /> : "Sign In"}
+            </Button>
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -279,14 +279,15 @@ export default function Navbar() {
             </div>
             
             {!isAuthenticated ? (
-              <Link href="/login">
-                <Button 
-                  className="w-full rounded-full py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
-                  onClick={closeMenu}
-                >
-                  Sign In
-                </Button>
-              </Link>
+              <Button 
+                className="w-full rounded-full py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
+                onClick={() => {
+                  closeMenu();
+                  setIsLoginModalOpen(true);
+                }}
+              >
+                Sign In
+              </Button>
             ) : (
               <div className="space-y-4">
                 <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
@@ -306,6 +307,12 @@ export default function Navbar() {
           </div>
         </nav>
       </div>
+
+      {/* Login Modal */}
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)} 
+      />
     </header>
   );
 }
