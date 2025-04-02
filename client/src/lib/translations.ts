@@ -28,7 +28,18 @@ export type TranslationKey =
   | 'viewDetails'
   | 'changeLanguage'
   | 'myAccount'
-  | 'logOut';
+  | 'logOut'
+  | 'username'
+  | 'password'
+  | 'email'
+  | 'confirmPassword'
+  | 'createAccount'
+  | 'welcomeBack'
+  | 'accessExclusive'
+  | 'registerSuccess'
+  | 'continueAsGuest'
+  | 'termsAgreement'
+  | 'loginSuccess';
 
 export type Language = 'en' | 'ar';
 
@@ -61,7 +72,18 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     viewDetails: 'View Details',
     changeLanguage: 'Change Language',
     myAccount: 'My Account',
-    logOut: 'Log Out'
+    logOut: 'Log Out',
+    username: 'Username',
+    password: 'Password',
+    email: 'Email Address',
+    confirmPassword: 'Confirm Password',
+    createAccount: 'Create Account',
+    welcomeBack: 'Welcome to Stay Chill',
+    accessExclusive: 'Sign in to access exclusive features and manage your bookings',
+    registerSuccess: 'Registration successful! You can now log in to your account',
+    continueAsGuest: 'Continue as Guest',
+    termsAgreement: 'By continuing, you agree to Stay Chill\'s Terms of Service and Privacy Policy.',
+    loginSuccess: 'Login successful!'
   },
   ar: {
     home: 'الرئيسية',
@@ -90,7 +112,18 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     viewDetails: 'عرض التفاصيل',
     changeLanguage: 'تغيير اللغة',
     myAccount: 'حسابي',
-    logOut: 'تسجيل الخروج'
+    logOut: 'تسجيل الخروج',
+    username: 'اسم المستخدم',
+    password: 'كلمة المرور',
+    email: 'البريد الإلكتروني',
+    confirmPassword: 'تأكيد كلمة المرور',
+    createAccount: 'إنشاء حساب',
+    welcomeBack: 'مرحبًا بك في ستاي تشيل',
+    accessExclusive: 'سجل الدخول للوصول إلى المميزات الحصرية وإدارة حجوزاتك',
+    registerSuccess: 'تم التسجيل بنجاح! يمكنك الآن تسجيل الدخول إلى حسابك',
+    continueAsGuest: 'المتابعة كضيف',
+    termsAgreement: 'بالمتابعة، فإنك توافق على شروط الخدمة وسياسة الخصوصية الخاصة بستاي تشيل.',
+    loginSuccess: 'تم تسجيل الدخول بنجاح!'
   }
 };
 

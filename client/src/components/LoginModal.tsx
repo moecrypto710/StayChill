@@ -5,6 +5,8 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/lib/auth";
+import { useLanguage } from "./LanguageSwitcher";
+import { useTranslation } from "@/lib/translations";
 
 import {
   Form,
@@ -57,6 +59,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<string>("login");
   const { login, register: registerUser } = useAuth();
+  const { currentLanguage } = useLanguage();
+  const { t } = useTranslation(currentLanguage.code);
 
   // Setup login form
   const loginForm = useForm<z.infer<typeof loginSchema>>({
@@ -89,16 +93,17 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     },
     onSuccess: () => {
       toast({
-        title: "Login successful!",
-        description: "Welcome back to Stay Chill",
+        title: t('loginSuccess'),
+        description: t('welcomeBack'),
       });
       onClose();
       loginForm.reset();
     },
     onError: (error) => {
       toast({
-        title: "Login failed",
-        description: error instanceof Error ? error.message : "Invalid username or password",
+        title: currentLanguage.code === 'ar' ? "فشل تسجيل الدخول" : "Login failed",
+        description: error instanceof Error ? error.message : 
+          (currentLanguage.code === 'ar' ? "اسم المستخدم أو كلمة المرور غير صحيحة" : "Invalid username or password"),
         variant: "destructive",
       });
     },
@@ -116,16 +121,17 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     },
     onSuccess: () => {
       toast({
-        title: "Registration successful!",
-        description: "You can now log in to your account",
+        title: t('registerSuccess'),
+        description: currentLanguage.code === 'ar' ? "يمكنك الآن تسجيل الدخول إلى حسابك" : "You can now log in to your account",
       });
       setActiveTab("login");
       registerForm.reset();
     },
     onError: (error) => {
       toast({
-        title: "Registration failed",
-        description: error instanceof Error ? error.message : "Please try again with different credentials",
+        title: currentLanguage.code === 'ar' ? "فشل التسجيل" : "Registration failed",
+        description: error instanceof Error ? error.message : 
+          (currentLanguage.code === 'ar' ? "يرجى المحاولة مرة أخرى باستخدام بيانات اعتماد مختلفة" : "Please try again with different credentials"),
         variant: "destructive",
       });
     },
@@ -146,13 +152,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md md:max-w-lg bg-white dark:bg-gray-800 border-none shadow-2xl">
+      <DialogContent className={`sm:max-w-md md:max-w-lg bg-white dark:bg-gray-800 border-none shadow-2xl ${currentLanguage.code === 'ar' ? 'ar' : ''}`}>
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold text-center text-gray-900 dark:text-white">
-            Welcome to Stay Chill
+            {t('welcomeBack')}
           </DialogTitle>
           <DialogDescription className="text-center text-gray-600 dark:text-gray-300">
-            Sign in to access exclusive features and manage your bookings
+            {t('accessExclusive')}
           </DialogDescription>
         </DialogHeader>
 
@@ -162,13 +168,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               value="login" 
               className="text-slate-600 font-medium dark:text-slate-300 data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-600 dark:data-[state=active]:bg-emerald-900/20 dark:data-[state=active]:text-emerald-400 rounded-md py-3"
             >
-              Sign In
+              {t('signIn')}
             </TabsTrigger>
             <TabsTrigger 
               value="register" 
               className="text-slate-600 font-medium dark:text-slate-300 data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-600 dark:data-[state=active]:bg-emerald-900/20 dark:data-[state=active]:text-emerald-400 rounded-md py-3"
             >
-              Create Account
+              {t('createAccount')}
             </TabsTrigger>
           </TabsList>
 
@@ -180,12 +186,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 dark:text-gray-300">Username</FormLabel>
+                      <FormLabel className="text-gray-700 dark:text-gray-300">{t('username')}</FormLabel>
                       <FormControl>
                         <Input 
-                          placeholder="Enter your username" 
+                          placeholder={currentLanguage.code === 'ar' ? "أدخل اسم المستخدم" : "Enter your username"} 
                           {...field} 
                           className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
+                          dir={currentLanguage.direction}
                         />
                       </FormControl>
                       <FormMessage className="text-red-500 text-xs" />
@@ -198,13 +205,14 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 dark:text-gray-300">Password</FormLabel>
+                      <FormLabel className="text-gray-700 dark:text-gray-300">{t('password')}</FormLabel>
                       <FormControl>
                         <Input 
                           type="password" 
-                          placeholder="Enter your password" 
+                          placeholder={currentLanguage.code === 'ar' ? "أدخل كلمة المرور" : "Enter your password"}
                           {...field} 
                           className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
+                          dir={currentLanguage.direction}
                         />
                       </FormControl>
                       <FormMessage className="text-red-500 text-xs" />
@@ -219,13 +227,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 >
                   {loginMutation.isPending ? 
                     <div className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <svg className={`animate-spin ${currentLanguage.code === 'ar' ? 'ml-2 -mr-1' : '-ml-1 mr-2'} h-4 w-4 text-white`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      <span>Signing In...</span>
+                      <span>{currentLanguage.code === 'ar' ? "جاري تسجيل الدخول..." : "Signing In..."}</span>
                     </div>
-                    : "Sign In"
+                    : t('signIn')
                   }
                 </Button>
               </form>
@@ -236,7 +244,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 <span className="w-full border-t border-gray-300 dark:border-gray-700"></span>
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">or</span>
+                <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">
+                  {currentLanguage.code === 'ar' ? 'أو' : 'or'}
+                </span>
               </div>
             </div>
 
@@ -244,8 +254,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               variant="outline"
               className="w-full border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
               onClick={guestLogin}
+              dir={currentLanguage.direction}
             >
-              Continue as Guest
+              {t('continueAsGuest')}
             </Button>
           </TabsContent>
 
@@ -257,12 +268,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 dark:text-gray-300">Username</FormLabel>
+                      <FormLabel className="text-gray-700 dark:text-gray-300">{t('username')}</FormLabel>
                       <FormControl>
                         <Input 
-                          placeholder="Choose a username" 
+                          placeholder={currentLanguage.code === 'ar' ? "اختر اسم مستخدم" : "Choose a username"} 
                           {...field} 
                           className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
+                          dir={currentLanguage.direction}
                         />
                       </FormControl>
                       <FormMessage className="text-red-500 text-xs" />
@@ -275,13 +287,14 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 dark:text-gray-300">Email</FormLabel>
+                      <FormLabel className="text-gray-700 dark:text-gray-300">{t('email')}</FormLabel>
                       <FormControl>
                         <Input 
                           type="email" 
-                          placeholder="Enter your email" 
+                          placeholder={currentLanguage.code === 'ar' ? "أدخل بريدك الإلكتروني" : "Enter your email"} 
                           {...field} 
                           className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
+                          dir={currentLanguage.direction}
                         />
                       </FormControl>
                       <FormMessage className="text-red-500 text-xs" />
@@ -294,13 +307,14 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 dark:text-gray-300">Password</FormLabel>
+                      <FormLabel className="text-gray-700 dark:text-gray-300">{t('password')}</FormLabel>
                       <FormControl>
                         <Input 
                           type="password" 
-                          placeholder="Create a password" 
+                          placeholder={currentLanguage.code === 'ar' ? "أنشئ كلمة مرور" : "Create a password"} 
                           {...field} 
                           className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
+                          dir={currentLanguage.direction}
                         />
                       </FormControl>
                       <FormMessage className="text-red-500 text-xs" />
@@ -313,13 +327,14 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 dark:text-gray-300">Confirm Password</FormLabel>
+                      <FormLabel className="text-gray-700 dark:text-gray-300">{t('confirmPassword')}</FormLabel>
                       <FormControl>
                         <Input 
                           type="password" 
-                          placeholder="Confirm your password" 
+                          placeholder={currentLanguage.code === 'ar' ? "تأكيد كلمة المرور" : "Confirm your password"} 
                           {...field} 
                           className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
+                          dir={currentLanguage.direction}
                         />
                       </FormControl>
                       <FormMessage className="text-red-500 text-xs" />
@@ -334,13 +349,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 >
                   {registerMutation.isPending ? 
                     <div className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <svg className={`animate-spin ${currentLanguage.code === 'ar' ? 'ml-2 -mr-1' : '-ml-1 mr-2'} h-4 w-4 text-white`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      <span>Creating Account...</span>
+                      <span>{currentLanguage.code === 'ar' ? "جاري إنشاء الحساب..." : "Creating Account..."}</span>
                     </div>
-                    : "Create Account"
+                    : t('createAccount')
                   }
                 </Button>
               </form>
@@ -349,8 +364,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         </Tabs>
 
         <DialogFooter className="sm:justify-center mt-4">
-          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-            By continuing, you agree to Stay Chill's Terms of Service and Privacy Policy.
+          <p className="text-xs text-gray-500 dark:text-gray-400 text-center" dir={currentLanguage.direction}>
+            {t('termsAgreement')}
           </p>
         </DialogFooter>
       </DialogContent>

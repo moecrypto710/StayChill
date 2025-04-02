@@ -53,6 +53,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/* RTL Support */
+.ar {
+  direction: rtl;
+  text-align: right;
+}
+
+.ar .form-label {
+  text-align: right;
+}
+
+.ar .form-item {
+  text-align: right;
+}
+
+/* Fix spinner positioning for RTL */
+.ar .animate-spin.ml-2 {
+  margin-left: 0.5rem;
+  margin-right: 0;
+}
+
+/* Fix dialog for RTL */
+.ar .dialog-header, 
+.ar .dialog-content,
+.ar .dialog-footer {
+  direction: rtl;
+}
+
 @layer base {
   * {
     @apply border-border;
