@@ -51,7 +51,11 @@ export type TranslationKey =
   | 'averageRating'
   | 'primeLocations'
   | 'favorites'
-  | 'account';
+  | 'account'
+  | 'explore'
+  | 'bookings'
+  | 'trips'
+  | 'inbox';
 
 export type Language = 'en' | 'ar';
 
@@ -107,7 +111,11 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     averageRating: '4.8 Average Rating',
     primeLocations: 'Prime Beachfront Locations',
     favorites: 'Favorites',
-    account: 'Account'
+    account: 'Account',
+    explore: 'Explore',
+    bookings: 'Bookings',
+    trips: 'Trips',
+    inbox: 'Inbox'
   },
   ar: {
     home: 'الرئيسية',
@@ -159,7 +167,11 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     averageRating: 'متوسط تقييم 4.8',
     primeLocations: 'مواقع مميزة على الشاطئ',
     favorites: 'المفضلة',
-    account: 'الحساب'
+    account: 'الحساب',
+    explore: 'استكشاف',
+    bookings: 'الحجوزات',
+    trips: 'رحلاتي',
+    inbox: 'الرسائل'
   }
 };
 
