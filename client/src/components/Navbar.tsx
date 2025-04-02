@@ -254,8 +254,8 @@ export default function Navbar() {
             </button>
           </div>
           
-          <nav className="mt-8">
-            <div className="flex flex-col gap-4">
+          <nav className="mt-6">
+            <div className="flex flex-col gap-2">
               <Link 
                 href="/" 
                 className="flex items-center px-4 py-3 text-base font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"

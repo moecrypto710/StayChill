@@ -91,8 +91,8 @@ function NavItem({ icon, label, active, onClick }: NavItemProps) {
       }`}
       onClick={onClick}
     >
-      <div className="mb-1">{icon}</div>
-      <span className="text-xs font-medium">{label}</span>
+      <div className="mb-1.5">{icon}</div>
+      <span className="text-[11px] font-medium leading-none">{label}</span>
     </button>
   );
 }
