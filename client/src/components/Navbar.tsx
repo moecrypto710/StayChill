@@ -6,7 +6,11 @@ import {
   X as XIcon,
   User,
   Search,
-  LogOut
+  LogOut,
+  Home,
+  Building2,
+  Compass,
+  MessageSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -239,48 +243,59 @@ export default function Navbar() {
       </div>
       
       {/* Mobile menu with animation */}
-      <div className={`mobile-menu ${isMenuOpen ? "open" : ""} bg-white dark:bg-gray-900`}>
-        <nav className="flex flex-col gap-6 p-4">
-          <Link 
-            href="/" 
-            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
-            onClick={closeMenu}
-            dir={currentLanguage.direction}
-          >
-            {t('home')}
-          </Link>
-          <Link 
-            href="/properties" 
-            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
-            onClick={closeMenu}
-            dir={currentLanguage.direction}
-          >
-            {t('explore')}
-          </Link>
-          <Link 
-            href="/bookings" 
-            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
-            onClick={closeMenu}
-            dir={currentLanguage.direction}
-          >
-            {t('bookings')}
-          </Link>
-          <Link 
-            href="/trips" 
-            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
-            onClick={closeMenu}
-            dir={currentLanguage.direction}
-          >
-            {t('trips')}
-          </Link>
-          <Link 
-            href="/inbox" 
-            className="text-xl font-medium text-gray-700 dark:text-gray-200 hover:text-emerald-500 dark:hover:text-emerald-500 transition-colors"
-            onClick={closeMenu}
-            dir={currentLanguage.direction}
-          >
-            {t('inbox')}
-          </Link>
+      <div className={`fixed inset-0 z-50 transform ${isMenuOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out md:hidden`}>
+        <div className="min-h-screen px-4 bg-white dark:bg-gray-900">
+          <div className="flex items-center justify-between pt-5">
+            <Link href="/" className="text-xl font-bold text-emerald-500" onClick={closeMenu}>
+              StayChill
+            </Link>
+            <button onClick={closeMenu} className="p-2">
+              <XIcon className="h-6 w-6" />
+            </button>
+          </div>
+          
+          <nav className="mt-8">
+            <div className="flex flex-col gap-4">
+              <Link 
+                href="/" 
+                className="flex items-center px-4 py-3 text-base font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                onClick={closeMenu}
+              >
+                <Home className="h-5 w-5 mr-3" />
+                {t('home')}
+              </Link>
+              <Link 
+                href="/properties" 
+                className="flex items-center px-4 py-3 text-base font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                onClick={closeMenu}
+              >
+                <Search className="h-5 w-5 mr-3" />
+                {t('explore')}
+              </Link>
+              <Link 
+                href="/bookings" 
+                className="flex items-center px-4 py-3 text-base font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                onClick={closeMenu}
+              >
+                <Building2 className="h-5 w-5 mr-3" />
+                {t('bookings')}
+              </Link>
+              <Link 
+                href="/trips" 
+                className="flex items-center px-4 py-3 text-base font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                onClick={closeMenu}
+              >
+                <Compass className="h-5 w-5 mr-3" />
+                {t('trips')}
+              </Link>
+              <Link 
+                href="/inbox" 
+                className="flex items-center px-4 py-3 text-base font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                onClick={closeMenu}
+              >
+                <MessageSquare className="h-5 w-5 mr-3" />
+                {t('inbox')}
+              </Link>
           
           <div className="my-4 border-t border-gray-200 dark:border-gray-700 pt-4">
             {isAuthenticated && (
