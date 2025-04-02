@@ -64,9 +64,9 @@ export default function HeroSection() {
           <div className="text-center space-y-2">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
               {isRtl ? (
-                <>اعثر على المكان المثالي لل<span className="text-emerald-500">{t('stayInEgypt')}</span></>
+                <>اعثر على المكان المثالي لل<span className="text-primary">{t('stayInEgypt')}</span></>
               ) : (
-                <>Find the perfect place to <span className="text-emerald-500">{t('stayInEgypt')}</span></>
+                <>Find the perfect place to <span className="text-primary">{t('stayInEgypt')}</span></>
               )}
             </h1>
             <p className="text-sm sm:text-md text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
@@ -118,7 +118,7 @@ export default function HeroSection() {
                 </div>
                 
                 <Button 
-                  className="rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
+                  className="rounded-full bg-primary hover:bg-primary/90 text-white"
                   size="sm"
                   onClick={handleSearch}
                 >
@@ -132,20 +132,20 @@ export default function HeroSection() {
           {/* Compact Stats bar */}
           <div className="flex flex-wrap gap-4 justify-center mt-6 text-center">
             <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/20">
-                <Home className="h-4 w-4 text-emerald-500" />
+              <div className="p-1.5 rounded-full bg-primary/10">
+                <Home className="h-4 w-4 text-primary" />
               </div>
               <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('verifiedProperties')}</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/20">
-                <Star className="h-4 w-4 text-emerald-500" />
+              <div className="p-1.5 rounded-full bg-primary/10">
+                <Star className="h-4 w-4 text-primary" />
               </div>
               <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('averageRating')}</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/20">
-                <MapPin className="h-4 w-4 text-emerald-500" />
+              <div className="p-1.5 rounded-full bg-primary/10">
+                <MapPin className="h-4 w-4 text-primary" />
               </div>
               <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('primeLocations')}</span>
             </div>
