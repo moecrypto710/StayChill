@@ -10,6 +10,7 @@ type User = {
 type AuthContextType = {
   user: User | null;
   isAuthenticated: boolean;
+  isLoggedIn: boolean; // Alias for isAuthenticated, for better readability
   isLoading: boolean;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
@@ -82,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         isAuthenticated: !!user,
+        isLoggedIn: !!user, // Alias for isAuthenticated
         isLoading,
         login,
         logout,

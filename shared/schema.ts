@@ -236,3 +236,46 @@ export type ChatParticipant = typeof chatParticipants.$inferSelect;
 export type InsertChatParticipant = z.infer<typeof insertChatParticipantSchema>;
 export type Message = typeof messages.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
+
+// Recommendation system types
+export const travelPreferences = pgTable("travel_preferences", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  preferredLocations: text("preferred_locations").array().notNull(),
+  preferredAmenities: text("preferred_amenities").array().notNull(),
+  travelStyle: text("travel_style").notNull(), // 'family', 'couple', 'solo', 'friends', 'business'
+  budgetRange: text("budget_range").notNull(), // 'budget', 'mid-range', 'luxury'
+  tripDuration: text("trip_duration").notNull(), // 'weekend', 'week', 'long-term'
+  seasonalPreference: text("seasonal_preference").notNull(), // 'summer', 'winter', 'spring', 'fall', 'any'
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const recommendations = pgTable("recommendations", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  propertyId: integer("property_id").notNull().references(() => properties.id),
+  score: integer("score").notNull(), // Recommendation score from 0-100
+  reasonCodes: text("reason_codes").array().notNull(), // Why this property was recommended
+  viewed: boolean("viewed").default(false),
+  saved: boolean("saved").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertTravelPreferencesSchema = createInsertSchema(travelPreferences).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertRecommendationSchema = createInsertSchema(recommendations).omit({ id: true, createdAt: true });
+
+// Travel preference validation schema
+export const travelPreferencesValidationSchema = insertTravelPreferencesSchema.extend({
+  preferredLocations: z.array(z.string()).min(1, "Select at least one preferred location"),
+  preferredAmenities: z.array(z.string()).min(1, "Select at least one preferred amenity"),
+  travelStyle: z.enum(['family', 'couple', 'solo', 'friends', 'business']),
+  budgetRange: z.enum(['budget', 'mid-range', 'luxury']),
+  tripDuration: z.enum(['weekend', 'week', 'long-term']),
+  seasonalPreference: z.enum(['summer', 'winter', 'spring', 'fall', 'any']),
+});
+
+export type TravelPreference = typeof travelPreferences.$inferSelect;
+export type InsertTravelPreference = z.infer<typeof insertTravelPreferencesSchema>;
+export type Recommendation = typeof recommendations.$inferSelect;
+export type InsertRecommendation = z.infer<typeof insertRecommendationSchema>;

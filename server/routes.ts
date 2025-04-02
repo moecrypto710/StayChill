@@ -17,7 +17,8 @@ import {
   paymentIntentSchema,
   insertChatRoomSchema,
   insertChatParticipantSchema,
-  insertMessageSchema
+  insertMessageSchema,
+  travelPreferencesValidationSchema
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -699,6 +700,142 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Mount chat router
   apiRouter.use("/chat", chatRouter);
+  
+  // Personalized travel recommendations routes
+  const recommendationsRouter = express.Router();
+  
+  // Get recommendations for current user
+  recommendationsRouter.get("/", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session.userId as number;
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 5;
+      
+      const recommendations = await storage.getRecommendationsForUser(userId, limit);
+      res.json(recommendations);
+    } catch (error) {
+      console.error("Error fetching recommendations:", error);
+      res.status(500).json({ error: "Failed to fetch recommendations" });
+    }
+  });
+  
+  // Generate new recommendations for current user
+  recommendationsRouter.post("/generate", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session.userId as number;
+      
+      // Check if user has preferences first
+      const preferences = await storage.getUserTravelPreferences(userId);
+      if (!preferences) {
+        return res.status(400).json({ 
+          error: "Travel preferences not found",
+          message: "Please set your travel preferences first"
+        });
+      }
+      
+      const recommendations = await storage.generateRecommendations(userId);
+      res.status(201).json(recommendations);
+    } catch (error) {
+      console.error("Error generating recommendations:", error);
+      res.status(500).json({ error: "Failed to generate recommendations" });
+    }
+  });
+  
+  // Mark recommendation as viewed
+  recommendationsRouter.put("/:id/view", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const recommendation = await storage.markRecommendationAsViewed(id);
+      
+      if (!recommendation) {
+        return res.status(404).json({ error: "Recommendation not found" });
+      }
+      
+      res.json(recommendation);
+    } catch (error) {
+      console.error("Error marking recommendation as viewed:", error);
+      res.status(500).json({ error: "Failed to mark recommendation as viewed" });
+    }
+  });
+  
+  // Save/unsave recommendation
+  recommendationsRouter.put("/:id/save", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { saved } = req.body;
+      
+      if (saved === undefined) {
+        return res.status(400).json({ error: "Saved status is required" });
+      }
+      
+      const recommendation = await storage.markRecommendationAsSaved(id, saved);
+      
+      if (!recommendation) {
+        return res.status(404).json({ error: "Recommendation not found" });
+      }
+      
+      res.json(recommendation);
+    } catch (error) {
+      console.error("Error updating recommendation saved status:", error);
+      res.status(500).json({ error: "Failed to update recommendation saved status" });
+    }
+  });
+  
+  // Mount recommendations router
+  apiRouter.use("/recommendations", recommendationsRouter);
+  
+  // Travel preferences routes
+  const preferencesRouter = express.Router();
+  
+  // Get travel preferences for current user
+  preferencesRouter.get("/", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session.userId as number;
+      const preferences = await storage.getUserTravelPreferences(userId);
+      
+      if (!preferences) {
+        return res.status(404).json({ error: "Travel preferences not found" });
+      }
+      
+      res.json(preferences);
+    } catch (error) {
+      console.error("Error fetching travel preferences:", error);
+      res.status(500).json({ error: "Failed to fetch travel preferences" });
+    }
+  });
+  
+  // Create or update travel preferences
+  preferencesRouter.post("/", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session.userId as number;
+      
+      // Validate the request body
+      const preferenceData = travelPreferencesValidationSchema.parse({
+        ...req.body,
+        userId
+      });
+      
+      // Check if user already has preferences
+      const existingPreferences = await storage.getUserTravelPreferences(userId);
+      
+      if (existingPreferences) {
+        // Update existing preferences
+        const updatedPreferences = await storage.updateUserTravelPreferences(
+          userId, 
+          preferenceData
+        );
+        return res.json(updatedPreferences);
+      } else {
+        // Create new preferences
+        const newPreferences = await storage.createUserTravelPreferences(preferenceData);
+        return res.status(201).json(newPreferences);
+      }
+    } catch (error) {
+      handleZodError(error, res);
+    }
+  });
+  
+  // Mount preferences router
+  apiRouter.use("/travel-preferences", preferencesRouter);
   
   // Mount API router
   app.use("/api", apiRouter);

@@ -23,6 +23,7 @@ import BookingDetail from "./pages/BookingDetail"; // Import the BookingDetail c
 import Inbox from "./pages/Inbox"; // Import the Inbox component
 import Rewards from "./pages/Rewards"; // Import the Rewards component
 import Profile from "./pages/Profile"; // Import the Profile component
+import { Recommendations } from "./pages/Recommendations"; // Import the Recommendations component
 
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
@@ -154,6 +155,14 @@ function Router() {
         <ProtectedRoute>
           <AuthenticatedLayout>
             <Profile />
+          </AuthenticatedLayout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/recommendations"> {/* Recommendations route */}
+        <ProtectedRoute>
+          <AuthenticatedLayout>
+            <Recommendations />
           </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>

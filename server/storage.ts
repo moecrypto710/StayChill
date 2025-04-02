@@ -8,6 +8,8 @@ import {
   chatRooms,
   chatParticipants,
   messages,
+  travelPreferences,
+  recommendations,
   type Property, 
   type InsertProperty, 
   type Booking, 
@@ -23,6 +25,10 @@ import {
   type AvailabilityData,
   type ChatRoom,
   type InsertChatRoom,
+  type TravelPreference,
+  type InsertTravelPreference,
+  type Recommendation,
+  type InsertRecommendation,
   type ChatParticipant,
   type InsertChatParticipant,
   type Message,
@@ -90,6 +96,16 @@ export interface IStorage {
   sendMessage(message: InsertMessage): Promise<Message>;
   getMessagesByRoomId(roomId: number): Promise<Message[]>;
   markMessagesAsRead(roomId: number, userId: number): Promise<boolean>;
+  
+  // Recommendation operations
+  getUserTravelPreferences(userId: number): Promise<TravelPreference | undefined>;
+  createUserTravelPreferences(preferences: InsertTravelPreference): Promise<TravelPreference>;
+  updateUserTravelPreferences(userId: number, preferences: Partial<TravelPreference>): Promise<TravelPreference | undefined>;
+  getRecommendationsForUser(userId: number, limit?: number): Promise<Recommendation[]>;
+  createRecommendation(recommendation: InsertRecommendation): Promise<Recommendation>;
+  markRecommendationAsViewed(id: number): Promise<Recommendation | undefined>;
+  markRecommendationAsSaved(id: number, saved: boolean): Promise<Recommendation | undefined>;
+  generateRecommendations(userId: number): Promise<Recommendation[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -102,6 +118,8 @@ export class MemStorage implements IStorage {
   private chatRooms: Map<number, ChatRoom>;
   private chatParticipants: Map<number, ChatParticipant>;
   private messages: Map<number, Message>;
+  private travelPreferences: Map<number, TravelPreference>;
+  private recommendations: Map<number, Recommendation>;
 
   private userCurrentId: number;
   private propertyCurrentId: number;
@@ -111,6 +129,8 @@ export class MemStorage implements IStorage {
   private chatRoomCurrentId: number;
   private chatParticipantCurrentId: number;
   private messageCurrentId: number;
+  private travelPreferenceCurrentId: number;
+  private recommendationCurrentId: number;
 
   constructor() {
     this.users = new Map();
@@ -122,6 +142,8 @@ export class MemStorage implements IStorage {
     this.chatRooms = new Map();
     this.chatParticipants = new Map();
     this.messages = new Map();
+    this.travelPreferences = new Map();
+    this.recommendations = new Map();
 
     this.userCurrentId = 1;
     this.propertyCurrentId = 1;
@@ -131,6 +153,8 @@ export class MemStorage implements IStorage {
     this.chatRoomCurrentId = 1;
     this.chatParticipantCurrentId = 1;
     this.messageCurrentId = 1;
+    this.travelPreferenceCurrentId = 1;
+    this.recommendationCurrentId = 1;
 
     // Add some initial dummy properties and guest user
     this.initializeProperties();
@@ -281,7 +305,12 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userCurrentId++;
-    const user: User = { ...insertUser, id };
+    const now = new Date();
+    const user: User = { 
+      ...insertUser, 
+      id,
+      createdAt: now
+    };
     this.users.set(id, user);
     return user;
   }
@@ -697,6 +726,193 @@ export class MemStorage implements IStorage {
     });
 
     return true;
+  }
+
+  // Travel preferences operations
+  async getUserTravelPreferences(userId: number): Promise<TravelPreference | undefined> {
+    return Array.from(this.travelPreferences.values())
+      .find(pref => pref.userId === userId);
+  }
+
+  async createUserTravelPreferences(preferences: InsertTravelPreference): Promise<TravelPreference> {
+    const id = this.travelPreferenceCurrentId++;
+    const now = new Date();
+    const newPreference: TravelPreference = {
+      ...preferences,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.travelPreferences.set(id, newPreference);
+    return newPreference;
+  }
+
+  async updateUserTravelPreferences(userId: number, updates: Partial<TravelPreference>): Promise<TravelPreference | undefined> {
+    const preference = Array.from(this.travelPreferences.values())
+      .find(pref => pref.userId === userId);
+      
+    if (!preference) return undefined;
+    
+    const updatedPreference: TravelPreference = {
+      ...preference,
+      ...updates,
+      updatedAt: new Date()
+    };
+    
+    this.travelPreferences.set(preference.id, updatedPreference);
+    return updatedPreference;
+  }
+
+  // Recommendations operations
+  async getRecommendationsForUser(userId: number, limit: number = 5): Promise<Recommendation[]> {
+    return Array.from(this.recommendations.values())
+      .filter(rec => rec.userId === userId)
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0))
+      .slice(0, limit);
+  }
+
+  async createRecommendation(recommendation: InsertRecommendation): Promise<Recommendation> {
+    const id = this.recommendationCurrentId++;
+    const now = new Date();
+    const newRecommendation: Recommendation = {
+      ...recommendation,
+      id,
+      createdAt: now,
+      viewed: false,
+      saved: false
+    };
+    this.recommendations.set(id, newRecommendation);
+    return newRecommendation;
+  }
+
+  async markRecommendationAsViewed(id: number): Promise<Recommendation | undefined> {
+    const recommendation = this.recommendations.get(id);
+    if (!recommendation) return undefined;
+    
+    recommendation.viewed = true;
+    recommendation.viewedAt = new Date();
+    return recommendation;
+  }
+
+  async markRecommendationAsSaved(id: number, saved: boolean): Promise<Recommendation | undefined> {
+    const recommendation = this.recommendations.get(id);
+    if (!recommendation) return undefined;
+    
+    recommendation.saved = saved;
+    return recommendation;
+  }
+
+  async generateRecommendations(userId: number): Promise<Recommendation[]> {
+    // Get user preferences
+    const preferences = await this.getUserTravelPreferences(userId);
+    if (!preferences) {
+      return [];
+    }
+    
+    // Get all properties
+    const properties = await this.getProperties();
+    
+    // Filter properties based on user preferences
+    let matchingProperties = properties;
+    
+    // Apply filters based on preferences
+    if (preferences.budget === 'low') {
+      matchingProperties = matchingProperties.filter(p => p.price < 200);
+    } else if (preferences.budget === 'medium') {
+      matchingProperties = matchingProperties.filter(p => p.price >= 200 && p.price <= 350);
+    } else if (preferences.budget === 'high') {
+      matchingProperties = matchingProperties.filter(p => p.price > 350);
+    }
+    
+    // Filter by destination types (match any)
+    if (preferences.destinationTypes && preferences.destinationTypes.length > 0) {
+      // Map destination types to areas or amenities
+      const destinationTypesToAreas: Record<string, string[]> = {
+        'beach': ['Sahel', 'Ras El Hekma'],
+        'city': ['Cairo', 'Alexandria'],
+        'mountain': ['Sinai', 'Saint Catherine'],
+        'desert': ['Siwa', 'Western Desert'],
+        'lake': ['Fayoum'],
+        'countryside': ['Luxor', 'Aswan'],
+        'island': ['Elephantine'],
+        'resort': ['Sharm El Sheikh', 'Hurghada']
+      };
+      
+      // Find properties that match any of the desired destination types
+      const areaFilters = preferences.destinationTypes.flatMap(
+        type => destinationTypesToAreas[type] || []
+      );
+      
+      if (areaFilters.length > 0) {
+        matchingProperties = matchingProperties.filter(
+          p => areaFilters.includes(p.area) || 
+               areaFilters.some(area => p.location.includes(area))
+        );
+      }
+    }
+    
+    // Filter by amenities based on preferences
+    if (preferences.preferredActivities && preferences.preferredActivities.length > 0) {
+      const activityToAmenities: Record<string, string[]> = {
+        'swimming': ['Pool', 'Beach', 'Swimming Pool', 'Beachfront'],
+        'hiking': ['Mountain View', 'Near Trails'],
+        'dining': ['Restaurant', 'Kitchen', 'Dining Area'],
+        'shopping': ['Near Mall', 'Shopping'],
+        'sightseeing': ['Near Attractions', 'City Center'],
+        'nightlife': ['Nightclub', 'Bars Nearby'],
+        'spa': ['Spa', 'Wellness', 'Jacuzzi'],
+        'sports': ['Tennis Court', 'Gym', 'Sports Facilities']
+      };
+      
+      const amenityFilters = preferences.preferredActivities.flatMap(
+        activity => activityToAmenities[activity] || []
+      );
+      
+      if (amenityFilters.length > 0) {
+        matchingProperties = matchingProperties.filter(p => 
+          p.amenities.some(amenity => 
+            amenityFilters.some(filter => amenity.includes(filter))
+          )
+        );
+      }
+    }
+    
+    // Create recommendations from the matching properties
+    const generatedRecommendations: Recommendation[] = [];
+    
+    // Sort properties by relevance score (simple implementation)
+    matchingProperties.sort((a, b) => {
+      // Higher rating first
+      if (a.rating !== b.rating) {
+        return b.rating - a.rating;
+      }
+      // Then featured properties
+      if (a.featured !== b.featured) {
+        return a.featured ? -1 : 1;
+      }
+      // Then new properties
+      if (a.isNew !== b.isNew) {
+        return a.isNew ? -1 : 1;
+      }
+      return 0;
+    });
+    
+    // Take top properties and convert to recommendations
+    const topProperties = matchingProperties.slice(0, 6);
+    
+    for (const property of topProperties) {
+      const recommendation: InsertRecommendation = {
+        userId,
+        propertyId: property.id,
+        score: 50 + Math.floor(Math.random() * 50), // simple score calculation
+        reason: `Matches your preference for ${preferences.destinationTypes?.[0] || 'travel'}`
+      };
+      
+      const createdRec = await this.createRecommendation(recommendation);
+      generatedRecommendations.push(createdRec);
+    }
+    
+    return generatedRecommendations;
   }
 }
 
@@ -1200,6 +1416,10 @@ export class PostgresStorage implements IStorage {
   // Availability and pricing operations
   // Using in-memory implementation for demo until we add tables to DB
   private availabilityDataCache: Map<number, AvailabilityData> = new Map();
+  private travelPreferences: Map<number, TravelPreference> = new Map();
+  private recommendations: Map<number, Recommendation> = new Map();
+  private recommendationCurrentId: number = 1;
+  private travelPreferenceCurrentId: number = 1;
 
   async getAvailabilityData(propertyId: number, startDate?: string, endDate?: string): Promise<AvailabilityData> {
     // Get data or create default if it doesn't exist
@@ -1415,6 +1635,214 @@ export class PostgresStorage implements IStorage {
     } catch (error: any) {
       console.error("Error marking messages as read:", error);
       throw new Error(`Failed to mark messages as read: ${error.message}`);
+    }
+  }
+
+  // Recommendation system methods
+  async getUserTravelPreferences(userId: number): Promise<TravelPreference | undefined> {
+    try {
+      const result = await this.db.select().from(travelPreferences)
+        .where(eq(travelPreferences.userId, userId))
+        .limit(1);
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error: any) {
+      console.error("Error getting user travel preferences:", error);
+      throw new Error(`Failed to get user travel preferences: ${error.message}`);
+    }
+  }
+
+  async createUserTravelPreferences(preferences: InsertTravelPreference): Promise<TravelPreference> {
+    try {
+      const result = await this.db.insert(travelPreferences).values({
+        ...preferences,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }).returning();
+      return result[0];
+    } catch (error: any) {
+      console.error("Error creating user travel preferences:", error);
+      throw new Error(`Failed to create user travel preferences: ${error.message}`);
+    }
+  }
+
+  async updateUserTravelPreferences(userId: number, updates: Partial<TravelPreference>): Promise<TravelPreference | undefined> {
+    try {
+      // Find the existing preferences first
+      const existing = await this.getUserTravelPreferences(userId);
+      
+      if (!existing) return undefined;
+      
+      // Update with new values and set updatedAt to now
+      const result = await this.db.update(travelPreferences)
+        .set({
+          ...updates,
+          updatedAt: new Date()
+        })
+        .where(eq(travelPreferences.id, existing.id))
+        .returning();
+      
+      return result[0];
+    } catch (error: any) {
+      console.error("Error updating user travel preferences:", error);
+      throw new Error(`Failed to update user travel preferences: ${error.message}`);
+    }
+  }
+
+  async getRecommendationsForUser(userId: number, limit: number = 5): Promise<Recommendation[]> {
+    try {
+      const result = await this.db.select().from(recommendations)
+        .where(eq(recommendations.userId, userId))
+        .orderBy(desc(recommendations.score))
+        .limit(limit);
+      return result;
+    } catch (error: any) {
+      console.error("Error getting recommendations for user:", error);
+      throw new Error(`Failed to get recommendations for user: ${error.message}`);
+    }
+  }
+
+  async createRecommendation(recommendation: InsertRecommendation): Promise<Recommendation> {
+    try {
+      const result = await this.db.insert(recommendations).values({
+        ...recommendation,
+        createdAt: new Date()
+      }).returning();
+      return result[0];
+    } catch (error: any) {
+      console.error("Error creating recommendation:", error);
+      throw new Error(`Failed to create recommendation: ${error.message}`);
+    }
+  }
+
+  async markRecommendationAsViewed(id: number): Promise<Recommendation | undefined> {
+    try {
+      const result = await this.db.update(recommendations)
+        .set({ viewed: true })
+        .where(eq(recommendations.id, id))
+        .returning();
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error: any) {
+      console.error("Error marking recommendation as viewed:", error);
+      throw new Error(`Failed to mark recommendation as viewed: ${error.message}`);
+    }
+  }
+
+  async markRecommendationAsSaved(id: number, saved: boolean): Promise<Recommendation | undefined> {
+    try {
+      const result = await this.db.update(recommendations)
+        .set({ saved })
+        .where(eq(recommendations.id, id))
+        .returning();
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error: any) {
+      console.error("Error marking recommendation as saved:", error);
+      throw new Error(`Failed to mark recommendation as saved: ${error.message}`);
+    }
+  }
+
+  async generateRecommendations(userId: number): Promise<Recommendation[]> {
+    try {
+      // Get user preferences
+      const preferences = await this.getUserTravelPreferences(userId);
+      if (!preferences) {
+        throw new Error(`No travel preferences found for user with ID ${userId}`);
+      }
+      
+      // Get properties for potential recommendations
+      const properties = await this.getProperties();
+      
+      // Get existing recommendations to avoid duplicates
+      const existingRecs = await this.getRecommendationsForUser(userId, 100);
+      const existingPropertyIds = new Set(existingRecs.map(r => r.propertyId));
+      
+      // Filter out properties that are already recommended
+      const candidateProperties = properties.filter(p => !existingPropertyIds.has(p.id));
+      
+      // If no new properties to recommend, return empty array
+      if (candidateProperties.length === 0) {
+        return [];
+      }
+      
+      // Score properties based on user preferences
+      const scoredProperties = candidateProperties.map(property => {
+        let score = 0;
+        const reasonCodes: string[] = [];
+        
+        // Score based on location match
+        if (preferences.preferredLocations.includes(property.area)) {
+          score += 30;
+          reasonCodes.push('location_match');
+        }
+        
+        // Score based on amenities
+        const amenityMatches = property.amenities.filter(a => 
+          preferences.preferredAmenities.includes(a)
+        );
+        
+        if (amenityMatches.length > 0) {
+          score += Math.min(amenityMatches.length * 10, 40);
+          reasonCodes.push('amenity_match');
+        }
+        
+        // Score based on budget range
+        const isBudget = property.price < 150;
+        const isMidRange = property.price >= 150 && property.price <= 300;
+        const isLuxury = property.price > 300;
+        
+        if ((preferences.budgetRange === 'budget' && isBudget) ||
+            (preferences.budgetRange === 'mid-range' && isMidRange) ||
+            (preferences.budgetRange === 'luxury' && isLuxury)) {
+          score += 20;
+          reasonCodes.push('budget_match');
+        }
+        
+        // Score based on travel style
+        if (preferences.travelStyle === 'family' && property.bedrooms >= 3) {
+          score += 15;
+          reasonCodes.push('family_friendly');
+        } else if (preferences.travelStyle === 'couple' && property.bedrooms <= 2) {
+          score += 15;
+          reasonCodes.push('couple_friendly');
+        }
+        
+        // Add a random factor (0-10 points)
+        const randomScore = Math.floor(Math.random() * 10);
+        score += randomScore;
+        
+        return {
+          property,
+          score,
+          reasonCodes
+        };
+      });
+      
+      // Sort by score (highest first)
+      scoredProperties.sort((a, b) => b.score - a.score);
+      
+      // Take the top 5 (or fewer if not enough candidates)
+      const topProperties = scoredProperties.slice(0, 5);
+      
+      // Create recommendation records
+      const newRecommendations: Recommendation[] = [];
+      
+      for (const { property, score, reasonCodes } of topProperties) {
+        const newRec: InsertRecommendation = {
+          userId,
+          propertyId: property.id,
+          score,
+          reasonCodes,
+          viewed: false,
+          saved: false
+        };
+        
+        const recommendation = await this.createRecommendation(newRec);
+        newRecommendations.push(recommendation);
+      }
+      
+      return newRecommendations;
+    } catch (error: any) {
+      console.error("Error generating recommendations:", error);
+      throw new Error(`Failed to generate recommendations: ${error.message}`);
     }
   }
 }
