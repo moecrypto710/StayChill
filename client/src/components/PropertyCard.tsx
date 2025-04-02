@@ -7,7 +7,7 @@ interface PropertyCardProps {
   minimalView?: boolean;
 }
 
-export function PropertyCard({ property, minimalView = false }: PropertyCardProps) {
+export default function PropertyCard({ property, minimalView = false }: PropertyCardProps) {
   const { t } = useTranslation();
   
   // If property doesn't have required fields, return null

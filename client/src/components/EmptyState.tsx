@@ -8,7 +8,7 @@ interface EmptyStateProps {
 }
 
 // Simple empty state component for when there's no data to display
-export function EmptyState({ 
+export default function EmptyState({ 
   title, 
   description, 
   icon, 
