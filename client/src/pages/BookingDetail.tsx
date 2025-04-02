@@ -3,10 +3,24 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { MessageCircle, ArrowLeft, Calendar, Home, CreditCard, Loader2 } from 'lucide-react';
+import { 
+  MessageCircle, 
+  ArrowLeft, 
+  Calendar, 
+  Home, 
+  CreditCard, 
+  Loader2, 
+  MapPin, 
+  Star, 
+  CheckCircle2, 
+  Clock,
+  XCircle
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/components/LanguageSwitcher';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 
 interface Booking {
   id: number;
@@ -58,7 +72,19 @@ export default function BookingDetail() {
       cancelled: 'Cancelled',
       paid: 'Paid',
       unpaid: 'Unpaid',
-      processing: 'Processing'
+      processing: 'Processing',
+      rateStay: 'Rate Your Stay',
+      bookingProgress: 'Booking Progress',
+      viewOnMap: 'View on Map',
+      submitReview: 'Submit Review',
+      upcoming: 'Upcoming',
+      completed: 'Completed',
+      checkIn: 'Check-in',
+      checkOut: 'Check-out',
+      amenities: 'Amenities',
+      locationInfo: 'Location Info',
+      bookingTimeline: 'Booking Timeline',
+      tripProgress: 'Trip Progress'
     },
     ar: {
       bookingDetails: 'تفاصيل الحجز',
@@ -77,7 +103,19 @@ export default function BookingDetail() {
       cancelled: 'ملغي',
       paid: 'مدفوع',
       unpaid: 'غير مدفوع',
-      processing: 'قيد المعالجة'
+      processing: 'قيد المعالجة',
+      rateStay: 'قيّم إقامتك',
+      bookingProgress: 'تقدم الحجز',
+      viewOnMap: 'عرض على الخريطة',
+      submitReview: 'إرسال التقييم',
+      upcoming: 'قادم',
+      completed: 'مكتمل',
+      checkIn: 'تسجيل الوصول',
+      checkOut: 'تسجيل المغادرة',
+      amenities: 'المرافق',
+      locationInfo: 'معلومات الموقع',
+      bookingTimeline: 'الجدول الزمني للحجز',
+      tripProgress: 'تقدم الرحلة'
     }
   };
 
@@ -189,7 +227,43 @@ export default function BookingDetail() {
 
   const bookingStatus = getStatusDisplay(booking.status);
   const paymentStatus = getPaymentStatusDisplay(booking.paymentStatus);
-
+  
+  // Calculate trip progress based on today's date relative to booking dates
+  const calculateTripProgress = () => {
+    const today = new Date();
+    const checkIn = new Date(booking.checkIn);
+    const checkOut = new Date(booking.checkOut);
+    
+    if (today < checkIn) {
+      return { 
+        stage: 'upcoming', 
+        text: t.upcoming, 
+        progress: 0,
+        icon: <Clock className="h-5 w-5 text-amber-500" />
+      };
+    } else if (today > checkOut) {
+      return { 
+        stage: 'completed', 
+        text: t.completed, 
+        progress: 100,
+        icon: <CheckCircle2 className="h-5 w-5 text-green-500" />
+      };
+    } else {
+      // During the stay
+      const totalDuration = checkOut.getTime() - checkIn.getTime();
+      const elapsed = today.getTime() - checkIn.getTime();
+      const progressPercent = Math.round((elapsed / totalDuration) * 100);
+      return { 
+        stage: 'active', 
+        text: `${progressPercent}%`, 
+        progress: progressPercent,
+        icon: <Calendar className="h-5 w-5 text-primary" />
+      };
+    }
+  };
+  
+  const tripProgress = calculateTripProgress();
+  
   return (
     <div className="container py-6" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="mb-6 flex items-center justify-between">
@@ -210,6 +284,40 @@ export default function BookingDetail() {
           {t.chatWithHost}
         </Button>
       </div>
+      
+      {/* Trip Timeline */}
+      <Card className="mb-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">{t.tripProgress}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center">
+                {tripProgress.icon}
+                <span className="ml-2 font-medium">{tripProgress.text}</span>
+              </div>
+              <Badge 
+                variant={booking.status === 'confirmed' ? 'default' : booking.status === 'cancelled' ? 'destructive' : 'outline'}
+              >
+                {bookingStatus.text}
+              </Badge>
+            </div>
+            <Progress value={tripProgress.progress} className="h-2" />
+            
+            <div className="flex justify-between text-sm text-muted-foreground mt-2">
+              <div className="flex flex-col items-center">
+                <span className="font-medium">{t.checkIn}</span>
+                <span>{formatDate(booking.checkIn)}</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="font-medium">{t.checkOut}</span>
+                <span>{formatDate(booking.checkOut)}</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Booking details */}
@@ -300,44 +408,87 @@ export default function BookingDetail() {
 
         {/* Property preview */}
         {!isLoadingProperty && property && (
-          <Card>
-            <div className="relative h-48 overflow-hidden rounded-t-lg">
-              <img
-                src={property.images[0] || 'https://placehold.co/600x400?text=No+Image'}
-                alt={property.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <CardHeader>
-              <CardTitle>{property.title}</CardTitle>
-              <CardDescription>{property.location}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex space-x-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Bedrooms</p>
-                  <p className="font-medium">{property.bedrooms}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Bathrooms</p>
-                  <p className="font-medium">{property.bathrooms}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Price / night</p>
-                  <p className="font-medium">${property.price}</p>
-                </div>
+          <div className="space-y-6">
+            <Card>
+              <div className="relative h-48 overflow-hidden rounded-t-lg">
+                <img
+                  src={property.images[0] || 'https://placehold.co/600x400?text=No+Image'}
+                  alt={property.title}
+                  className="w-full h-full object-cover"
+                />
+                {tripProgress.stage === 'completed' && (
+                  <div className="absolute top-2 right-2">
+                    <Badge className="bg-primary hover:bg-primary/90">
+                      <Star className="h-3 w-3 mr-1" fill="currentColor" /> 
+                      {t.rateStay}
+                    </Badge>
+                  </div>
+                )}
               </div>
-            </CardContent>
-            <CardFooter>
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => setLocation(`/property/${property.id}`)}
-              >
-                View Property
-              </Button>
-            </CardFooter>
-          </Card>
+              <CardHeader>
+                <CardTitle>{property.title}</CardTitle>
+                <CardDescription className="flex items-center">
+                  <MapPin className="h-4 w-4 mr-1 inline-block text-muted-foreground" />
+                  {property.location}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex space-x-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Bedrooms</p>
+                    <p className="font-medium">{property.bedrooms}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Bathrooms</p>
+                    <p className="font-medium">{property.bathrooms}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Price / night</p>
+                    <p className="font-medium">${property.price}</p>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => setLocation(`/property/${property.id}`)}
+                >
+                  View Property
+                </Button>
+                <Button 
+                  variant="secondary" 
+                  className="flex-1"
+                >
+                  <MapPin className="h-4 w-4 mr-2" />
+                  {t.viewOnMap}
+                </Button>
+              </CardFooter>
+            </Card>
+            
+            {/* Rating Section (only visible for completed stays) */}
+            {tripProgress.stage === 'completed' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">{t.rateStay}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex space-x-1 mb-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star 
+                        key={i} 
+                        className="h-8 w-8 cursor-pointer hover:text-primary transition-colors" 
+                        fill="none"
+                      />
+                    ))}
+                  </div>
+                  <Button className="w-full">
+                    {t.submitReview}
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         )}
       </div>
     </div>
