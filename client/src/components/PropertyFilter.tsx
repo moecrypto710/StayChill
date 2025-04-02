@@ -5,7 +5,7 @@ import { queryClient } from "@/lib/queryClient";
 import PropertyCard from "./PropertyCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Palmtree, Home, Waves, Trees, Droplets } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { 
   Select,
@@ -141,6 +141,42 @@ export default function PropertyFilter() {
         <div className="mb-8">
           <h2 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-white">Explore all properties</h2>
           <p className="text-gray-600 dark:text-gray-400">Discover amazing stays in Sahel and Ras El Hekma</p>
+        </div>
+        
+        {/* Category shortcuts - As seen in user's reference image */}
+        <div className="mb-6 overflow-x-auto">
+          <div className="flex space-x-8 pb-2 justify-center">
+            <div className="flex flex-col items-center space-y-2">
+              <Button variant="ghost" className="rounded-full h-16 w-16 p-0 bg-gray-100 hover:bg-gray-200">
+                <Palmtree className="h-6 w-6 text-teal-700" />
+              </Button>
+              <span className="text-xs">Desert</span>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <Button variant="ghost" className="rounded-full h-16 w-16 p-0 bg-gray-100 hover:bg-gray-200">
+                <Home className="h-6 w-6 text-teal-700" />
+              </Button>
+              <span className="text-xs">Cabins</span>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <Button variant="ghost" className="rounded-full h-16 w-16 p-0 bg-gray-100 hover:bg-gray-200">
+                <Waves className="h-6 w-6 text-teal-700" />
+              </Button>
+              <span className="text-xs">Beachfront</span>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <Button variant="ghost" className="rounded-full h-16 w-16 p-0 bg-gray-100 hover:bg-gray-200">
+                <Trees className="h-6 w-6 text-teal-700" />
+              </Button>
+              <span className="text-xs">Treehouses</span>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <Button variant="ghost" className="rounded-full h-16 w-16 p-0 bg-gray-100 hover:bg-gray-200">
+                <Droplets className="h-6 w-6 text-teal-700" />
+              </Button>
+              <span className="text-xs">Lake</span>
+            </div>
+          </div>
         </div>
         
         {/* Horizontal filter pills - Airbnb style */}

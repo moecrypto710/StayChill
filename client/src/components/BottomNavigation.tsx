@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { Home, Search, User, Building2, MessageSquare, Trophy } from "lucide-react";
+import { Home, Search, User, Building2, MessageSquare, Trophy, MapPin } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useTranslation } from "@/lib/translations";
 import { useLanguage } from "./LanguageSwitcher";
@@ -34,24 +34,18 @@ export default function BottomNavigation() {
             onClick={() => navigate('/properties')}
           />
           <NavItem
+            icon={<MapPin size={20} />}
+            label={t('destinations')}
+            active={isActive('/destinations') || location.startsWith('/destinations/')}
+            onClick={() => navigate('/destinations')}
+          />
+          <NavItem
             icon={<MessageSquare size={20} />}
             label={t('inbox')}
             active={isActive('/inbox')}
             onClick={() => {
               if (isAuthenticated) {
                 navigate('/inbox');
-              } else {
-                setIsLoginModalOpen(true);
-              }
-            }}
-          />
-          <NavItem
-            icon={<Trophy size={20} />}
-            label={t('rewards')}
-            active={isActive('/rewards')}
-            onClick={() => {
-              if (isAuthenticated) {
-                navigate('/rewards');
               } else {
                 setIsLoginModalOpen(true);
               }

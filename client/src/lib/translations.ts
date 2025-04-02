@@ -138,7 +138,44 @@ export type TranslationKey =
   | 'explore'
   | 'bookings'
   | 'trips'
-  | 'inbox';
+  | 'inbox'
+  // Destination guide translations
+  | 'destinations'
+  | 'loading'
+  | 'overview'
+  | 'neighborhoods'
+  | 'activities'
+  | 'tips'
+  | 'about'
+  | 'highlights'
+  | 'photos'
+  | 'practicalInfo'
+  | 'bestTimeToVisit'
+  | 'weather'
+  | 'gettingThere'
+  | 'fromCairo'
+  | 'fromAlex'
+  | 'nearestAirport'
+  | 'location'
+  | 'latitude'
+  | 'longitude'
+  | 'viewOnMap'
+  | 'findAccommodation'
+  | 'explorePropertiesIn'
+  | 'viewProperties'
+  | 'neighborhoodsIn'
+  | 'exploreAreasIn'
+  | 'popularPropertyTypes'
+  | 'thingsToDo'
+  | 'activitiesIn'
+  | 'localTips'
+  | 'insiderTipsFor'
+  | 'exploreDestinations'
+  | 'searchDestinations'
+  | 'exploreDestination'
+  | 'areas'
+  | 'noDestinationsFound'
+  | 'clearSearch';
 
 export type Language = 'en' | 'ar';
 
@@ -265,7 +302,45 @@ export const translations: Record<Language, Partial<Record<TranslationKey, strin
     error_saving_recommendation: 'Error Saving Recommendation',
     oops_something_went_wrong: 'Oops! Something went wrong',
     error_loading_recommendations: 'We couldn\'t load your recommendations',
-    refresh: 'Refresh Page'
+    refresh: 'Refresh Page',
+    
+    // Destination guide translations
+    destinations: 'Destinations',
+    loading: 'Loading...',
+    overview: 'Overview',
+    neighborhoods: 'Neighborhoods',
+    activities: 'Activities',
+    tips: 'Local Tips',
+    about: 'About',
+    highlights: 'Highlights',
+    photos: 'Photos',
+    practicalInfo: 'Practical Information',
+    bestTimeToVisit: 'Best Time to Visit',
+    weather: 'Weather',
+    gettingThere: 'Getting There',
+    fromCairo: 'From Cairo',
+    fromAlex: 'From Alexandria',
+    nearestAirport: 'Nearest Airport',
+    location: 'Location',
+    latitude: 'Latitude',
+    longitude: 'Longitude',
+    viewOnMap: 'View on Map',
+    findAccommodation: 'Find Accommodation',
+    explorePropertiesIn: 'Explore properties in {location}',
+    viewProperties: 'View Properties',
+    neighborhoodsIn: 'Neighborhoods in {location}',
+    exploreAreasIn: 'Explore different areas in {location}',
+    popularPropertyTypes: 'Popular Property Types',
+    thingsToDo: 'Things to Do',
+    activitiesIn: 'Activities in {location}',
+    localTips: 'Local Tips',
+    insiderTipsFor: 'Insider tips for {location}',
+    exploreDestinations: 'Explore beach destinations in Egypt',
+    searchDestinations: 'Search destinations',
+    exploreDestination: 'Explore Destination',
+    areas: 'Areas',
+    noDestinationsFound: 'No destinations found',
+    clearSearch: 'Clear Search'
   },
   ar: {
     home: 'الرئيسية',
@@ -388,7 +463,45 @@ export const translations: Record<Language, Partial<Record<TranslationKey, strin
     error_saving_recommendation: 'خطأ في حفظ التوصية',
     oops_something_went_wrong: 'عفوًا! حدث خطأ ما',
     error_loading_recommendations: 'تعذر تحميل التوصيات الخاصة بك',
-    refresh: 'تحديث الصفحة'
+    refresh: 'تحديث الصفحة',
+    
+    // Destination guide translations
+    destinations: 'الوجهات السياحية',
+    loading: 'جاري التحميل...',
+    overview: 'نظرة عامة',
+    neighborhoods: 'الأحياء',
+    activities: 'الأنشطة',
+    tips: 'نصائح محلية',
+    about: 'عن',
+    highlights: 'المعالم البارزة',
+    photos: 'صور',
+    practicalInfo: 'معلومات عملية',
+    bestTimeToVisit: 'أفضل وقت للزيارة',
+    weather: 'الطقس',
+    gettingThere: 'كيفية الوصول',
+    fromCairo: 'من القاهرة',
+    fromAlex: 'من الإسكندرية',
+    nearestAirport: 'أقرب مطار',
+    location: 'الموقع',
+    latitude: 'خط العرض',
+    longitude: 'خط الطول',
+    viewOnMap: 'عرض على الخريطة',
+    findAccommodation: 'البحث عن مكان للإقامة',
+    explorePropertiesIn: 'استكشف العقارات في {location}',
+    viewProperties: 'عرض العقارات',
+    neighborhoodsIn: 'الأحياء في {location}',
+    exploreAreasIn: 'استكشف المناطق المختلفة في {location}',
+    popularPropertyTypes: 'أنواع العقارات الشائعة',
+    thingsToDo: 'أشياء يمكن القيام بها',
+    activitiesIn: 'الأنشطة في {location}',
+    localTips: 'نصائح محلية',
+    insiderTipsFor: 'نصائح خبراء لـ {location}',
+    exploreDestinations: 'استكشف الوجهات الشاطئية في مصر',
+    searchDestinations: 'البحث في الوجهات',
+    exploreDestination: 'استكشف الوجهة',
+    areas: 'مناطق',
+    noDestinationsFound: 'لم يتم العثور على وجهات',
+    clearSearch: 'مسح البحث'
   }
 };
 
@@ -408,5 +521,6 @@ export function useTranslation(lang?: Language) {
            key;
   };
   
-  return { t, isRtl, currentLang };
+  // Return both currentLang and language (for backward compatibility)
+  return { t, isRtl, currentLang, language: currentLang };
 }

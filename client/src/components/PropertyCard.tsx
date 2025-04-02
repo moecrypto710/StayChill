@@ -5,9 +5,10 @@ import { useTranslation } from '@/lib/translations';
 interface PropertyCardProps {
   property: any;
   minimalView?: boolean;
+  showRating?: boolean;
 }
 
-export default function PropertyCard({ property, minimalView = false }: PropertyCardProps) {
+export default function PropertyCard({ property, minimalView = false, showRating = true }: PropertyCardProps) {
   const { t } = useTranslation();
   
   // If property doesn't have required fields, return null
@@ -32,9 +33,11 @@ export default function PropertyCard({ property, minimalView = false }: Property
               <h3 className="font-semibold text-lg mb-1 line-clamp-1">{property.title}</h3>
               <p className="text-muted-foreground text-sm mb-2">{property.location}</p>
             </div>
-            <Badge variant="outline" className="text-xs font-medium">
-              {property.rating} ★
-            </Badge>
+            {showRating && (
+              <Badge variant="outline" className="text-xs font-medium">
+                {property.rating} ★
+              </Badge>
+            )}
           </div>
           
           <div className="flex gap-2 mt-2">

@@ -25,6 +25,8 @@ import Inbox from "./pages/Inbox"; // Import the Inbox component
 import Rewards from "./pages/Rewards"; // Import the Rewards component
 import Profile from "./pages/Profile"; // Import the Profile component
 import Recommendations from "./pages/Recommendations"; // Import the Recommendations component
+import Destinations from "./pages/Destinations"; // Import the Destinations component
+import DestinationGuide from "./pages/DestinationGuide"; // Import the DestinationGuide component
 
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
@@ -166,6 +168,24 @@ function Router() {
             <Recommendations />
           </AuthenticatedLayout>
         </ProtectedRoute>
+      </Route>
+
+      <Route path="/destinations"> {/* Destinations list route */}
+        <ProtectedRoute>
+          <AuthenticatedLayout>
+            <Destinations />
+          </AuthenticatedLayout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/destinations/:id"> {/* Destination details route */}
+        {(params) => (
+          <ProtectedRoute>
+            <AuthenticatedLayout>
+              <DestinationGuide />
+            </AuthenticatedLayout>
+          </ProtectedRoute>
+        )}
       </Route>
 
       {/* Catch all route */}
