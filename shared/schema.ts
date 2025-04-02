@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, jsonb, timestamp, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, jsonb, timestamp, varchar, decimal } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -43,6 +43,9 @@ export const bookings = pgTable("bookings", {
   checkOut: timestamp("check_out").notNull(),
   guests: integer("guests").notNull(),
   message: text("message"),
+  totalAmount: decimal("total_amount", { precision: 10, scale: 2 }),
+  paymentStatus: text("payment_status").default("unpaid"), // unpaid, processing, paid, refunded
+  paymentIntentId: text("payment_intent_id"),
   status: text("status").notNull().default("pending"), // pending, confirmed, cancelled
 });
 
@@ -165,6 +168,26 @@ export const panoramaSchema = z.object({
   hotspots: z.array(hotspotSchema).optional()
 });
 
+// Payment schemas
+export const paymentMethodSchema = z.object({
+  type: z.enum(['card']),
+  card: z.object({
+    number: z.string().min(13).max(19),
+    expMonth: z.number().min(1).max(12),
+    expYear: z.number().min(new Date().getFullYear() % 100),
+    cvc: z.string().min(3).max(4)
+  })
+});
+
+export const paymentIntentSchema = z.object({
+  bookingId: z.number(),
+  amount: z.number().positive(),
+  currency: z.string().default("usd"),
+  description: z.string().optional(),
+  paymentMethod: z.string().optional(),
+  returnUrl: z.string().optional()
+});
+
 export type PropertySearch = z.infer<typeof propertySearchSchema>;
 export type Favorite = typeof favorites.$inferSelect;
 export type InsertFavorite = typeof favorites.$inferInsert;
@@ -172,3 +195,5 @@ export type PricePoint = z.infer<typeof pricePointSchema>;
 export type AvailabilityData = z.infer<typeof availabilityDataSchema>;
 export type Hotspot = z.infer<typeof hotspotSchema>;
 export type Panorama = z.infer<typeof panoramaSchema>;
+export type PaymentMethod = z.infer<typeof paymentMethodSchema>;
+export type PaymentIntent = z.infer<typeof paymentIntentSchema>;

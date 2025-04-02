@@ -13,13 +13,20 @@ import {
   inquiryValidationSchema,
   loginSchema,
   registerSchema,
-  pricePointSchema
+  pricePointSchema,
+  paymentIntentSchema
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import Stripe from "stripe";
 
 // Create memory store for sessions
 const MemoryStore = memorystore(session);
+
+// Initialize Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2023-10-16' as any, // Cast to any to fix TypeScript compatibility issues
+});
 
 function handleZodError(error: unknown, res: Response) {
   if (error instanceof ZodError) {
@@ -218,6 +225,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Update booking payment status
+  apiRouter.patch("/bookings/:bookingId/payment-status", isAuthenticated, async (req, res) => {
+    try {
+      const bookingId = parseInt(req.params.bookingId);
+      const { paymentStatus, paymentIntentId } = req.body;
+      
+      if (!paymentStatus) {
+        return res.status(400).json({ error: "Payment status is required" });
+      }
+      
+      // Check if booking exists
+      const booking = await storage.getBooking(bookingId);
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+      
+      const updatedBooking = await storage.updateBookingPaymentStatus(bookingId, paymentStatus, paymentIntentId);
+      
+      if (paymentStatus === 'paid') {
+        // If payment is marked as paid, also update booking status to confirmed
+        await storage.updateBookingStatus(bookingId, 'confirmed');
+      }
+      
+      res.json(updatedBooking);
+    } catch (error) {
+      console.error("Error updating booking payment status:", error);
+      res.status(500).json({ error: "Failed to update booking payment status" });
+    }
+  });
+  
   // Inquiry routes
   apiRouter.post("/inquiries", isAuthenticated, async (req, res) => {
     try {
@@ -303,6 +340,193 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Payment routes
+  const paymentRouter = express.Router();
+
+  // Create payment intent
+  paymentRouter.post("/create-payment-intent", isAuthenticated, async (req, res) => {
+    try {
+      const paymentData = paymentIntentSchema.parse(req.body);
+      const { bookingId, amount, currency = "usd", description } = paymentData;
+
+      // Get the booking to verify it exists
+      const booking = await storage.getBooking(bookingId);
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+
+      // Create payment intent with Stripe
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount * 100, // Stripe works in cents
+        currency,
+        description: description || `Payment for booking #${bookingId}`,
+        metadata: { bookingId: bookingId.toString() },
+      });
+
+      // Update booking with payment intent ID and total amount
+      await storage.updateBookingPaymentStatus(bookingId, "processing", paymentIntent.id);
+      await storage.updateBookingTotalAmount(bookingId, amount);
+
+      // Return the client secret to the frontend
+      res.json({
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id
+      });
+    } catch (error) {
+      console.error("Error creating payment intent:", error);
+      if (error instanceof Error) {
+        res.status(400).json({ error: error.message });
+      } else {
+        handleZodError(error, res);
+      }
+    }
+  });
+
+  // Process a payment
+  paymentRouter.post("/process-payment", isAuthenticated, async (req, res) => {
+    try {
+      const { paymentIntentId, bookingId } = req.body;
+      
+      if (!paymentIntentId || !bookingId) {
+        return res.status(400).json({ error: "Missing payment intent ID or booking ID" });
+      }
+
+      // Retrieve the payment intent from Stripe to check its status
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      
+      // Check payment status
+      if (paymentIntent.status === "succeeded") {
+        // Update booking status in database
+        await storage.updateBookingPaymentStatus(bookingId, "paid", paymentIntentId);
+        await storage.updateBookingStatus(bookingId, "confirmed");
+        
+        res.json({ 
+          success: true, 
+          message: "Payment successful",
+          status: "paid",
+          bookingStatus: "confirmed"
+        });
+      } else if (paymentIntent.status === "requires_payment_method" || 
+                paymentIntent.status === "requires_confirmation" ||
+                paymentIntent.status === "requires_action") {
+        // Payment still needs action
+        res.json({ 
+          success: false, 
+          message: "Payment requires further action",
+          status: paymentIntent.status
+        });
+      } else {
+        // Payment failed or was cancelled
+        await storage.updateBookingPaymentStatus(bookingId, "failed", paymentIntentId);
+        
+        res.json({ 
+          success: false, 
+          message: "Payment failed or was cancelled",
+          status: paymentIntent.status
+        });
+      }
+    } catch (error) {
+      console.error("Error processing payment:", error);
+      if (error instanceof Error) {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Failed to process payment" });
+      }
+    }
+  });
+
+  // Webhook for payment events from Stripe
+  paymentRouter.post("/webhook", express.raw({ type: 'application/json' }), async (req, res) => {
+    try {
+      // Verify the webhook signature
+      const signature = req.headers['stripe-signature'];
+      
+      if (!signature) {
+        return res.status(400).json({ error: "Missing Stripe signature" });
+      }
+
+      // Verify the event
+      let event;
+      try {
+        event = stripe.webhooks.constructEvent(
+          req.body,
+          signature,
+          process.env.STRIPE_WEBHOOK_SECRET || 'whsec_test'
+        );
+      } catch (err) {
+        return res.status(400).json({ error: `Webhook signature verification failed: ${err instanceof Error ? err.message : 'Unknown error'}` });
+      }
+
+      // Handle the event
+      const eventObject = event.data.object as any; // Cast to any to work with the object safely
+      
+      // Only proceed if this is a payment intent event and has metadata with bookingId
+      if (event.type.startsWith('payment_intent.') && eventObject && eventObject.metadata) {
+        const bookingId = parseInt(eventObject.metadata.bookingId);
+        
+        if (!bookingId) {
+          return res.status(400).json({ error: "Missing booking ID in payment metadata" });
+        }
+
+        switch (event.type) {
+          case 'payment_intent.succeeded':
+            // Payment succeeded, update booking
+            await storage.updateBookingPaymentStatus(bookingId, "paid", eventObject.id);
+            await storage.updateBookingStatus(bookingId, "confirmed");
+            break;
+          case 'payment_intent.payment_failed':
+            // Payment failed, update booking
+            await storage.updateBookingPaymentStatus(bookingId, "failed", eventObject.id);
+            break;
+          case 'payment_intent.canceled':
+            // Payment canceled, update booking
+            await storage.updateBookingPaymentStatus(bookingId, "canceled", eventObject.id);
+            break;
+          case 'payment_intent.processing':
+            // Payment is processing
+            await storage.updateBookingPaymentStatus(bookingId, "processing", eventObject.id);
+            break;
+          default:
+            console.log(`Unhandled payment intent event type ${event.type}`);
+        }
+      } else {
+        console.log(`Event type ${event.type} is not related to payment intents or lacks metadata`);
+      }
+
+      res.json({ received: true });
+    } catch (error) {
+      console.error("Error processing webhook:", error);
+      res.status(500).json({ error: "Failed to process webhook" });
+    }
+  });
+
+  // Get payment status for a booking
+  paymentRouter.get("/booking/:bookingId/payment-status", isAuthenticated, async (req, res) => {
+    try {
+      const bookingId = parseInt(req.params.bookingId);
+      const booking = await storage.getBooking(bookingId);
+      
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+      
+      // Return payment status
+      res.json({
+        bookingId,
+        paymentStatus: booking.paymentStatus || "unpaid",
+        bookingStatus: booking.status,
+        paymentIntentId: booking.paymentIntentId,
+        totalAmount: booking.totalAmount
+      });
+    } catch (error) {
+      console.error("Error getting payment status:", error);
+      res.status(500).json({ error: "Failed to get payment status" });
+    }
+  });
+
+  // Mount payment router
+  apiRouter.use("/payments", paymentRouter);
+  
   // Mount API router
   app.use("/api", apiRouter);
 

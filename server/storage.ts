@@ -52,6 +52,8 @@ export interface IStorage {
   getBookingsByPropertyId(propertyId: number): Promise<Booking[]>;
   createBooking(booking: InsertBooking): Promise<Booking>;
   updateBookingStatus(id: number, status: string): Promise<Booking | undefined>;
+  updateBookingPaymentStatus(id: number, paymentStatus: string, paymentIntentId?: string): Promise<Booking | undefined>;
+  updateBookingTotalAmount(id: number, totalAmount: number): Promise<Booking | undefined>;
 
   // Inquiry operations
   getInquiries(): Promise<Inquiry[]>;
@@ -385,6 +387,25 @@ export class MemStorage implements IStorage {
     if (!booking) return undefined;
 
     booking.status = status;
+    return booking;
+  }
+  
+  async updateBookingPaymentStatus(id: number, paymentStatus: string, paymentIntentId?: string): Promise<Booking | undefined> {
+    const booking = this.bookings.get(id);
+    if (!booking) return undefined;
+
+    booking.paymentStatus = paymentStatus;
+    if (paymentIntentId) {
+      booking.paymentIntentId = paymentIntentId;
+    }
+    return booking;
+  }
+
+  async updateBookingTotalAmount(id: number, totalAmount: number): Promise<Booking | undefined> {
+    const booking = this.bookings.get(id);
+    if (!booking) return undefined;
+
+    booking.totalAmount = totalAmount;
     return booking;
   }
 
@@ -872,6 +893,41 @@ export class PostgresStorage implements IStorage {
     } catch (error: any) {
       console.error("Error updating booking status:", error);
       throw new Error(`Failed to update booking status: ${error.message}`);
+    }
+  }
+
+  async updateBookingPaymentStatus(id: number, paymentStatus: string, paymentIntentId?: string): Promise<Booking | undefined> {
+    try {
+      const updateData: any = { paymentStatus };
+      if (paymentIntentId) {
+        updateData.paymentIntentId = paymentIntentId;
+      }
+
+      const result = await this.db
+        .update(bookings)
+        .set(updateData)
+        .where(eq(bookings.id, id))
+        .returning();
+
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error: any) {
+      console.error("Error updating booking payment status:", error);
+      throw new Error(`Failed to update booking payment status: ${error.message}`);
+    }
+  }
+
+  async updateBookingTotalAmount(id: number, totalAmount: number): Promise<Booking | undefined> {
+    try {
+      const result = await this.db
+        .update(bookings)
+        .set({ totalAmount })
+        .where(eq(bookings.id, id))
+        .returning();
+
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error: any) {
+      console.error("Error updating booking total amount:", error);
+      throw new Error(`Failed to update booking total amount: ${error.message}`);
     }
   }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
 import { Property } from "@shared/schema";
@@ -8,6 +8,7 @@ import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange, Panorama } from "@/lib/types";
 import Panorama360Gallery from "@/components/Panorama360Gallery";
 import PropertyHeatMap, { AvailabilityData } from "@/components/PropertyHeatMap";
+import PaymentModal from "@/components/PaymentModal";
 import { 
   Card,
   CardContent,
@@ -63,6 +64,9 @@ export default function PropertyDetail() {
     to: undefined,
   });
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [currentBooking, setCurrentBooking] = useState<number | null>(null);
+  const [bookingAmount, setBookingAmount] = useState(0);
   
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
@@ -181,13 +185,29 @@ export default function PropertyDetail() {
       const res = await apiRequest("POST", "/api/bookings", data);
       return res.json();
     },
-    onSuccess: () => {
-      toast({
-        title: "Booking request submitted!",
-        description: "We'll get back to you soon to confirm your booking.",
-      });
-      bookingForm.reset();
-      setDateRange({ from: undefined, to: undefined });
+    onSuccess: (data) => {
+      // After successful booking, open payment modal
+      if (property && dateRange.from && dateRange.to) {
+        // Calculate number of nights
+        const checkIn = new Date(dateRange.from);
+        const checkOut = new Date(dateRange.to);
+        const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24));
+        
+        // Calculate total amount
+        const totalAmount = property.price * nights;
+        
+        // Open payment modal with booking details
+        setCurrentBooking(data.id);
+        setBookingAmount(totalAmount);
+        setIsPaymentModalOpen(true);
+      } else {
+        toast({
+          title: "Booking request submitted!",
+          description: "We'll get back to you soon to confirm your booking.",
+        });
+        bookingForm.reset();
+        setDateRange({ from: undefined, to: undefined });
+      }
     },
     onError: (error) => {
       toast({
@@ -244,6 +264,18 @@ export default function PropertyDetail() {
   const onInquirySubmit = (data: z.infer<typeof inquiryValidationSchema>) => {
     inquiryMutation.mutate(data);
   };
+  
+  // Handle payment success
+  const handlePaymentSuccess = () => {
+    toast({
+      title: "Payment successful!",
+      description: "Your booking has been confirmed.",
+    });
+    bookingForm.reset();
+    setDateRange({ from: undefined, to: undefined });
+    setCurrentBooking(null);
+    queryClient.invalidateQueries({ queryKey: [`/api/properties/${propertyId}`] });
+  };
 
   if (isLoading) {
     return (
@@ -293,6 +325,17 @@ export default function PropertyDetail() {
         <title>{property.title} | Stay Chill</title>
         <meta name="description" content={property.description.substring(0, 160)} />
       </Helmet>
+
+      {/* Payment Modal */}
+      {currentBooking && (
+        <PaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          bookingId={currentBooking}
+          amount={bookingAmount}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
       
       <div className="container mx-auto px-4 py-12">
         <div className="mb-6 flex flex-wrap justify-between items-start gap-4">
