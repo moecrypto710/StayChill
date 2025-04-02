@@ -7,7 +7,6 @@ import { Property, Panorama } from "@shared/schema";
 import { useLanguage } from './LanguageSwitcher';
 import { useTranslation } from "@/lib/translations";
 import VirtualTour from "./VirtualTour";
-import { cn } from "@/lib/utils";
 
 interface PropertyCardProps {
   property: Property;
